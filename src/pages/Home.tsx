@@ -183,7 +183,7 @@ export const Home = () => {
                 </button>
               </div>
             </div>
-            <div className="w-full min-h-28  rounded-md p-4 border-2 shadow-md relative">
+            <div className="w-full min-h-28  rounded-md p-4 border-2 shadow-md relative ">
               <div className="w-full flex gap-2 items-center">
                 <img src={volleyBall} className="w-6" alt="" />
 

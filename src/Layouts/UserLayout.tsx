@@ -7,12 +7,15 @@ import loginTop from "../assets/Images/login-top.png";
 import booking from "../assets/icons/booking.svg";
 import { LoginOrSignup } from "../components/LoginSingup";
 import { CustomModal } from "../components/Moda";
-import { Dribbble, TwitterIcon, X } from "lucide-react";
-import { useState } from "react";
+import { Dribbble, TwitterIcon, User, X } from "lucide-react";
+import {  useRef, useState } from "react";
 import { Instagram } from "lucide-react";
+import toast from "react-hot-toast";
 export const UserLayout = () => {
   const [numberErr, setNumberErr] = useState<boolean>(false);
   const [phonenumber, setPhoneNumber] = useState<string>("");
+
+  const loginModalRef = useRef<HTMLDivElement>(null);
   return (
     <div>
       <header className="w-full h-20 flex items-center justify-center sticky top-0 left-0 z-10 bg-white">
@@ -22,13 +25,27 @@ export const UserLayout = () => {
         >
           <img src={logo} className="h-full" alt="" />
           <div className="flex h-full items-center gap-3 md:gap-6">
-            <div className="flex  md:gap-2 items-center cursor-pointer">
+            <div
+              className="flex  md:gap-2 items-center cursor-pointer"
+              onClick={() => {
+                toast("Please create an account", {
+                  className: "px-4 h-10",
+                  style: { color: "green",border:"1px solid green",outline:"1px solid green" },
+                  icon:<User className="w-5" />
+                });
+                loginModalRef.current?.click();
+              }}
+            >
               <img src={booking} className="w-7" alt="" />
               <span>Book now</span>
             </div>
             <CustomModal
               className="w-[90%] sm:w-[75%] md:w-[66%] lg:w-[43%] xl:w-[60%] p-0"
-              TriggerComponent={<LoginOrSignup />}
+              TriggerComponent={
+                <div ref={loginModalRef}>
+                  <LoginOrSignup />
+                </div>
+              }
               closeComponent={
                 <div className="cursor-pointer">
                   <X className="w-6" />
@@ -118,7 +135,7 @@ export const UserLayout = () => {
       <Outlet />
       <footer className="w-full min-h-96 pt-16 border-t mt-5 bg-[#0d0d0d] text-white pb-4">
         <main className="mx-auto w-[90%] h-full">
-          <div className="mx-auto lg:w-[90%] md:flex gap-16 h-full border-b pb-10 border-[#393939]">
+          <div className="mx-auto lg:w-[90%] flex-col flex md:flex-row gap-16 h-full border-b pb-10 border-[#393939]">
             <div className="h-full flex flex-col gap-5 w-96 leading-7">
               <div className="w-full">
                 <h1 className="uppercase font-semibold">LAL Sports Academy</h1>

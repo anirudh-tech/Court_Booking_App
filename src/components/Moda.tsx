@@ -39,10 +39,15 @@ export const CustomModal = ({
               exit={"closed"}
               variants={modalVariants}
               transition={{ duration: 0.2, ease: "easeOut", delay: 0 }}
-              onClick={()=>closeRef.current?.click()}
+              onClick={() => closeRef.current?.click()}
               className="fixed inset-0 flex items-center justify-center bg-slate-950  bg-opacity-45"
             >
-              <motion.div onClick={(e)=>e.stopPropagation()}
+              <motion.div
+                onClick={(e) => e.stopPropagation()}
+                // initial={{ width: 0,height:0 }}
+                // animate={{ width: "auto",height:"auto" }}
+                exit={{ width: 0, height: 0, rotateX: "45deg" }}
+                transition={{ duration: 0.9, ease: "easeOut", delay: 0 }}
                 className={`bg-[white]  rounded-md  relative ${className}`}
               >
                 <div
