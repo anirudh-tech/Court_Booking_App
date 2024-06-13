@@ -192,7 +192,10 @@ export function Booking() {
               </span>
             </div>
           </div>
-          <div className="w-full h-12 flex items-center justify-center bg-custom-gradient rounded-md text-white" role="button">
+          <div
+            className="w-full h-12 flex items-center justify-center bg-custom-gradient rounded-md text-white"
+            role="button"
+          >
             Proceed to payment
           </div>
         </div>

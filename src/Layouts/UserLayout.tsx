@@ -50,7 +50,7 @@ export const UserLayout = () => {
               <span>Book now</span>
             </div>
             <CustomModal
-              className="w-[90%] sm:w-[75%] md:w-[66%] lg:w-[43%] xl:w-[60%] p-0"
+              className="w-[90%] sm:w-[75%] md:w-[66%] lg:w-[80%] xl:w-[60%] p-0"
               TriggerComponent={
                 <div ref={loginModalRef}>
                   <LoginOrSignup />
