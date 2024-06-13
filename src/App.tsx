@@ -5,6 +5,7 @@ import { UserLayout } from "./Layouts/UserLayout";
 import AOS from "aos";
 // import "aos/dist/aos.css";
 import { useEffect } from "react";
+import { Booking } from "./pages/Booking";
 function App() {
   useEffect(() => {
     AOS.init({
@@ -18,6 +19,7 @@ function App() {
       <Routes>
         <Route path="/" element={<UserLayout />}>
           <Route index element={<Home />} />
+          <Route path="/booking" element={<Booking />} />
         </Route>
       </Routes>
     </main>

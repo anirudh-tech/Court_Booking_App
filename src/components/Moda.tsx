@@ -44,8 +44,6 @@ export const CustomModal = ({
             >
               <motion.div
                 onClick={(e) => e.stopPropagation()}
-                // initial={{ width: 0,height:0 }}
-                // animate={{ width: "auto",height:"auto" }}
                 exit={{ width: 0, height: 0, rotateX: "45deg" }}
                 transition={{ duration: 0.9, ease: "easeOut", delay: 0 }}
                 className={`bg-[white]  rounded-md  relative ${className}`}

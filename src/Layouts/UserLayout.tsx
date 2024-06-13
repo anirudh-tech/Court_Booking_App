@@ -7,8 +7,8 @@ import loginTop from "../assets/Images/login-top.png";
 import booking from "../assets/icons/booking.svg";
 import { LoginOrSignup } from "../components/LoginSingup";
 import { CustomModal } from "../components/Moda";
-import { Dribbble, TwitterIcon, User, X } from "lucide-react";
-import {  useRef, useState } from "react";
+import { Dribbble, TwitterIcon,  X } from "lucide-react";
+import { useRef, useState } from "react";
 import { Instagram } from "lucide-react";
 import toast from "react-hot-toast";
 export const UserLayout = () => {
@@ -28,11 +28,17 @@ export const UserLayout = () => {
             <div
               className="flex  md:gap-2 items-center cursor-pointer"
               onClick={() => {
-                toast("Please create an account", {
-                  className: "px-4 h-10",
-                  style: { color: "green",border:"1px solid green",outline:"1px solid green" },
-                  icon:<User className="w-5" />
-                });
+                // toast("Please create an account", {
+                //   className: "px-4 h-10",
+                //   style: {
+                //     color: "green",
+                //     border: "1px solid green",
+                //     outline: "1px solid green",
+                //     outlineOffset: 3,
+                //   },
+                //   icon: <User className="w-5" />,
+                // });
+                toast.error("Please create an account")
                 loginModalRef.current?.click();
               }}
             >
