@@ -12,8 +12,8 @@ import {
 } from "@/shadcn/ui/select";
 import { formatDuration } from "@/utils/formatDuration";
 import { formatTime } from "@/utils/formatTime";
-import { formatEndTimeWithDuration, getEndTimeWithDuration } from "@/utils/getEndTime";
-import { addDays, format, formatDate, isBefore } from "date-fns";
+import { formatEndTimeWithDuration } from "@/utils/getEndTime";
+import { addDays, format, isBefore } from "date-fns";
 import { CalendarIcon, Clock, Minus, Plus } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -69,6 +69,19 @@ export function Booking() {
             <Select>
               <SelectTrigger className="sm:w-64 w-52 outline-none ring-0">
                 <SelectValue placeholder="🍳 Select sports" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="light">Light</SelectItem>
+                <SelectItem value="dark">Dark</SelectItem>
+                <SelectItem value="system">System</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="w-full flex justify-between h-10 items-center">
+            <label htmlFor="">Select Courts</label>
+            <Select>
+              <SelectTrigger className="sm:w-64 w-52 outline-none ring-0">
+                <SelectValue placeholder="🥅 Select a court" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="light">Light</SelectItem>
@@ -147,7 +160,11 @@ export function Booking() {
             <div className="sm:w-64 w-52 h-10  rounded-md flex justify-between items-center">
               <div
                 onClick={decrementDuration}
-                className={`size-9 flex justify-center items-center rounded-full cursor-pointer bg-custom-gradient text-white transition-all duration-200`}
+                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
+                  hours <= 1
+                    ? "pointer-events-none bg-slate-300 border"
+                    : "bg-custom-gradient"
+                }  text-white transition-all duration-200`}
               >
                 <Minus className="w-5" />
               </div>
@@ -156,7 +173,11 @@ export function Booking() {
               </span>
               <div
                 onClick={incrementDuration}
-                className={`size-9 flex justify-center items-center rounded-full cursor-pointer bg-custom-gradient text-white transition-all duration-200`}
+                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
+                  hours >= 20
+                    ? "pointer-events-none bg-slate-300 border"
+                    : "bg-custom-gradient"
+                }  text-white transition-all duration-200`}
               >
                 <Plus className="w-5" />
               </div>
@@ -170,6 +191,9 @@ export function Booking() {
                 {formatEndTimeWithDuration(time ? time : new Date(), hours)}
               </span>
             </div>
+          </div>
+          <div className="w-full h-12 flex items-center justify-center bg-custom-gradient rounded-md text-white" role="button">
+            Proceed to payment
           </div>
         </div>
       </div>
