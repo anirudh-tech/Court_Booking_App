@@ -14,6 +14,7 @@ function App() {
       easing: "ease-out-cubic",
     });
   }, []);
+  // app file
   return (
     <main className="w-full">
       <Routes>
