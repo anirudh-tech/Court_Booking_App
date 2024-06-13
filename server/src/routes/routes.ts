@@ -9,7 +9,7 @@ export const routes = () => {
   const { adminLogin } = loginController();
   const { addSport, editSport } = sportController();
   const { addCourt, editCourt } = courtController();
-  const {} = bookingController();
+  const {bookCourt} = bookingController();
   const router = Router();
 
   //admin routes
@@ -24,7 +24,7 @@ export const routes = () => {
   router.route("/edit-court").patch(editCourt);
 
   //booking routes
-  router.route("book-court").post()
+  router.route("book-court").post(bookCourt);
 
   return router;
 };

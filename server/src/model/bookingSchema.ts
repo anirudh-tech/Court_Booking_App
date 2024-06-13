@@ -11,24 +11,33 @@ const BookingSchema = new Schema(
     courtId: {
       type: Schema.Types.ObjectId,
       ref: "Court",
-      required: true
+      required: true,
     },
     date: {
       type: Date,
-      required: true
+      required: true,
     },
     time: {
       type: Date,
-      required: true
+      required: true,
     },
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "User"
+      ref: "User",
     },
     duration: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ["Booked", "RequestingCancel", "Cancelled", "Played","Pending"],
+      default: "Pending",
+    },
+    amount: {
+      type: Number,
+      required: true,
+    },
   },
   {
     timestamps: true,
