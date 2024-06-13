@@ -2,7 +2,6 @@
 import { Outlet } from "react-router-dom";
 import logo from "../assets/Images/lsa-logo.png";
 import indFlag from "../assets/icons/Ind.png";
-import loginImg from "../assets/Images/login-bg.png";
 import loginTop from "../assets/Images/login-top.png";
 import booking from "../assets/icons/booking.svg";
 import { LoginOrSignup } from "../components/LoginSingup";
@@ -60,9 +59,9 @@ export const UserLayout = () => {
             >
               <div className="min-h-96 grid grid-cols-1 md:grid-cols-2">
                 <div
-                  className={`bg-[url(${loginImg})] bg-cover h-full hidden md:flex relative`}
+                  className={`h-full hidden md:flex relative`}
                 >
-                  <img src={loginImg} className="w-full h-full" alt="" />
+                  <img src={'./images/login-bg.png'} className="w-full h-full" alt="" />
                   <img
                     src={loginTop}
                     className="absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-72"
