@@ -13,4 +13,4 @@ const UserSchema = new Schema(
   }
 );
 
-export const User = model<UserEntity>("User", UserSchema);
+export const User = ;

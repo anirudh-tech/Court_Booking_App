@@ -9,7 +9,6 @@ const AdminSchema = new Schema(
     },
     password: {
       type: String,
-      required: true
     }
   },
   {
@@ -17,4 +16,4 @@ const AdminSchema = new Schema(
   }
 );
 
-export const Admin = model("Admin", AdminSchema);
+export const Admin = model("User", AdminSchema);
