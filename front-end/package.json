@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.6.0",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-popover": "^1.0.7",
     "@radix-ui/react-scroll-area": "^1.0.5",
@@ -26,6 +27,7 @@
     "firebase": "^10.12.2",
     "framer-motion": "^11.2.10",
     "input-otp": "^1.2.4",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.394.0",
     "react": "^18.2.0",
     "react-day-picker": "^8.10.1",
@@ -43,6 +45,7 @@
   },
   "devDependencies": {
     "@types/aos": "^3.0.7",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20.14.2",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",

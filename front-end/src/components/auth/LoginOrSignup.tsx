@@ -13,17 +13,18 @@ import {
 } from "@/redux/reducers/userReducer";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/shadcn/ui/input-otp";
 import { LoaderButton } from "../custom/LoaderButton";
-import { RootState } from "@/redux/store";
+import { AppDispatch, RootState } from "@/redux/store";
 import toast from "react-hot-toast";
 import { formatOtpTime } from "@/utils/formatOtpTIme";
 import { LoaderPinwheel } from "lucide-react";
+import { userAuthAction } from "@/redux/actions/userActions";
 export function LoginOrSignupPage() {
   const [numberErr, setNumberErr] = useState<string>("");
   const [phonenumber, setPhoneNumber] = useState<string>("");
 
   const [otp, setOtp] = useState<string>();
 
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const { verification, loading, user } = useSelector(
     (state: RootState) => state.user
   );
@@ -88,7 +89,7 @@ export function LoginOrSignupPage() {
     try {
       await verification?.confirm(otp ? otp : "");
 
-      toast.success("Verification successful");
+      dispatch(userAuthAction({ phoneNumber: phonenumber })).then(() => {});
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.log("🚀 ~ verifyOtp ~ error:", error);
@@ -227,7 +228,7 @@ export function LoginOrSignupPage() {
                 <span>{formatOtpTime(timeLeft)}</span>
                 <span className="text-[13.5px] underline">Resend otp</span>
               </div>
-              <div className=" flex items-center h-16 flex-col">
+              <div className=" flex items-center h-16 flex-col w-full">
                 <LoaderButton
                   className="md:w-96 "
                   onClick={verifyOtp}
