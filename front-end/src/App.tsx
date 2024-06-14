@@ -6,6 +6,8 @@ import AOS from "aos";
 // import "aos/dist/aos.css";
 import { useEffect } from "react";
 import { Booking } from "./pages/Booking";
+import { MyBooking } from "./pages/MyBookings";
+import { AdminLogin } from "./pages/AdminLogin";
 function App() {
   useEffect(() => {
     AOS.init({
@@ -21,6 +23,8 @@ function App() {
         <Route path="/" element={<UserLayout />}>
           <Route index element={<Home />} />
           <Route path="/booking" element={<Booking />} />
+          <Route path="/mybooking" element={<MyBooking />} />
+          <Route path="/adminlogin" element={<AdminLogin />} />
         </Route>
       </Routes>
     </main>
