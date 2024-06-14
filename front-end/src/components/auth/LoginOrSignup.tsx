@@ -6,7 +6,11 @@ import { PhoneInput } from "../custom/phone-input";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "@/config/firebase/firebaseconfig";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading, setVerfication } from "@/redux/reducers/userReducer";
+import {
+  setLoading,
+  setUserLocally,
+  setVerfication,
+} from "@/redux/reducers/userReducer";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/shadcn/ui/input-otp";
 import { LoaderButton } from "../custom/LoaderButton";
 import { RootState } from "@/redux/store";
@@ -20,7 +24,7 @@ export function LoginOrSignupPage() {
   const [otp, setOtp] = useState<string>();
 
   const dispatch = useDispatch();
-  const { verification, loading } = useSelector(
+  const { verification, loading,user } = useSelector(
     (state: RootState) => state.user
   );
 
@@ -56,6 +60,14 @@ export function LoginOrSignupPage() {
         recaptcha
       );
 
+      dispatch(
+        setUserLocally({
+          user: {
+            phonenumber: phonenumber,
+          },
+          isVerified: false,
+        })
+      );
       dispatch(setVerfication(confirmationresult));
       setOtpSentTime(Date.now());
       console.log("🚀 ~ sendOTp ~ confirmation:", confirmationresult);
