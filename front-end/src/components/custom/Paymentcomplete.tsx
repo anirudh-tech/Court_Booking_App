@@ -1,0 +1,16 @@
+import { Check } from "lucide-react";
+
+export function PaymentCompleted() {
+  return (
+    <div className="w-full flex flex-col items-center justify-center gap-2">
+      <div className="size-16 rounded-full  flex items-center justify-center bg-green-100">
+        <div className="size-10  rounded-full flex items-center justify-center bg-green-600 text-white">
+          <Check className="w-5" />
+        </div>
+      </div>
+      <span className="tracking-wide text-[#474747]">
+        Payment Success !
+      </span>
+    </div>
+  );
+}

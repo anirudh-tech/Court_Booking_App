@@ -14,7 +14,7 @@ import { formatDuration } from "@/utils/formatDuration";
 import { formatTime } from "@/utils/formatTime";
 import { formatEndTimeWithDuration } from "@/utils/getEndTime";
 import { addDays, format, isBefore } from "date-fns";
-import { CalendarIcon, Clock, Minus, Plus } from "lucide-react";
+import { CalendarIcon, Clock, IndianRupee, Minus, Plus } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
 export function Booking() {
@@ -49,7 +49,7 @@ export function Booking() {
 
   return (
     <main className="w-full h-screen flex  justify-center items-start">
-      <div className="w-[90%] sm:w-[70%] md:w-[60%] lg:w-[38%]  mt-3 border rounded-md shadow-sm ">
+      <div className="w-[90%] sm:w-[70%] md:w-[60%] lg:w-[38%]  border rounded-md shadow-sm ">
         <div className="w-full flex flex-col p-3 ">
           <div className="w-full">
             <h1 className="font-semibold text-[#6c6c6c] text-[18px]">
@@ -63,7 +63,7 @@ export function Booking() {
         <div className="h-10 w-full flex items-center justify-center bg-custom-gradient text-white text-[13px]">
           Book a court
         </div>
-        <div className="w-full flex flex-col px-3 py-5 gap-8">
+        <div className="w-full flex flex-col px-3 py-5 gap-6">
           <div className="w-full flex justify-between h-10 items-center">
             <label htmlFor="">Select Sports</label>
             <Select>
@@ -189,6 +189,15 @@ export function Booking() {
               <Clock className="w-4" />{" "}
               <span className="text-[13px]">
                 {formatEndTimeWithDuration(time ? time : new Date(), hours)}
+              </span>
+            </div>
+          </div>
+          <div className="w-full flex justify-between  items-center border border-r-0 border-l-0 p-2">
+            <label htmlFor="">Total amount </label>
+            <div className="sm:w-64 w-52 h-10  rounded-md flex justify-end gap-1  items-center  px-4 pointer-events-none">
+              <IndianRupee className="w-4 font-bold" />{" "}
+              <span className="text-[15px] font-semibold">
+                300.00
               </span>
             </div>
           </div>
