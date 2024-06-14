@@ -18,8 +18,12 @@ const userReducer = createSlice({
     setLoading: (state, { payload }) => {
       state.loading = payload;
     },
+    setUserLocally: (state, { payload }) => {
+      state.user = payload.user;
+      state.isVerified = payload.verified;
+    },
   },
   extraReducers: () => {},
 });
 export default userReducer.reducer;
-export const { setVerfication,setLoading } = userReducer.actions;
+export const { setVerfication, setLoading,setUserLocally } = userReducer.actions;
