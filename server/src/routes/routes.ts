@@ -6,14 +6,16 @@ import { courtController } from "../controllers/courtController";
 import { bookingController } from "../controllers/bookingController";
 
 export const routes = () => {
-  const { adminLogin } = loginController();
+  const { adminLogin,userLogin } = loginController();
   const { addSport, editSport } = sportController();
   const { addCourt, editCourt } = courtController();
   const {bookCourt} = bookingController();
   const router = Router();
 
   //admin routes
+  // router.route("/add-admin").post(addAdmin)
   router.route("/admin-login").post(adminLogin);
+  router.route("/user-login").post(userLogin)
 
   //sport routes
   router.route("/add-sport").post(addSport);

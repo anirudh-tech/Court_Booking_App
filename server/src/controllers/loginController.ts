@@ -1,18 +1,28 @@
 import { NextFunction, Request, Response } from "express";
-import { Admin } from "../model/adminSchema";
 import { hash, genSalt } from "bcryptjs";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { User } from "../model/userSchema";
 
-const adminUsername = "lalsportsacademy";
-const adminPassword = "d12Uc5OQ@47osOsiOD";
+// const adminUsername = "lalsportsacademy";
+// const adminPassword = "d12Uc5OQ@47osOsiOD";
 
 export const loginController = () => {
   return {
+    // addAdmin: async (req: Request, res: Response, next: NextFunction) => {
+    //   let { username, password, role } = req.body;
+    //   req.body.password = await hash(password, await genSalt(10));
+    //   const admin = await User.create(req.body)
+    //   res.json({
+    //     data: admin,
+    //     message: "admin added"
+    //   })
+    // },
+
     adminLogin: async (req: Request, res: Response, next: NextFunction) => {
       try {
         const { username, password } = req.body;
-        const admin: any = await Admin.findOne({ username });
+        const admin: any = await User.findOne({ username });
         if (admin) {
           console.log("🚀 ~ file: loginController.ts:17 ~ adminLogin: ~ admin:", admin)
           const isMatch: boolean = await bcrypt.compare(
@@ -48,12 +58,17 @@ export const loginController = () => {
         } else {
           throw new Error("Account not found");
         }
-        if (username == adminUsername && password == adminPassword) {
-          const hashedPassword = await hash(password, await genSalt(10));
-        }
       } catch (error) {
         next(error);
       }
     },
+    userLogin: async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const {phoneNumber} = req.body
+        const token = req.header('Authorization')?.split(' ')[1];
+      } catch (error) {
+        
+      }
+    }
   };
 };

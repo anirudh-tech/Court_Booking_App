@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { Sport } from "../model/sportSchema";
 import { Court } from "../model/courtSchema";
-import { User } from "../model/userSchema";
 import { Booking } from "../model/bookingSchema";
 import Razorpay from "razorpay";
+import { User } from "../model/userSchema";
 export const bookingController = () => {
   const keyId = process.env.RAZORPAY_KEY_ID;
   const keySecret = process.env.RAZORPAY_SECRET;
