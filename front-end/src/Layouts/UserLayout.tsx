@@ -57,7 +57,7 @@ export const UserLayout = () => {
                 </div>
               }
               closeComponent={
-                <div className="cursor-pointer">
+                <div className="cursor-pointer z-20">
                   <X className="w-6" />
                 </div>
               }

@@ -24,7 +24,7 @@ export function LoginOrSignupPage() {
   const [otp, setOtp] = useState<string>();
 
   const dispatch = useDispatch();
-  const { verification, loading,user } = useSelector(
+  const { verification, loading, user } = useSelector(
     (state: RootState) => state.user
   );
 
@@ -48,12 +48,16 @@ export function LoginOrSignupPage() {
     }
   }, [OTP_VALIDITY_DURATION, otpSentTime]);
   const sendOTp = async () => {
+    dispatch(setLoading(true));
     try {
       if (!phonenumber || phonenumber.trim() == "") {
         setNumberErr("Please fill phone number");
         return;
       }
+      console.log(import.meta.env);
+
       const recaptcha = new RecaptchaVerifier(auth, "recaptcha", {});
+
       const confirmationresult = await signInWithPhoneNumber(
         auth,
         phonenumber,
@@ -75,6 +79,8 @@ export function LoginOrSignupPage() {
     } catch (error: any) {
       setNumberErr(error.message.split(":")[1].trim());
       console.log(error);
+    } finally {
+      dispatch(setLoading(false));
     }
   };
   const verifyOtp = async () => {
@@ -180,7 +186,7 @@ export function LoginOrSignupPage() {
       ) : (
         <>
           <div className="h-full p-6 overflow-hidden">
-            <div className="w-full h-12 text-[18px] flex gap-1 items-start  relative">
+            <div className=" h-12 text-[18px] flex gap-1 items-start  relative">
               <span className="font-semibold">Verify your otp</span>
               <div className="absolute left-0 bottom-0 h-[1px] w-full bg-black rounded-sm">
                 <div className="h-full w-full bg-gray-200"></div>

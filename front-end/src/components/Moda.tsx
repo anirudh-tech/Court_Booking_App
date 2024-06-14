@@ -49,7 +49,7 @@ export const CustomModal = ({
                 className={`bg-[white]  rounded-md  relative ${className}`}
               >
                 <div
-                  className="absolute right-5 top-5"
+                  className="absolute right-5 top-5 z-20"
                   onClick={closeModal}
                   ref={closeRef}
                 >
