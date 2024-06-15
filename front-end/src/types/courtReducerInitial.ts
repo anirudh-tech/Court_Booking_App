@@ -1,0 +1,30 @@
+export interface Court {
+  courtName: string;
+  sportId: string;
+  normalcost: {
+    price: number;
+    day: {
+      from: string;
+      to: string;
+    };
+    time: {
+      from: string;
+      to: string;
+    };
+  };
+  specialcost: {
+    type: "day" | "time";
+    price: number;
+    diff: {
+      from: string;
+      to: string;
+    };
+  };
+}
+
+export interface CourtInitial {
+  loading: boolean;
+  err: boolean | string;
+  court: Court|null;
+  courts: Court[]|null;
+}

@@ -13,6 +13,7 @@ import { fetchUser } from "./redux/actions/userActions";
 import { AdminLayout } from "./Layouts/AdminLayout";
 import { AdminSports } from "./pages/Admin/AdminSports";
 import { Bookings } from "./pages/Admin/Bookings";
+import { AdminCourts } from "./pages/Admin/AdminCourts";
 function App() {
   const dispatch: AppDispatch = useDispatch();
   useEffect(() => {
@@ -45,7 +46,7 @@ function App() {
             <Route path="/admin/" element={<AdminLayout />}>
               <Route path="sports" element={<AdminSports />} />
               <Route path="bookings" element={<Bookings />} />
-              {/* <Route path="courts" element={} /> */}
+              <Route path="courts" element={<AdminCourts />} />
             </Route>
           </>
         )}
