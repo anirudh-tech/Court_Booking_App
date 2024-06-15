@@ -14,6 +14,7 @@ import { AdminLayout } from "./Layouts/AdminLayout";
 import { AdminSports } from "./pages/Admin/AdminSports";
 import { Bookings } from "./pages/Admin/Bookings";
 import { AdminCourts } from "./pages/Admin/AdminCourts";
+
 function App() {
   const dispatch: AppDispatch = useDispatch();
   useEffect(() => {
@@ -25,7 +26,10 @@ function App() {
       <Routes>
         <Route path="/" element={<UserLayout />}>
           <Route index element={<Home />} />
-          <Route path="/booking" element={<Booking />} />
+          <Route
+            path="/booking"
+            element={!user?._id ? <Navigate to={"/"} /> : <Booking />}
+          />
           <Route path="/mybooking" element={<MyBooking />} />
           <Route
             path="/adminlogin"
