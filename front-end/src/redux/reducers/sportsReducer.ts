@@ -41,7 +41,7 @@ const sportsReducer = createSlice({
         state.loading = false;
         state.sports?.push(payload.data);
         state.err = false;
-        toast.success("Sports added")
+        toast.success("Sports added");
       })
       .addCase(sportAddAction.rejected, (state, { payload }) => {
         state.loading = false;
@@ -72,11 +72,9 @@ const sportsReducer = createSlice({
       })
       .addCase(deleteSport.fulfilled, (state, { payload }) => {
         state.loading = false;
-        state.sports = state.sports?.map((sport) => {
-          if (sport._id !== payload.id) {
-            return sport;
-          }
-        }) as Sport[];
+        state.sports = state.sports?.filter(
+          (sport) => sport?._id !== payload.id
+        ) as Sport[];
         state.err = false;
       })
       .addCase(deleteSport.rejected, (state, { payload }) => {

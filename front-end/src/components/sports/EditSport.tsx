@@ -4,12 +4,14 @@ import { Input } from "@/shadcn/ui/input";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AppDispatch, RootState } from "@/redux/store";
 import { useDispatch, useSelector } from "react-redux";
-import { sportAddAction } from "@/redux/actions/sportAcion";
+import { editSport } from "@/redux/actions/sportAcion";
 import { uploadImageToCloudinary } from "@/utils/uploadImageToCloud";
+import { Sport } from "@/types/sportsReducerInita";
+import { imageUrlToFileObject } from "@/utils/imageToFile";
 
 const imageSchema = z.custom<FileList>();
 const addSportSchema = z.object({
@@ -21,8 +23,10 @@ const addSportSchema = z.object({
 
 interface ChildProp {
   closeModal: () => void;
+  sportData: Sport;
 }
-export const AddSports = ({ closeModal }: ChildProp) => {
+
+export const EditSport = ({ closeModal, sportData }: ChildProp) => {
   const {
     watch,
     setValue,
@@ -39,13 +43,27 @@ export const AddSports = ({ closeModal }: ChildProp) => {
     },
   });
 
+  useEffect(() => {
+    setValue("sportName", sportData.sportName);
+    imageUrlToFileObject(String(sportData?.image)).then((res) => {
+      setValue("image", res as unknown as FileList);
+    });
+  }, [sportData]);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const dispatch: AppDispatch = useDispatch();
   const submitAddSports = async (values: z.infer<typeof addSportSchema>) => {
     setLocalload(true);
     const image = (await uploadImageToCloudinary(values.image)) as string;
-    dispatch(sportAddAction({ sportName: values.sportName, image: image }))
+    dispatch(
+      editSport({
+        sportId: String(sportData._id),
+        sendPayload: {
+          sportName: values.sportName,
+          image: image,
+        },
+      })
+    )
       .then((res) => {
         if (res.type.endsWith("fulfilled")) {
           closeModal();
@@ -142,12 +160,13 @@ export const AddSports = ({ closeModal }: ChildProp) => {
           )}
         </div>
       </div>
-      <div className="w-full flex flex-col">
+      <div className="w-full flex flex-col items-start">
         <label htmlFor="" className="text-[14px]">
           Enter sports name
         </label>
         <Input
           type="text"
+          value={watch("sportName")}
           placeholder="sports name"
           onChange={(e) => {
             setValue("sportName", e.target.value);
@@ -168,7 +187,7 @@ export const AddSports = ({ closeModal }: ChildProp) => {
         <LoaderButton
           className="bg-green-500 h-10"
           type="submit"
-          loading={loading||localload}
+          loading={loading || localload}
         >
           Submit
         </LoaderButton>

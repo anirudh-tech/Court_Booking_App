@@ -21,9 +21,16 @@ export const sportAddAction = createAsyncThunk(
 export const editSport = createAsyncThunk(
   "sports/edit-sport",
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async (sendPayload: any, { rejectWithValue }) => {
+  async (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { sportId, sendPayload }: { sportId: string; sendPayload: any },
+    { rejectWithValue }
+  ) => {
     try {
-      const { data } = await axiosInstance.patch("/edit-sport", sendPayload);
+      const { data } = await axiosInstance.patch(`/edit-sport`, {
+        data: sendPayload,
+        sportId,
+      });
       return data;
     } catch (error) {
       return rejectWithValue(handleError(error));
