@@ -10,6 +10,9 @@ import { AdminLogin } from "./pages/AdminLogin";
 import { AppDispatch } from "./redux/store";
 import { useDispatch } from "react-redux";
 import { fetchUser } from "./redux/actions/userActions";
+import { AdminLayout } from "./Layouts/AdminLayout";
+import { AdminCourts } from "./pages/Admin/AdminCourts";
+import { Bookings } from "./pages/Admin/Bookings";
 function App() {
   const dispatch: AppDispatch = useDispatch();
   useEffect(() => {
@@ -23,6 +26,11 @@ function App() {
           <Route path="/booking" element={<Booking />} />
           <Route path="/mybooking" element={<MyBooking />} />
           <Route path="/adminlogin" element={<AdminLogin />} />
+        </Route>
+
+        <Route path="/admin/" element={<AdminLayout />}>
+          <Route path="courts" element={<AdminCourts />} />
+          <Route path="bookings" element={<Bookings />} />
         </Route>
       </Routes>
     </main>
