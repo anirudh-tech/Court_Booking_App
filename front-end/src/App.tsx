@@ -11,7 +11,7 @@ import { AppDispatch } from "./redux/store";
 import { useDispatch } from "react-redux";
 import { fetchUser } from "./redux/actions/userActions";
 import { AdminLayout } from "./Layouts/AdminLayout";
-import { AdminCourts } from "./pages/Admin/AdminCourts";
+import {  AdminSports } from "./pages/Admin/AdminSports";
 import { Bookings } from "./pages/Admin/Bookings";
 function App() {
   const dispatch: AppDispatch = useDispatch();
@@ -29,8 +29,9 @@ function App() {
         </Route>
 
         <Route path="/admin/" element={<AdminLayout />}>
-          <Route path="courts" element={<AdminCourts />} />
+          <Route path="sports" element={<AdminSports />} />
           <Route path="bookings" element={<Bookings />} />
+          {/* <Route path="courts" element={} /> */}
         </Route>
       </Routes>
     </main>

@@ -1,5 +1,5 @@
 import logo from "@/assets/Images/lsa-logo.png";
-import { CreditCard, KeyboardMusic } from "lucide-react";
+import { CreditCard, KeyboardMusic, Trophy } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 export function AdminLayout() {
   return (
@@ -10,6 +10,13 @@ export function AdminLayout() {
             <img src={logo} className="h-10" alt="" />
           </div>
           <div className="w-full flex flex-col gap-2 pl-2 mt-5">
+            <NavLink
+              className="w-full flex gap-2 h-10 items-center hover:bg-slate-200 pl-3 transition-all duration-200 rounded-md cursor-pointer"
+              to={"sports"}
+            >
+              <Trophy  className="w-5" />
+              <span>Sports</span>
+            </NavLink>
             <NavLink
               className="w-full flex gap-2 h-10 items-center hover:bg-slate-200 pl-3 transition-all duration-200 rounded-md cursor-pointer"
               to={"courts"}
