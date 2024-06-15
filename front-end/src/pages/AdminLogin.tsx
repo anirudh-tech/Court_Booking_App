@@ -5,8 +5,11 @@ import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-const adminFormSchema = z.object({
-  email: z.string().email().max(120),
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
+import { adminLogin } from "@/redux/actions/userActions";
+export const adminFormSchema = z.object({
+  username: z.string().max(120).min(3),
   password: z.string().min(12),
 });
 export function AdminLogin() {
@@ -25,14 +28,16 @@ export function AdminLogin() {
     mode: "onChange",
     reValidateMode: "onChange",
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
+  const dispatch: AppDispatch = useDispatch();
   const submitForm = (values: z.infer<typeof adminFormSchema>) => {
-    values;
+    dispatch(adminLogin(values));
   };
-  errors;
+
+  const { loading } = useSelector((state: RootState) => state.user);
   return (
     <main className=" w-full flex items-center justify-center">
       <form
@@ -45,23 +50,23 @@ export function AdminLogin() {
         <div className="w-full flex flex-col mt-5 gap-7">
           <div className="w-full flex flex-col gap-2">
             <label htmlFor="" className="text-[#474747]">
-              Enter email address
+              Enter username
             </label>
             <div>
               <Input
                 className="h-12"
                 onChange={(e) => {
-                  setValue("email", e.target.value);
-                  trigger("email");
+                  setValue("username", e.target.value);
+                  trigger("username");
                 }}
-                value={watch("email")}
-                placeholder="Email address"
-                type="email"
+                value={watch("username")}
+                placeholder="Enter user name"
+                type="text"
               />
-              {errors && errors.email && errors.email.message && (
+              {errors && errors.username && errors.username.message && (
                 <>
                   <span className="text-[12px] text-red-600">
-                    {errors.email.message}
+                    {errors.username.message}
                   </span>
                 </>
               )}
@@ -87,7 +92,7 @@ export function AdminLogin() {
                   className="absolute right-4 top-3 cursor-pointer text-[#474747]"
                   onClick={() => setPassShow(!passShow)}
                 >
-                    {/*  */}
+                  {/*  */}
                   {passShow ? (
                     <>
                       <EyeOff className="w-5 " />
@@ -111,7 +116,7 @@ export function AdminLogin() {
           <div className="w-full h-12">
             <LoaderButton
               type="submit"
-              loading={false}
+              loading={loading}
               className="bg-green-500"
             >
               Submit

@@ -13,4 +13,5 @@ export interface User {
   phoneNumber: number;
   createdAt?: Date;
   updatedAt?: Date;
+  role: "User" | "Admin";
 }

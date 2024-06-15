@@ -1,6 +1,11 @@
 import { UserReducerInitial } from "@/types/userReducerInitial";
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchUser, logoutUser, userAuthAction } from "../actions/userActions";
+import {
+  adminLogin,
+  fetchUser,
+  logoutUser,
+  userAuthAction,
+} from "../actions/userActions";
 import toast from "react-hot-toast";
 
 const initialState: UserReducerInitial = {
@@ -70,6 +75,20 @@ const userReducer = createSlice({
       .addCase(logoutUser.rejected, (state, { payload }) => {
         state.loading = false;
         state.err = payload as string;
+      })
+      .addCase(adminLogin.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(adminLogin.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.user = payload.data;
+        state.err = false;
+      })
+      .addCase(adminLogin.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.err = payload as string;
+        toast.error(state.err);
+        state.user = null;
       });
   },
 });
