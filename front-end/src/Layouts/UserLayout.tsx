@@ -4,17 +4,42 @@ import logo from "../assets/Images/lsa-logo.png";
 import booking from "../assets/icons/booking.svg";
 import { LoginOrSignup } from "../components/LoginSingup";
 import { CustomModal } from "../components/Moda";
-import { Dribbble, TwitterIcon, X } from "lucide-react";
-import { useRef } from "react";
+import { Dribbble, LogOutIcon, TwitterIcon, X } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { Instagram } from "lucide-react";
 import toast from "react-hot-toast";
 import { LoginOrSignupPage } from "@/components/auth/LoginOrSignup";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
+import { LoaderButton } from "@/components/custom/LoaderButton";
+import { logoutUser } from "@/redux/actions/userActions";
+
 export const UserLayout = () => {
-
-
   const loginModalRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
+  const confirmModalCloseRef = useRef<HTMLDivElement>(null);
+  const loginModalCloseRef = useRef<HTMLDivElement>(null);
+  const { isVerified, loading, user } = useSelector(
+    (state: RootState) => state.user
+  );
+
+  useEffect(() => {
+    if (user && user?._id) {
+      loginModalCloseRef.current?.click();
+      confirmModalCloseRef.current?.click();
+    }
+  }, [user]);
+
+  const dispatch: AppDispatch = useDispatch();
+  const handleLogout = () => {
+    dispatch(logoutUser()).then((res) => {
+      if (res.type.endsWith("fulfilled")) {
+        confirmModalCloseRef.current?.click();
+        loginModalCloseRef.current?.click();
+      }
+    });
+  };
   return (
     <div>
       <header className="w-full h-20 flex items-center justify-center sticky top-0 left-0 z-10 bg-white">
@@ -32,38 +57,93 @@ export const UserLayout = () => {
             <div
               className="flex  md:gap-2 items-center cursor-pointer"
               onClick={() => {
-                // toast("Please create an account", {
-                //   className: "px-4 h-10",
-                //   style: {
-                //     color: "green",
-                //     border: "1px solid green",
-                //     outline: "1px solid green",
-                //     outlineOffset: 3,
-                //   },
-                //   icon: <User className="w-5" />,
-                // });
-                toast.error("Please create an account");
-                loginModalRef.current?.click();
+                if (!isVerified) {
+                  toast.error("Please create an account");
+                  loginModalRef.current?.click();
+                } else {
+                  navigate("/booking");
+                }
               }}
             >
               <img src={booking} className="w-7" alt="" />
               <span>Book now</span>
             </div>
-            <CustomModal
-              className="w-[90%] sm:w-[75%] md:w-[66%] lg:w-[80%] xl:w-[60%] p-0"
-              TriggerComponent={
-                <div ref={loginModalRef}>
-                  <LoginOrSignup />
-                </div>
-              }
-              closeComponent={
-                <div className="cursor-pointer z-20">
-                  <X className="w-6" />
-                </div>
-              }
-            >
-              <LoginOrSignupPage />
-            </CustomModal>
+            {isVerified ? (
+              <>
+                <CustomModal
+                  className="w-[90%] sm:w-[75%] md:w-[66%] lg:w-[40%] xl:w-[40%] p-0 rounded-md"
+                  TriggerComponent={
+                    <div className="flex gap-1  md:gap-2 items-center h-full cursor-pointer">
+                      <LogOutIcon className="w-5" />
+                      <div className="h-full flex gap-1  items-center">
+                        <span>Logout</span>
+                      </div>
+                    </div>
+                  }
+                  closeComponent={
+                    <div
+                      className="cursor-pointer z-20"
+                      ref={confirmModalCloseRef}
+                    >
+                      <X className="w-6" />
+                    </div>
+                  }
+                >
+                  <div className="w-full min-h-36 bg-white p-6 rounded-md">
+                    <div className="w-full">
+                      <h1 className="text-[19px] font-semibold">
+                        Are absolutely sure
+                      </h1>
+                    </div>
+                    <div className="mt-2">
+                      <p className="text-[14px]">
+                        This action cannot be undone. This will permanently
+                        delete your account and remove your data from our
+                        servers.
+                      </p>
+                    </div>
+                    <div className="w-full flex justify-end gap-2 mt-1">
+                      <button
+                        className="h-10 min-w-20  rounded-md px-4 bg-slate-100"
+                        onClick={() => confirmModalCloseRef.current?.click()}
+                      >
+                        Cancel
+                      </button>
+                      <LoaderButton
+                        loading={loading}
+                        type="button" 
+                        onClick={handleLogout}
+                        from="logout"
+                        className="h-10   rounded-md px-4 bg-green-600 hover:bg-green-700 text-white min-w-20"
+                      >
+                        Continue
+                      </LoaderButton>
+                    </div>
+                  </div>
+                </CustomModal>
+              </>
+            ) : (
+              <>
+                <CustomModal
+                  className="w-[90%] sm:w-[75%] md:w-[66%] lg:w-[80%] xl:w-[60%] p-0"
+                  TriggerComponent={
+                    <div ref={loginModalRef}>
+                      <LoginOrSignup />
+                    </div>
+                  }
+                  closeComponent={
+                    <div
+                      className="cursor-pointer z-20"
+                      ref={loginModalCloseRef}
+                    >
+                      <X className="w-6" />
+                    </div>
+                  }
+                >
+                  <LoginOrSignupPage />
+                </CustomModal>
+              </>
+            )}
           </div>
         </div>
       </header>

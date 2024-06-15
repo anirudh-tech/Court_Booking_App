@@ -1,0 +1,65 @@
+import logo from "@/assets/Images/lsa-logo.png";
+import { logoutUser } from "@/redux/actions/userActions";
+import { AppDispatch } from "@/redux/store";
+import { CreditCard, KeyboardMusic, LogOut, Trophy } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+export function AdminLayout() {
+  const dispatch: AppDispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleAdminLogout = () => {
+    dispatch(logoutUser()).then((res) => {
+      if (res.type.endsWith("fulfilled")) {
+        navigate("/");
+      }
+    });
+  };
+  return (
+    <main className="w-full min-h-screen">
+      <div className="w-full flex h-full">
+        <aside className="hidden md:flex flex-col h-screen w-64 border p-2 sticky top-0 left-0 ">
+          <div className="border-b py-3">
+            <img src={logo} className="h-10" alt="" />
+          </div>
+          <div className="w-full flex flex-col gap-2 pl-2 mt-5">
+            <NavLink
+              className="w-full flex gap-2 h-10 items-center hover:bg-slate-200 pl-3 transition-all duration-200 rounded-md cursor-pointer"
+              to={"sports"}
+            >
+              <Trophy className="w-5" />
+              <span>Sports</span>
+            </NavLink>
+            <NavLink
+              className="w-full flex gap-2 h-10 items-center hover:bg-slate-200 pl-3 transition-all duration-200 rounded-md cursor-pointer"
+              to={"courts"}
+            >
+              <KeyboardMusic className="w-5" />
+              <span>Courts</span>
+            </NavLink>
+            <NavLink
+              to={"bookings"}
+              className="w-full flex gap-2 h-10 items-center relative  pl-3 hover:bg-slate-200 hover:px-3 transition-all duration-200 rounded-md cursor-pointer"
+            >
+              <CreditCard className="w-5" />
+              <span>Bookings</span>
+              <div className="absolute right-0 size-6 text-[13px] rounded-full flex items-center justify-center bg-green-500 text-white">
+                5
+              </div>
+            </NavLink>
+          </div>
+          <div className="absolute left-0 bottom-0 h-28 w-full bg-white px-2">
+            <div
+              className="w-full h-10 gap-2 border flex items-center px-4 rounded-md bg-slate-50 shadow-md cursor-pointer"
+              onClick={handleAdminLogout}
+            >
+              <LogOut className="w-5" /> <span>logout</span>
+            </div>
+          </div>
+        </aside>
+        <div className="w-full h-full">
+          <Outlet />
+        </div>
+      </div>
+    </main>
+  );
+}

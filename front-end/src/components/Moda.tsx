@@ -40,7 +40,7 @@ export const CustomModal = ({
               variants={modalVariants}
               transition={{ duration: 0.2, ease: "easeOut", delay: 0 }}
               onClick={() => closeRef.current?.click()}
-              className="fixed inset-0 flex items-center justify-center bg-slate-950  bg-opacity-45"
+              className="fixed z-30 inset-0 flex items-center justify-center bg-slate-950  bg-opacity-45"
             >
               <motion.div
                 onClick={(e) => e.stopPropagation()}
