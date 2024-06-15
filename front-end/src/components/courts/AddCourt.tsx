@@ -125,7 +125,7 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
   const endTimeSlot = useGenerateTimSlot(
     normalStartTime ? normalStartTime : new Date()
   );
-  endTimeSlot
+  endTimeSlot;
   const submitCourtForm = (values: z.infer<typeof addCourtSchema>) => {
     console.log("🚀 ~ submitCourtForm ~ values:", values);
     dispatch(courtAddAction(values)).then((res) => {
@@ -134,7 +134,8 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
       }
     });
   };
-  const { sports,loading } = useSelector((state: RootState) => state.sport);
+  const { sports } = useSelector((state: RootState) => state.sport);
+  const { loading } = useSelector((state: RootState) => state.court);
   return (
     <form
       className="w-full max-h-[690px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 p-6 bg-white rounded-md "

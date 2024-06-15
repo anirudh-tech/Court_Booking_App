@@ -13,7 +13,7 @@ export const useGenerateTimSlot = (date: Date) => {
 
   const startTime = isToday ? now : new Date(date.setHours(5, 0, 0, 0));
   const endTime = new Date(startTime);
-  endTime.setHours(22, 30, 0, 0); // Set end time to 10:30 PM
+  endTime.setHours(23, 0, 0, 0); // Set end time to 11:00 PM
 
   // Generate slots until 10:30 PM or the next 12 hours from start time
   while (startTime <= endTime) {

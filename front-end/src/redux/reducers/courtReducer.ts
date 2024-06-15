@@ -1,6 +1,10 @@
-import { CourtInitial } from "@/types/courtReducerInitial";
+import { Court, CourtInitial } from "@/types/courtReducerInitial";
 import { createSlice } from "@reduxjs/toolkit";
-import { courtAddAction, listAllCourts } from "../actions/courtAction";
+import {
+  courtAddAction,
+  deleteCourt,
+  listAllCourts,
+} from "../actions/courtAction";
 import toast from "react-hot-toast";
 
 const initialState: CourtInitial = {
@@ -33,7 +37,7 @@ const courtReducer = createSlice({
         state.loading = true;
       })
       .addCase(listAllCourts.fulfilled, (state, { payload }) => {
-        console.log("🚀 ~ .addCase ~ payload:", payload)
+        console.log("🚀 ~ .addCase ~ payload:", payload);
         state.loading = false;
         state.courts = payload.data;
         state.err = false;
@@ -42,6 +46,20 @@ const courtReducer = createSlice({
         state.loading = false;
         state.err = payload as string;
         state.courts = null;
+      })
+      .addCase(deleteCourt.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteCourt.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.courts = state.courts?.filter(
+          (court) => court._id !== payload.courtId
+        ) as Court[];
+      })
+      .addCase(deleteCourt.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.err = payload as string;
+        toast.error(state.err);
       });
   },
 });

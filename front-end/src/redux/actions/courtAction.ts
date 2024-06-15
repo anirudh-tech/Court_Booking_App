@@ -26,3 +26,15 @@ export const listAllCourts = createAsyncThunk(
     }
   }
 );
+
+export const deleteCourt = createAsyncThunk(
+  "court/delete-court",
+  async (courtId: string, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.delete(`/delete-court/${courtId}`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(handleError(error));
+    }
+  }
+);
