@@ -42,7 +42,7 @@ import { AddCourts } from "@/components/courts/addCourts";
                 Add court
               </button>
             }
-            className="w-[90%] sm:w-[75%] md:w-[66%] lg:w-[40%] xl:w-[34%] p-0 rounded-md"
+            className="w-[90%] sm:w-[75%] md:w-[76%] lg:w-[48%] xl:w-[40%] p-0 rounded-md"
             closeComponent={
               <div className="cursor-pointer z-20" ref={modalCloseRef}>
                 <X className="w-6" />
