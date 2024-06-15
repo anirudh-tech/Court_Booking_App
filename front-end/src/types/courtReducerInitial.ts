@@ -12,7 +12,7 @@ export interface Court {
       to: string;
     };
   };
-  specialcost: {
+  specialcost?: {
     type: "day" | "time";
     price: number;
     diff: {

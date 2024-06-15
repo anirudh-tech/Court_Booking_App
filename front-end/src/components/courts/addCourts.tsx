@@ -25,6 +25,7 @@ import { useGenerateStartTime } from "@/hooks/generateMorningtime";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Switch } from "@/shadcn/ui/switch";
+import { courtAddAction } from "@/redux/actions/courtAction";
 
 interface ChildProp {
   closeModal: () => void;
@@ -34,56 +35,56 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
   const [spcialCostoption, setSpOption] = useState<boolean>(false);
   const addCourtSchema = spcialCostoption
     ? z.object({
-        courtName: z
-          .string()
-          .min(3, { message: "Minimum 3 characters required" })
-          .max(100, { message: "Allow only 100 characters" }),
-        sportId: z.string().nonempty({ message: "Sport ID cannot be empty" }),
-        normalcost: z.object({
-          price: z
-            .number()
-            .nonnegative({ message: "Price must be non-negative" }),
-          day: z.object({
-            from: z.string().nonempty({ message: "Day from cannot be empty" }),
-            to: z.string().nonempty({ message: "Day to cannot be empty" }),
-          }),
-          time: z.object({
-            from: z.string().nonempty({ message: "Time from cannot be empty" }),
-            to: z.string().nonempty({ message: "Time to cannot be empty" }),
-          }),
+      courtName: z
+        .string()
+        .min(3, { message: "Minimum 3 characters required" })
+        .max(100, { message: "Allow only 100 characters" }),
+      sportId: z.string().nonempty({ message: "Sport ID cannot be empty" }),
+      normalcost: z.object({
+        price: z
+          .number()
+          .nonnegative({ message: "Price must be non-negative" }),
+        day: z.object({
+          from: z.string().nonempty({ message: "Day from cannot be empty" }),
+          to: z.string().nonempty({ message: "Day to cannot be empty" }),
         }),
-        specialcost: z.object({
-          category: z.string().nonempty(),
-          price: z
-            .number()
-            .nonnegative({ message: "Price must be non-negative" })
-            .refine((val) => val !== 0, { message: "Price cannot be zero" }),
-          diff: z.object({
-            from: z.string(),
-            to: z.string(),
-          }),
+        time: z.object({
+          from: z.string().nonempty({ message: "Time from cannot be empty" }),
+          to: z.string().nonempty({ message: "Time to cannot be empty" }),
         }),
-      })
+      }),
+      specialcost: z.object({
+        category: z.string().nonempty(),
+        price: z
+          .number()
+          .nonnegative({ message: "Price must be non-negative" })
+          .refine((val) => val !== 0, { message: "Price cannot be zero" }),
+        diff: z.object({
+          from: z.string(),
+          to: z.string(),
+        }),
+      }),
+    })
     : z.object({
-        courtName: z
-          .string()
-          .min(3, { message: "Minimum 3 characters required" })
-          .max(100, { message: "Allow only 100 characters" }),
-        sportId: z.string().nonempty({ message: "Sport ID cannot be empty" }),
-        normalcost: z.object({
-          price: z
-            .number()
-            .nonnegative({ message: "Price must be non-negative" }),
-          day: z.object({
-            from: z.string().nonempty({ message: "Day from cannot be empty" }),
-            to: z.string().nonempty({ message: "Day to cannot be empty" }),
-          }),
-          time: z.object({
-            from: z.string().nonempty({ message: "Time from cannot be empty" }),
-            to: z.string().nonempty({ message: "Time to cannot be empty" }),
-          }),
+      courtName: z
+        .string()
+        .min(3, { message: "Minimum 3 characters required" })
+        .max(100, { message: "Allow only 100 characters" }),
+      sportId: z.string().nonempty({ message: "Sport ID cannot be empty" }),
+      normalcost: z.object({
+        price: z
+          .number()
+          .nonnegative({ message: "Price must be non-negative" }),
+        day: z.object({
+          from: z.string().nonempty({ message: "Day from cannot be empty" }),
+          to: z.string().nonempty({ message: "Day to cannot be empty" }),
         }),
-      });
+        time: z.object({
+          from: z.string().nonempty({ message: "Time from cannot be empty" }),
+          to: z.string().nonempty({ message: "Time to cannot be empty" }),
+        }),
+      }),
+    });
   closeModal;
 
   const {
@@ -125,7 +126,12 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
     normalStartTime ? normalStartTime : new Date()
   );
   const submitCourtForm = (values: z.infer<typeof addCourtSchema>) => {
+
     console.log("🚀 ~ submitCourtForm ~ values:", values);
+    dispatch(courtAddAction({ courtName: values.courtName, sportId: values.sportId, normalcost: values.normalcost }))
+    .then((res) => {
+      console.log("🚀 ~ file: addCourts.tsx:133 ~ .then ~ res:", res)
+    })
   };
   const { sports } = useSelector((state: RootState) => state.sport);
   return (
@@ -396,24 +402,24 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
                 onValueChange={(value) => {
                   setValue(
                     "specialcost.category" as
-                      | "courtName"
-                      | "sportId"
-                      | "normalcost"
-                      | "normalcost.price"
-                      | "normalcost.day"
-                      | "normalcost.time"
-                      | "normalcost.day.from",
+                    | "courtName"
+                    | "sportId"
+                    | "normalcost"
+                    | "normalcost.price"
+                    | "normalcost.day"
+                    | "normalcost.time"
+                    | "normalcost.day.from",
                     value
                   );
                   trigger(
                     "specialcost.category" as
-                      | "courtName"
-                      | "sportId"
-                      | "normalcost"
-                      | "normalcost.price"
-                      | "normalcost.day"
-                      | "normalcost.time"
-                      | "normalcost.day.from"
+                    | "courtName"
+                    | "sportId"
+                    | "normalcost"
+                    | "normalcost.price"
+                    | "normalcost.day"
+                    | "normalcost.time"
+                    | "normalcost.day.from"
                   );
                 }}
               >
@@ -449,6 +455,16 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
             </div>
             {watch(
               "specialcost.category" as
+              | "courtName"
+              | "sportId"
+              | "normalcost"
+              | "normalcost.price"
+              | "normalcost.day"
+              | "normalcost.time"
+              | "normalcost.day.from"
+            ) &&
+              watch(
+                "specialcost.category" as
                 | "courtName"
                 | "sportId"
                 | "normalcost"
@@ -456,16 +472,6 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
                 | "normalcost.day"
                 | "normalcost.time"
                 | "normalcost.day.from"
-            ) &&
-              watch(
-                "specialcost.category" as
-                  | "courtName"
-                  | "sportId"
-                  | "normalcost"
-                  | "normalcost.price"
-                  | "normalcost.day"
-                  | "normalcost.time"
-                  | "normalcost.day.from"
               ) !== "" && (
                 <>
                   <div className="w-full grid grid-cols-1 gap-3 md:grid-cols-2 mt-2">
@@ -474,24 +480,24 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
                         onValueChange={(value) => {
                           setValue(
                             "specialcost.diff.from" as
-                              | "courtName"
-                              | "sportId"
-                              | "normalcost"
-                              | "normalcost.price"
-                              | "normalcost.day"
-                              | "normalcost.time"
-                              | "normalcost.day.from",
+                            | "courtName"
+                            | "sportId"
+                            | "normalcost"
+                            | "normalcost.price"
+                            | "normalcost.day"
+                            | "normalcost.time"
+                            | "normalcost.day.from",
                             value
                           );
                           trigger(
                             "specialcost.diff.from" as
-                              | "courtName"
-                              | "sportId"
-                              | "normalcost"
-                              | "normalcost.price"
-                              | "normalcost.day"
-                              | "normalcost.time"
-                              | "normalcost.day.from"
+                            | "courtName"
+                            | "sportId"
+                            | "normalcost"
+                            | "normalcost.price"
+                            | "normalcost.day"
+                            | "normalcost.time"
+                            | "normalcost.day.from"
                           );
                         }}
                       >
@@ -499,13 +505,13 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
                           <SelectValue
                             placeholder={`Select start ${watch(
                               "specialcost.category" as
-                                | "courtName"
-                                | "sportId"
-                                | "normalcost"
-                                | "normalcost.price"
-                                | "normalcost.day"
-                                | "normalcost.time"
-                                | "normalcost.day.from"
+                              | "courtName"
+                              | "sportId"
+                              | "normalcost"
+                              | "normalcost.price"
+                              | "normalcost.day"
+                              | "normalcost.time"
+                              | "normalcost.day.from"
                             )}`}
                           />
                         </SelectTrigger>
@@ -513,13 +519,13 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
                           <SelectGroup>
                             {watch(
                               "specialcost.category" as
-                                | "courtName"
-                                | "sportId"
-                                | "normalcost"
-                                | "normalcost.price"
-                                | "normalcost.day"
-                                | "normalcost.time"
-                                | "normalcost.day.from"
+                              | "courtName"
+                              | "sportId"
+                              | "normalcost"
+                              | "normalcost.price"
+                              | "normalcost.day"
+                              | "normalcost.time"
+                              | "normalcost.day.from"
                             ) == "day" ? (
                               <>
                                 <>
@@ -550,7 +556,7 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
                         </SelectContent>
                       </Select>
                       <span className="text-[12px] text-red-600 h-4">
-                         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                         {errors && (errors as any).specialcost?.diff?.from && (
                           <>
                             {
@@ -567,13 +573,13 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
                         disabled={
                           watch(
                             "specialcost.diff.from" as
-                              | "courtName"
-                              | "sportId"
-                              | "normalcost"
-                              | "normalcost.price"
-                              | "normalcost.day"
-                              | "normalcost.time"
-                              | "normalcost.day.from"
+                            | "courtName"
+                            | "sportId"
+                            | "normalcost"
+                            | "normalcost.price"
+                            | "normalcost.day"
+                            | "normalcost.time"
+                            | "normalcost.day.from"
                           ) == ""
                             ? true
                             : false
@@ -581,24 +587,24 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
                         onValueChange={(value) => {
                           setValue(
                             "specialcost.diff.to" as
-                              | "courtName"
-                              | "sportId"
-                              | "normalcost"
-                              | "normalcost.price"
-                              | "normalcost.day"
-                              | "normalcost.time"
-                              | "normalcost.day.from",
+                            | "courtName"
+                            | "sportId"
+                            | "normalcost"
+                            | "normalcost.price"
+                            | "normalcost.day"
+                            | "normalcost.time"
+                            | "normalcost.day.from",
                             value
                           );
                           trigger(
                             "specialcost.diff.to" as
-                              | "courtName"
-                              | "sportId"
-                              | "normalcost"
-                              | "normalcost.price"
-                              | "normalcost.day"
-                              | "normalcost.time"
-                              | "normalcost.day.from"
+                            | "courtName"
+                            | "sportId"
+                            | "normalcost"
+                            | "normalcost.price"
+                            | "normalcost.day"
+                            | "normalcost.time"
+                            | "normalcost.day.from"
                           );
                         }}
                       >
@@ -606,13 +612,13 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
                           <SelectValue
                             placeholder={`Select end ${watch(
                               "specialcost.category" as
-                                | "courtName"
-                                | "sportId"
-                                | "normalcost"
-                                | "normalcost.price"
-                                | "normalcost.day"
-                                | "normalcost.time"
-                                | "normalcost.day.from"
+                              | "courtName"
+                              | "sportId"
+                              | "normalcost"
+                              | "normalcost.price"
+                              | "normalcost.day"
+                              | "normalcost.time"
+                              | "normalcost.day.from"
                             )}`}
                           />
                         </SelectTrigger>
@@ -620,13 +626,13 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
                           <SelectGroup>
                             {watch(
                               "specialcost.category" as
-                                | "courtName"
-                                | "sportId"
-                                | "normalcost"
-                                | "normalcost.price"
-                                | "normalcost.day"
-                                | "normalcost.time"
-                                | "normalcost.day.from"
+                              | "courtName"
+                              | "sportId"
+                              | "normalcost"
+                              | "normalcost.price"
+                              | "normalcost.day"
+                              | "normalcost.time"
+                              | "normalcost.day.from"
                             ) == "day" ? (
                               <>
                                 <>
@@ -680,24 +686,24 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
                   if (!Number.isNaN(e.target.value)) {
                     setValue(
                       "specialcost.price" as
-                        | "courtName"
-                        | "sportId"
-                        | "normalcost"
-                        | "normalcost.price"
-                        | "normalcost.day"
-                        | "normalcost.time"
-                        | "normalcost.day.from",
+                      | "courtName"
+                      | "sportId"
+                      | "normalcost"
+                      | "normalcost.price"
+                      | "normalcost.day"
+                      | "normalcost.time"
+                      | "normalcost.day.from",
                       Number(e.target.value)
                     );
                     trigger(
                       "specialcost.price" as
-                        | "courtName"
-                        | "sportId"
-                        | "normalcost"
-                        | "normalcost.price"
-                        | "normalcost.day"
-                        | "normalcost.time"
-                        | "normalcost.day.from"
+                      | "courtName"
+                      | "sportId"
+                      | "normalcost"
+                      | "normalcost.price"
+                      | "normalcost.day"
+                      | "normalcost.time"
+                      | "normalcost.day.from"
                     );
                   }
                 }}
