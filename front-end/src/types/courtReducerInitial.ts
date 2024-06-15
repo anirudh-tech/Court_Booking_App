@@ -1,4 +1,5 @@
 export interface Court {
+  _id?: string;
   courtName: string;
   sportId: string;
   normalcost: {
@@ -20,6 +21,8 @@ export interface Court {
       to: string;
     };
   };
+  updatedAt?: Date;
+  createdAt?: Date;
 }
 
 export interface CourtInitial {

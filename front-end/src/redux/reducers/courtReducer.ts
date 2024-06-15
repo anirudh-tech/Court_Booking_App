@@ -29,6 +29,17 @@ const courtReducer = createSlice({
     .addCase(listAllCourts.pending, (state) => {
       state.loading = true;
     })
+    .addCase(listAllCourts.fulfilled, (state, { payload }) => {
+      state.loading = false;
+      state.courts = payload.data;
+      state.err = false;
+
+    })
+    .addCase(listAllCourts.rejected, (state, { payload }) => {
+      state.loading = false;
+      state.err = payload as string;
+      state.courts = null
+    })
   },
 });
 export default courtReducer.reducer;
