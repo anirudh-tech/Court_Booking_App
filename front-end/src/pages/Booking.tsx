@@ -1,3 +1,4 @@
+import { axiosInstance } from "@/constants/axiosInstance";
 import { useGenerateTimSlot } from "@/hooks/generateTimeslot";
 import { cn } from "@/lib/utils";
 import { Button } from "@/shadcn/ui/button";
@@ -14,8 +15,9 @@ import { formatDuration } from "@/utils/formatDuration";
 import { formatTime } from "@/utils/formatTime";
 import { formatEndTimeWithDuration } from "@/utils/getEndTime";
 import { addDays, format, isBefore } from "date-fns";
-import { CalendarIcon, Clock, Minus, Plus } from "lucide-react";
+import { CalendarIcon, Clock, IndianRupee, Minus, Plus } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 
 export function Booking() {
   const [date, setDate] = React.useState<Date>();
@@ -47,9 +49,47 @@ export function Booking() {
     }
   };
 
+  const demoAmount = {
+    amount: 500,
+    currency: "INR",
+    // receiptId: "testid",
+  };
+
+  const handleBooking = async () => {
+    const { data } = await axiosInstance.post(`/book-court`, demoAmount);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const order: any = data.order;
+    console.log("🚀 ~ handleBooking ~ order:", order);
+    //     VITE_RAZORPAY_KEY_ID
+    // VITE_RAZORPAY_SECRET
+
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
+      amount: order.amount.toString(),
+      currency: order.currency,
+      name: "tester.",
+      description: "Test Transaction",
+      order_id: order.id,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      handler: async function (response: any) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const data = {
+          orderCreationId: order.id,
+          razorpayPaymentId: response.razorpay_payment_id,
+          razorpayOrderId: response.razorpay_order_id,
+          razorpaySignature: response.razorpay_signature,
+        };
+        data
+        toast.error("HEo")
+      },
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const paymentObject = new (window as any).Razorpay(options);
+    paymentObject.open();
+  };
   return (
     <main className="w-full h-screen flex  justify-center items-start">
-      <div className="w-[90%] sm:w-[70%] md:w-[60%] lg:w-[38%]  mt-3 border rounded-md shadow-sm ">
+      <div className="w-[90%] sm:w-[70%] md:w-[60%] lg:w-[38%]  border rounded-md shadow-sm ">
         <div className="w-full flex flex-col p-3 ">
           <div className="w-full">
             <h1 className="font-semibold text-[#6c6c6c] text-[18px]">
@@ -63,7 +103,7 @@ export function Booking() {
         <div className="h-10 w-full flex items-center justify-center bg-custom-gradient text-white text-[13px]">
           Book a court
         </div>
-        <div className="w-full flex flex-col px-3 py-5 gap-8">
+        <div className="w-full flex flex-col px-3 py-5 gap-6">
           <div className="w-full flex justify-between h-10 items-center">
             <label htmlFor="">Select Sports</label>
             <Select>
@@ -192,7 +232,15 @@ export function Booking() {
               </span>
             </div>
           </div>
+          <div className="w-full flex justify-between  items-center border border-r-0 border-l-0 p-2">
+            <label htmlFor="">Total amount </label>
+            <div className="sm:w-64 w-52 h-10  rounded-md flex justify-end gap-1  items-center  px-4 pointer-events-none">
+              <IndianRupee className="w-4 font-bold" />{" "}
+              <span className="text-[15px] font-semibold">300.00</span>
+            </div>
+          </div>
           <div
+            onClick={handleBooking}
             className="w-full h-12 flex items-center justify-center bg-custom-gradient rounded-md text-white"
             role="button"
           >

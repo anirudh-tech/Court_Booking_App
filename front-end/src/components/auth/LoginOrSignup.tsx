@@ -6,21 +6,26 @@ import { PhoneInput } from "../custom/phone-input";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "@/config/firebase/firebaseconfig";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading, setVerfication } from "@/redux/reducers/userReducer";
+import {
+  setLoading,
+  setUserLocally,
+  setVerfication,
+} from "@/redux/reducers/userReducer";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/shadcn/ui/input-otp";
 import { LoaderButton } from "../custom/LoaderButton";
-import { RootState } from "@/redux/store";
+import { AppDispatch, RootState } from "@/redux/store";
 import toast from "react-hot-toast";
 import { formatOtpTime } from "@/utils/formatOtpTIme";
 import { LoaderPinwheel } from "lucide-react";
+import { userAuthAction } from "@/redux/actions/userActions";
 export function LoginOrSignupPage() {
   const [numberErr, setNumberErr] = useState<string>("");
   const [phonenumber, setPhoneNumber] = useState<string>("");
 
   const [otp, setOtp] = useState<string>();
 
-  const dispatch = useDispatch();
-  const { verification, loading } = useSelector(
+  const dispatch: AppDispatch = useDispatch();
+  const { verification, loading, user } = useSelector(
     (state: RootState) => state.user
   );
 
@@ -44,18 +49,30 @@ export function LoginOrSignupPage() {
     }
   }, [OTP_VALIDITY_DURATION, otpSentTime]);
   const sendOTp = async () => {
+    dispatch(setLoading(true));
     try {
       if (!phonenumber || phonenumber.trim() == "") {
         setNumberErr("Please fill phone number");
         return;
       }
+      console.log(import.meta.env);
+
       const recaptcha = new RecaptchaVerifier(auth, "recaptcha", {});
+
       const confirmationresult = await signInWithPhoneNumber(
         auth,
         phonenumber,
         recaptcha
       );
 
+      dispatch(
+        setUserLocally({
+          user: {
+            phonenumber: phonenumber,
+          },
+          isVerified: false,
+        })
+      );
       dispatch(setVerfication(confirmationresult));
       setOtpSentTime(Date.now());
       console.log("🚀 ~ sendOTp ~ confirmation:", confirmationresult);
@@ -63,6 +80,8 @@ export function LoginOrSignupPage() {
     } catch (error: any) {
       setNumberErr(error.message.split(":")[1].trim());
       console.log(error);
+    } finally {
+      dispatch(setLoading(false));
     }
   };
   const verifyOtp = async () => {
@@ -70,7 +89,7 @@ export function LoginOrSignupPage() {
     try {
       await verification?.confirm(otp ? otp : "");
 
-      toast.success("Verification successful");
+      dispatch(userAuthAction({ phoneNumber: phonenumber })).then(() => {});
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.log("🚀 ~ verifyOtp ~ error:", error);
@@ -168,7 +187,7 @@ export function LoginOrSignupPage() {
       ) : (
         <>
           <div className="h-full p-6 overflow-hidden">
-            <div className="w-full h-12 text-[18px] flex gap-1 items-start  relative">
+            <div className=" h-12 text-[18px] flex gap-1 items-start  relative">
               <span className="font-semibold">Verify your otp</span>
               <div className="absolute left-0 bottom-0 h-[1px] w-full bg-black rounded-sm">
                 <div className="h-full w-full bg-gray-200"></div>
@@ -209,7 +228,7 @@ export function LoginOrSignupPage() {
                 <span>{formatOtpTime(timeLeft)}</span>
                 <span className="text-[13.5px] underline">Resend otp</span>
               </div>
-              <div className=" flex items-center h-16 flex-col">
+              <div className=" flex items-center h-16 flex-col w-full">
                 <LoaderButton
                   className="md:w-96 "
                   onClick={verifyOtp}

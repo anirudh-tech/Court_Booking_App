@@ -9,5 +9,9 @@ export interface UserReducerInitial {
 }
 
 export interface User {
-  phonenumber: number;
+  _id?: string;
+  phoneNumber: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  role: "User" | "Admin";
 }

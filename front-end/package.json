@@ -10,11 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.6.0",
+    "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-popover": "^1.0.7",
     "@radix-ui/react-scroll-area": "^1.0.5",
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-switch": "^1.0.3",
     "@radix-ui/react-toast": "^1.1.5",
     "@reduxjs/toolkit": "^2.2.5",
     "aos": "^2.3.4",
@@ -26,10 +29,12 @@
     "firebase": "^10.12.2",
     "framer-motion": "^11.2.10",
     "input-otp": "^1.2.4",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.394.0",
     "react": "^18.2.0",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.51.5",
     "react-hot-toast": "^2.4.1",
     "react-phone-input-2": "^2.15.1",
     "react-phone-number-input": "^3.4.3",
@@ -37,10 +42,12 @@
     "react-router-dom": "^6.23.1",
     "tailwind-merge": "^2.3.0",
     "tailwind-scrollbar": "^3.1.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/aos": "^3.0.7",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20.14.2",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
