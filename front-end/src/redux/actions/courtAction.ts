@@ -10,7 +10,7 @@ export const courtAddAction = createAsyncThunk(
       const { data } = await axiosInstance.post("/add-court", {
         courtName: sendPayload.courtName,
         sportId: sendPayload.sportId,
-        normalcost: sendPayload.normalcost
+        normalcost: sendPayload.normalcost,
       });
       return data;
     } catch (error) {
@@ -19,4 +19,14 @@ export const courtAddAction = createAsyncThunk(
   }
 );
 
-
+export const listAllCourts = createAsyncThunk(
+  "courts/list-all-courts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.get(`/list-courts`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(handleError(error));
+    }
+  }
+);

@@ -1,6 +1,6 @@
 import { CourtInitial } from "@/types/courtReducerInitial";
 import { createSlice } from "@reduxjs/toolkit";
-import { courtAddAction } from "../actions/courtAction";
+import { courtAddAction, listAllCourts } from "../actions/courtAction";
 
 const initialState: CourtInitial = {
   loading: false,
@@ -25,6 +25,9 @@ const courtReducer = createSlice({
     .addCase(courtAddAction.rejected, (state, { payload }) => {
       state.loading = false;
       state.err = payload as string;
+    })
+    .addCase(listAllCourts.pending, (state) => {
+      state.loading = true;
     })
   },
 });
