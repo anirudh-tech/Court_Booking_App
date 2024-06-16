@@ -30,7 +30,11 @@ function App() {
             path="/booking"
             element={!user?._id ? <Navigate to={"/"} /> : <Booking />}
           />
-          <Route path="/mybooking" element={<MyBooking />} />
+          <Route path="/mybooking" element={
+            // user?._id?
+          <MyBooking />
+          // :<Navigate to={"/"}/>
+          } />
           <Route
             path="/adminlogin"
             element={

@@ -9,6 +9,6 @@ export interface Sport {
 export interface SportsReducerInital {
   loading: boolean;
   err: boolean | string;
-  sport: Sport | null;
+  // sport: Sport | null;
   sports: Sport[] | null;
 }

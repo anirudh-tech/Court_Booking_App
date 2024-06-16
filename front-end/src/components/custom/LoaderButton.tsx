@@ -1,4 +1,5 @@
-import { Loader } from "lucide-react";
+
+import { LoaderCircle } from "lucide-react";
 import { ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -28,13 +29,13 @@ export function LoaderButton({
             className={twMerge(
               "h-12  w-full bg-custom-gradient text-white flex gap-2 items-center justify-center  rounded-md",
               className,
-              loading && "pointer-events-none "
+              loading && "pointer-events-none bg-green-500"
             )}
           >
             {children}
             {loading && (
               <>
-                <Loader className="animate-spin" />
+                <LoaderCircle className="animate-spin" />
               </>
             )}
           </button>
@@ -53,7 +54,7 @@ export function LoaderButton({
             {children}
             {loading && (
               <>
-                <Loader className="animate-spin" />
+                <LoaderCircle className="animate-spin" />
               </>
             )}
           </button>

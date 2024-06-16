@@ -25,6 +25,7 @@ import { useGenerateStartTime } from "@/hooks/generateMorningtime";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Switch } from "@/shadcn/ui/switch";
+import { courtAddAction } from "@/redux/actions/courtAction";
 
 interface ChildProp {
   closeModal: () => void;
@@ -124,10 +125,17 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
   const endTimeSlot = useGenerateTimSlot(
     normalStartTime ? normalStartTime : new Date()
   );
+  endTimeSlot;
   const submitCourtForm = (values: z.infer<typeof addCourtSchema>) => {
     console.log("🚀 ~ submitCourtForm ~ values:", values);
+    dispatch(courtAddAction(values)).then((res) => {
+      if (res.type.endsWith("fulfilled")) {
+        closeModal();
+      }
+    });
   };
   const { sports } = useSelector((state: RootState) => state.sport);
+  const { loading } = useSelector((state: RootState) => state.court);
   return (
     <form
       className="w-full max-h-[690px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 p-6 bg-white rounded-md "
@@ -246,8 +254,8 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
               </SelectContent>
             </Select>
             <span className="text-[12px] text-red-600 h-4">
-              {errors && errors.normalcost?.day?.from && (
-                <>{errors.normalcost?.day.from.message as ReactNode}</>
+              {errors && errors.normalcost?.day?.to && (
+                <>{errors.normalcost?.day.to.message as ReactNode}</>
               )}
             </span>
           </div>
@@ -329,7 +337,7 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
               <PopoverContent className="w-auto p-0 max-h-64 overflow-x-hidden overflow-y-auto">
                 <div className="w-64 h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 p-1">
                   <div className="grid grid-cols-2 gap-2">
-                    {endTimeSlot.map((time, Idx) => (
+                    {startTimeslot.map((time, Idx) => (
                       <div
                         key={Idx}
                         role="button"
@@ -443,7 +451,12 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {errors && (errors as any)?.specialcost?.category && (
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  <>{(errors as any)?.specialcost?.category?.message as ReactNode}</>
+                  <>
+                    {
+                      (errors as any)?.specialcost?.category
+                        ?.message as ReactNode
+                    }
+                  </>
                 )}
               </span>
             </div>
@@ -550,7 +563,7 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
                         </SelectContent>
                       </Select>
                       <span className="text-[12px] text-red-600 h-4">
-                         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                         {errors && (errors as any).specialcost?.diff?.from && (
                           <>
                             {
@@ -661,7 +674,10 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
                         {errors && (errors as any).specialcost?.diff?.to && (
                           <>
                             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                            {(errors as any).specialcost?.diff?.to?.message as ReactNode}
+                            {
+                              (errors as any).specialcost?.diff?.to
+                                ?.message as ReactNode
+                            }
                           </>
                         )}
                       </span>
@@ -704,7 +720,9 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
               />
               <span className="text-[12px] text-red-600 h-4">
                 {errors && (errors as any).specialcost?.price && (
-                  <>{(errors as any).specialcost?.price?.message as ReactNode}</>
+                  <>
+                    {(errors as any).specialcost?.price?.message as ReactNode}
+                  </>
                 )}
               </span>
             </div>
@@ -713,7 +731,7 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
       )}
       {/* end */}
       <div className="w-full mt-4">
-        <LoaderButton loading={false} type="submit" className="bg-green-500">
+        <LoaderButton loading={loading} type="submit" className="bg-green-500">
           Submit
         </LoaderButton>
       </div>

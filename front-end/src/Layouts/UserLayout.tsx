@@ -41,7 +41,7 @@ export const UserLayout = () => {
     });
   };
   return (
-    <div>
+    <div >
       <header className="w-full h-20 flex items-center justify-center sticky top-0 left-0 z-10 bg-white">
         <div
           className="w-[90%] h-10 flex justify-between items-center "

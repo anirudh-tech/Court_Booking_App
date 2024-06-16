@@ -8,7 +8,6 @@ import court5 from "../assets/Images/court5.jpg";
 import court6 from "../assets/Images/court6.jpg";
 import court7 from "../assets/Images/court7.jpg";
 import court8 from "../assets/Images/court8.jpg";
-
 import badmintonIcon from "../assets/icons/BadMinton.svg";
 import volleyBall from "../assets/icons/Volleyball.svg";
 import cricket from "../assets/icons/cricket2.webp";

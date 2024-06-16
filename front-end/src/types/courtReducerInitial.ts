@@ -1,4 +1,5 @@
 export interface Court {
+  _id?: string;
   courtName: string;
   sportId: string;
   normalcost: {
@@ -12,19 +13,22 @@ export interface Court {
       to: string;
     };
   };
-  specialcost: {
-    type: "day" | "time";
+  specialcost?: {
+    category: "day" | "time";
     price: number;
     diff: {
       from: string;
       to: string;
     };
   };
+  sport?: string;
+  updatedAt?: Date;
+  createdAt?: Date;
 }
 
 export interface CourtInitial {
   loading: boolean;
   err: boolean | string;
-  court: Court|null;
-  courts: Court[]|null;
+  court: Court | null;
+  courts: Court[] | null;
 }
