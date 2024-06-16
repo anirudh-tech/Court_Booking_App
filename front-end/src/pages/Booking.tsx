@@ -1,6 +1,8 @@
 import { axiosInstance } from "@/constants/axiosInstance";
 import { useGenerateTimSlot } from "@/hooks/generateTimeslot";
 import { cn } from "@/lib/utils";
+import { listAlsports } from "@/redux/actions/sportAcion";
+import { AppDispatch, RootState } from "@/redux/store";
 import { Button } from "@/shadcn/ui/button";
 import { Calendar } from "@/shadcn/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn/ui/popover";
@@ -11,43 +13,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shadcn/ui/select";
+import { Court } from "@/types/courtReducerInitial";
+import { isSpecialTime } from "@/utils/IsSpecialTime";
 import { formatDuration } from "@/utils/formatDuration";
 import { formatTime } from "@/utils/formatTime";
 import { formatEndTimeWithDuration } from "@/utils/getEndTime";
+import { isSpecialDay } from "@/utils/isSpecialday";
+import { parseTime } from "@/utils/stringToTIme";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays, format, isBefore } from "date-fns";
 import { CalendarIcon, Clock, IndianRupee, Minus, Plus } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { z } from "zod";
 
 export function Booking() {
-  const [date, setDate] = React.useState<Date>();
   const isDateDisabled = (day: Date): boolean => {
     return isBefore(day, addDays(new Date(), -1));
   };
+
   useEffect(() => {
-    setDate(new Date());
-  }, []);
-  const timeSlots = useGenerateTimSlot(date ? date : new Date());
-  const [time, SetSelectedTime] = useState<Date>();
-  useEffect(() => {
-    SetSelectedTime(timeSlots[0]);
+    setValue("startTime", formatTime(timeSlots[0]));
   }, []);
 
   const popoverCloseRef = useRef<HTMLButtonElement>(null);
-  const [hours, setHours] = useState(1); // Initial duration is 1 hour
-  const incrementDuration = () => {
-    if (hours < 20) {
-      // Maximum duration limit
-      setHours(hours + 0.5); // Increment by half an hour
-    }
-  };
-
-  const decrementDuration = () => {
-    if (hours > 1) {
-      // Minimum duration limit
-      setHours(hours - 0.5); // Decrement by half an hour
-    }
-  };
 
   const demoAmount = {
     amount: 500,
@@ -55,7 +46,10 @@ export function Booking() {
     // receiptId: "testid",
   };
 
-  const handleBooking = async () => {
+  const handleBooking = async (values: z.infer<typeof bookingSchema>) => {
+    values;
+    alert("()")
+    return
     const { data } = await axiosInstance.post(`/book-court`, demoAmount);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const order: any = data.order;
@@ -79,17 +73,147 @@ export function Booking() {
           razorpayOrderId: response.razorpay_order_id,
           razorpaySignature: response.razorpay_signature,
         };
-        data
-        toast.error("HEo")
+        data;
+        toast.error("HEo");
       },
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const paymentObject = new (window as any).Razorpay(options);
     paymentObject.open();
   };
+
+
+  
+  const dispatch: AppDispatch = useDispatch();
+  useEffect(() => {
+    dispatch(listAlsports());
+  }, [dispatch]);
+  const { sports } = useSelector((state: RootState) => state.sport);
+  const bookingSchema = z.object({
+    sport: z.string().nonempty(),
+    court: z.string().nonempty(),
+    startTime: z.string(),
+    duration: z.number(),
+    bookedDate: z.date(),
+    amount: z.number(),
+  });
+  const {
+    handleSubmit,
+    trigger,
+    watch,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = useForm<z.infer<typeof bookingSchema>>({
+    mode: "onChange",
+    reValidateMode: "onChange",
+    resolver: zodResolver(bookingSchema),
+    defaultValues: {
+      sport: "",
+      court: "",
+      duration: 1,
+    },
+  });
+
+  const incrementDuration = () => {
+    const currentDuration = getValues("duration");
+    const currentAmount = getValues("amount");
+
+    if (currentDuration < 20) {
+      // Maximum duration limit
+      const newDuration = currentDuration + 0.5;
+      const newAmount = (currentAmount / currentDuration) * newDuration;
+
+      setValue("duration", newDuration); // Increment by half an hour
+      trigger("duration");
+      setValue("amount", newAmount); // Update amount with new duration
+      trigger("amount");
+    }
+  };
+
+  const decrementDuration = () => {
+    const currentDuration = getValues("duration");
+    const currentAmount = getValues("amount");
+
+    if (currentDuration > 1) {
+      // Minimum duration limit
+      const newDuration = currentDuration - 0.5;
+      const newAmount = (currentAmount / currentDuration) * newDuration;
+
+      setValue("duration", newDuration); // Decrement by half an hour
+      trigger("duration");
+      setValue("amount", newAmount); // Update amount with new duration
+      trigger("amount");
+    }
+  };
+
+  const [courts, setCourts] = useState<Court[]>([]);
+  const [localLoad, setLocalLoad] = useState<boolean>(false);
+  useEffect(() => {
+    if (watch("sport")) {
+      setLocalLoad(true);
+
+      axiosInstance
+        .post(`/getcourt-withsport`, { sportId: watch("sport") })
+        .then((res) => {
+          console.log(res.data.courts);
+
+          setCourts(res.data.courts);
+        })
+        .finally(() => setLocalLoad(false));
+    }
+  }, [watch("sport")]);
+
+  useEffect(() => {
+    const value = getValues("court");
+    const selecteCourt = courts?.find((court) => court._id == value);
+    if (
+      selecteCourt?.specialcost?.category == "day" &&
+      watch("bookedDate") &&
+      isSpecialDay(watch("bookedDate"), selecteCourt)
+    ) {
+      setValue("amount", Number(selecteCourt?.specialcost?.price));
+      trigger("amount");
+    } else {
+      setValue("amount", Number(selecteCourt?.normalcost.price));
+      trigger("amount");
+    }
+  }, [watch("bookedDate")]);
+
+  useEffect(() => {
+    const value = getValues("court");
+    const selecteCourt = courts?.find((court) => court._id == value);
+    if (
+      selecteCourt?.specialcost?.category === "time" &&
+      watch("startTime") &&
+      isSpecialTime(watch("startTime"), selecteCourt)
+    ) {
+      setValue("amount", Number(selecteCourt.specialcost.price));
+      trigger("amount");
+    } else {
+      setValue("amount", Number(selecteCourt?.normalcost?.price));
+      trigger("amount");
+    }
+  }, [watch("startTime")]);
+  useEffect(() => {
+    setValue("bookedDate", new Date());
+  }, []);
+  const timeSlots = useGenerateTimSlot(
+    watch("bookedDate") ? watch("bookedDate") : new Date()
+  );
+  // useEffect(() => {
+  //   console.log("()");
+  //   if (!timeSlots.includes(parseTime(getValues("startTime")))) {
+  //     setValue("startTime", formatTime(timeSlots[0]));
+  //   }
+  // }, [watch("bookingdate")]);
+  console.log(errors);
   return (
     <main className="w-full h-screen flex  justify-center items-start">
-      <div className="w-[90%] sm:w-[70%] md:w-[60%] lg:w-[38%]  border rounded-md shadow-sm ">
+      <form
+        className="w-[90%] sm:w-[70%] md:w-[60%] lg:w-[38%]  border rounded-md shadow-sm "
+        onSubmit={handleSubmit(handleBooking)}
+      >
         <div className="w-full flex flex-col p-3 ">
           <div className="w-full">
             <h1 className="font-semibold text-[#6c6c6c] text-[18px]">
@@ -106,94 +230,215 @@ export function Booking() {
         <div className="w-full flex flex-col px-3 py-5 gap-6">
           <div className="w-full flex justify-between h-10 items-center">
             <label htmlFor="">Select Sports</label>
-            <Select>
-              <SelectTrigger className="sm:w-64 w-52 outline-none ring-0">
-                <SelectValue placeholder="🍳 Select sports" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="system">System</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex flex-col">
+              <Select
+                onValueChange={(value) => {
+                  setValue("sport", value);
+                  setValue("court", "");
+                  trigger("sport");
+                  trigger("court")
+                }}
+              >
+                <SelectTrigger className="sm:w-64 w-52 outline-none ring-0">
+                  <SelectValue placeholder="🍳 Select sports" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sports?.map((sport) => (
+                    <SelectItem
+                      key={String(sport?._id)}
+                      value={String(sport._id)}
+                    >
+                      <div className="flex gap-4 py-1 ">
+                        <img src={sport.image} className="w-5" alt="" />
+                        <span>{sport.sportName}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors && errors.sport && errors.sport.message && (
+                <>
+                  <span className="text-[12px] text-red-600">
+                    {errors.sport.message}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
           <div className="w-full flex justify-between h-10 items-center">
             <label htmlFor="">Select Courts</label>
-            <Select>
-              <SelectTrigger className="sm:w-64 w-52 outline-none ring-0">
-                <SelectValue placeholder="🥅 Select a court" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="system">System</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex flex-col">
+              <Select
+                disabled={!courts || courts.length <= 0}
+                onValueChange={(value) => {
+                  setValue("court", value);
+                  trigger("court")
+                  const selecteCourt = courts.find(
+                    (court) => court._id == value
+                  );
+                  console.log(
+                    "🚀 ~ Booking ~ selecteCourt:",
+                    isSpecialDay(new Date(), selecteCourt as Court)
+                  );
+                  console.log("IS sp time ", watch("startTime"));
+                  console.log("IS sp time ", selecteCourt?.specialcost);
+                  console.log(
+                    "IS sp time ",
+                    isSpecialTime(watch("startTime"), selecteCourt as Court)
+                  );
+
+                  if (
+                    selecteCourt?.specialcost?.category == "day" &&
+                    format(new Date(), "PPP") ==
+                      format(watch("bookedDate"), "PPP")
+                  ) {
+                    if (isSpecialDay(new Date(), selecteCourt)) {
+                      setValue("amount", selecteCourt.specialcost.price);
+                      trigger("amount");
+                    }
+                  } else if (selecteCourt?.specialcost?.category == "time") {
+                    if (isSpecialTime(watch("startTime"), selecteCourt)) {
+                      setValue("amount", selecteCourt.specialcost.price);
+                      trigger("amount");
+                    }
+                  } else {
+                    console.log("Reach");
+                    setValue("amount", Number(selecteCourt?.normalcost.price));
+                    trigger("amount");
+                  }
+                }}
+              >
+                <SelectTrigger
+                  className={`sm:w-64 w-52 outline-none ring-0 ${
+                    !courts || (courts.length <= 0 && "pointer-events-none")
+                  } `}
+                >
+                  <SelectValue
+                    placeholder={
+                      <div>
+                        {localLoad ? (
+                          <>
+                            <span>
+                              Loading <span className="animate-pulse">...</span>
+                            </span>
+                          </>
+                        ) : (
+                          "🥅 Select a court"
+                        )}
+                      </div>
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {courts.map((court) => (
+                    <SelectItem value={String(court?._id)} key={court?._id}>
+                      {court.courtName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors && errors.court && errors.court.message && (
+                <>
+                  <span className="text-[12px] text-red-600">
+                    {errors.court.message}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
           <div className="w-full flex justify-between h-10 items-center">
             <label htmlFor="" className="capitalize">
               Select date
             </label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "sm:w-64 w-52 justify-start text-left font-normal",
-                    !date && "text-muted-foreground "
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  disabled={isDateDisabled}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <div className="flex flex-col">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    disabled={!watch("court") || watch("court") == ""}
+                    variant={"outline"}
+                    className={cn(
+                      "sm:w-64 w-52 justify-start text-left font-normal",
+                      !watch("bookedDate") && "text-muted-foreground "
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {watch("bookedDate") ? (
+                      format(watch("bookedDate"), "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={watch("bookedDate")}
+                    onSelect={(date) => {
+                      date && setValue("bookedDate", new Date(date));
+                    }}
+                    disabled={isDateDisabled}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              {errors && errors.bookedDate && errors.bookedDate.message && (
+                <>
+                  <span className="text-[12px] text-red-600">
+                    {errors.bookedDate.message}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
           <div className="w-full flex justify-between h-10 items-center">
             <label htmlFor="">Start Time</label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  ref={popoverCloseRef}
-                  className={cn(
-                    "sm:w-64 w-52 justify-start text-left font-normal",
-                    !date && "text-muted-foreground "
-                  )}
-                >
-                  <Clock className="mr-2 h-4 w-4" />
-                  {time ? formatTime(time) : <span>Pick a time</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 max-h-64 overflow-x-hidden overflow-y-auto">
-                <div className="w-64 h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 p-1">
-                  <div className="grid grid-cols-2 gap-2">
-                    {timeSlots.map((time, Idx) => (
-                      <div
-                        key={Idx}
-                        role="button"
-                        onClick={() => {
-                          SetSelectedTime(time);
-                          popoverCloseRef.current?.click();
-                        }}
-                        className="h-10 rounded-md cursor-pointer hover:bg-[#4cd681] transition-all duration-200 w-full flex items-center justify-center text-[13px] border"
-                      >
-                        {formatTime(time)}
-                      </div>
-                    ))}
+            <div className="flex flex-col">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    ref={popoverCloseRef}
+                    className={cn(
+                      "sm:w-64 w-52 justify-start text-left font-normal",
+                      !watch("bookedDate") && "text-muted-foreground "
+                    )}
+                  >
+                    <Clock className="mr-2 h-4 w-4" />
+                    {watch("startTime") ? (
+                      watch("startTime")
+                    ) : (
+                      <span>Pick a time</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 max-h-64 overflow-x-hidden overflow-y-auto">
+                  <div className="w-64 h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 p-1">
+                    <div className="grid grid-cols-2 gap-2">
+                      {timeSlots.map((time, Idx) => (
+                        <div
+                          key={Idx}
+                          role="button"
+                          onClick={() => {
+                            setValue("startTime", formatTime(time));
+                            popoverCloseRef.current?.click();
+                          }}
+                          className="h-10 rounded-md cursor-pointer hover:bg-[#4cd681] transition-all duration-200 w-full flex items-center justify-center text-[13px] border"
+                        >
+                          {formatTime(time)}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </PopoverContent>
-            </Popover>
+                </PopoverContent>
+              </Popover>
+              {errors && errors.startTime && errors.startTime.message && (
+                <>
+                  <span className="text-[12px] text-red-600">
+                    {errors.startTime.message}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
           <div className="w-full flex justify-between h-10 items-center">
             <label htmlFor="">Duration</label>
@@ -201,7 +446,7 @@ export function Booking() {
               <div
                 onClick={decrementDuration}
                 className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
-                  hours <= 1
+                  watch("duration") <= 1
                     ? "pointer-events-none bg-slate-300 border"
                     : "bg-custom-gradient"
                 }  text-white transition-all duration-200`}
@@ -209,12 +454,12 @@ export function Booking() {
                 <Minus className="w-5" />
               </div>
               <span className="text-[13px] font-semibold">
-                {formatDuration(hours)}
+                {formatDuration(watch("duration"))}
               </span>
               <div
                 onClick={incrementDuration}
                 className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
-                  hours >= 20
+                  watch("duration") >= 20
                     ? "pointer-events-none bg-slate-300 border"
                     : "bg-custom-gradient"
                 }  text-white transition-all duration-200`}
@@ -228,26 +473,35 @@ export function Booking() {
             <div className="sm:w-64 w-52 h-10  rounded-md flex justify-start gap-2 items-center border px-4 pointer-events-none">
               <Clock className="w-4" />{" "}
               <span className="text-[13px]">
-                {formatEndTimeWithDuration(time ? time : new Date(), hours)}
+                {formatEndTimeWithDuration(
+                  watch("startTime")
+                    ? parseTime(watch("startTime") as string)
+                    : new Date(),
+                  watch("duration")
+                )}
               </span>
             </div>
           </div>
           <div className="w-full flex justify-between  items-center border border-r-0 border-l-0 p-2">
             <label htmlFor="">Total amount </label>
-            <div className="sm:w-64 w-52 h-10  rounded-md flex justify-end gap-1  items-center  px-4 pointer-events-none">
-              <IndianRupee className="w-4 font-bold" />{" "}
-              <span className="text-[15px] font-semibold">300.00</span>
+            <div className="flex flex-col">
+              <div className="sm:w-64 w-52 h-10  rounded-md flex justify-end gap-1  items-center  px-4 pointer-events-none">
+                <IndianRupee className="w-4 font-bold" />{" "}
+                <span className="text-[15px] font-semibold">
+                  {watch("amount") ? watch("amount") : "---"}
+                </span>
+              </div>
             </div>
           </div>
-          <div
-            onClick={handleBooking}
+          <button
+            type="submit"
+            // onClick={handleBooking}
             className="w-full h-12 flex items-center justify-center bg-custom-gradient rounded-md text-white"
-            role="button"
           >
             Proceed to payment
-          </div>
+          </button>
         </div>
-      </div>
+      </form>
     </main>
   );
 }

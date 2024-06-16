@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 const initialState: SportsReducerInital = {
   loading: false,
   err: false,
-  sport: null,
+  // sport: null,
   sports: null,
 };
 const sportsReducer = createSlice({
