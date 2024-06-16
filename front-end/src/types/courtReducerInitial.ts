@@ -14,13 +14,14 @@ export interface Court {
     };
   };
   specialcost?: {
-    type: "day" | "time";
+    category: "day" | "time";
     price: number;
     diff: {
       from: string;
       to: string;
     };
   };
+  sport?: string;
   updatedAt?: Date;
   createdAt?: Date;
 }
@@ -28,6 +29,6 @@ export interface Court {
 export interface CourtInitial {
   loading: boolean;
   err: boolean | string;
-  court: Court|null;
-  courts: Court[]|null;
+  court: Court | null;
+  courts: Court[] | null;
 }
