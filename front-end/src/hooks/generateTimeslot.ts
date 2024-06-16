@@ -3,7 +3,11 @@ export const useGenerateTimSlot = (date: Date) => {
   const now = new Date();
   const isToday = now.toDateString() === date.toDateString();
 
-  if (isToday) {
+  if (isToday && now.getHours() >= 23) {
+    // If it's today and after 11:00 PM, use the next day
+    now.setDate(now.getDate() + 1);
+    now.setHours(5, 0, 0, 0);
+  } else if (isToday) {
     // Start from the next half-hour mark
     now.setMinutes(now.getMinutes() + (30 - (now.getMinutes() % 30)), 0, 0);
   } else {
@@ -15,7 +19,7 @@ export const useGenerateTimSlot = (date: Date) => {
   const endTime = new Date(startTime);
   endTime.setHours(23, 0, 0, 0); // Set end time to 11:00 PM
 
-  // Generate slots until 10:30 PM or the next 12 hours from start time
+  // Generate slots until 11:00 PM
   while (startTime <= endTime) {
     slots.push(new Date(startTime));
     startTime.setMinutes(startTime.getMinutes() + 30);

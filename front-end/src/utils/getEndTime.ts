@@ -11,8 +11,8 @@ export function getEndTimeWithDuration(
 }
 
 export function formatTime(date: Date): string {
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
+  const hours = date?.getHours();
+  const minutes = date?.getMinutes();
   const ampm = hours >= 12 ? "PM" : "AM";
   const formattedHours = hours % 12 || 12;
   const formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
@@ -24,5 +24,6 @@ export function formatEndTimeWithDuration(
   durationHours: number
 ): string {
   const endTime = getEndTimeWithDuration(startTime, durationHours);
+  console.log("🚀 ~ endTime:", endTime)
   return formatTime(endTime);
 }

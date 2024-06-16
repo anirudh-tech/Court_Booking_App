@@ -4,7 +4,8 @@ export const parseTime = (timeString: string): Date => {
   const match = timeString.match(timeRegex);
 
   if (!match) {
-    throw new Error("Invalid time format");
+    return new Date();
+    // throw new Error("Invalid time format");
   }
 
   const [, hours, minutes, ampm] = match;
@@ -17,10 +18,10 @@ export const parseTime = (timeString: string): Date => {
     parsedHours = 0;
   }
 
-  date.setHours(parsedHours);
-  date.setMinutes(parsedMinutes);
-  date.setSeconds(0);
-  date.setMilliseconds(0);
+  date?.setHours(parsedHours);
+  date?.setMinutes(parsedMinutes);
+  date?.setSeconds(0);
+  date?.setMilliseconds(0);
 
   return date;
 };

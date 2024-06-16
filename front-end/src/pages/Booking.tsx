@@ -21,7 +21,7 @@ import { formatEndTimeWithDuration } from "@/utils/getEndTime";
 import { isSpecialDay } from "@/utils/isSpecialday";
 import { parseTime } from "@/utils/stringToTIme";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { addDays, format, isBefore } from "date-fns";
+import { addDays, format, isBefore, startOfDay } from "date-fns";
 import { CalendarIcon, Clock, IndianRupee, Minus, Plus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -31,10 +31,23 @@ import { z } from "zod";
 
 export function Booking() {
   const isDateDisabled = (day: Date): boolean => {
-    return isBefore(day, addDays(new Date(), -1));
+    const now = new Date();
+    const currentHour = now.getHours();
+  
+    if (currentHour >= 23) {
+      // After 11:00 PM, start disabling from the next day
+      const nextDay = addDays(startOfDay(now), 1);
+      return isBefore(day, nextDay);
+    } else {
+      // Otherwise, disable all dates before today
+      const today = startOfDay(now);
+      return isBefore(day, today);
+    }
   };
 
   useEffect(() => {
+    console.log(formatTime(timeSlots[0])," FORM");
+    
     setValue("startTime", formatTime(timeSlots[0]));
   }, []);
 
@@ -197,8 +210,19 @@ export function Booking() {
     }
   }, [watch("startTime")]);
   useEffect(() => {
-    setValue("bookedDate", new Date());
-  }, []);
+    const now = new Date();
+    const currentHour = now.getHours();
+
+    if (currentHour >= 23) {
+      // If it's after 11:00 PM, set the date to the next day
+      const nextDay = new Date(now);
+      nextDay.setDate(now.getDate() + 1);
+      setValue("bookedDate", nextDay);
+    } else {
+      // Otherwise, set it to the current date
+      setValue("bookedDate", now);
+    }
+  }, [setValue]);
   const timeSlots = useGenerateTimSlot(
     watch("bookedDate") ? watch("bookedDate") : new Date()
   );
