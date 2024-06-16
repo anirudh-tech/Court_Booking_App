@@ -73,8 +73,9 @@ export function Booking() {
           razorpayOrderId: response.razorpay_order_id,
           razorpaySignature: response.razorpay_signature,
         };
-        data;
-        toast.error("HEo");
+        await axiosInstance.post(`/validate-payment`, data);
+        data
+        toast.error("HEo")
       },
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
