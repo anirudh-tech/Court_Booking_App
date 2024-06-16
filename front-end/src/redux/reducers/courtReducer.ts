@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   courtAddAction,
   deleteCourt,
+  editCourt,
   listAllCourts,
 } from "../actions/courtAction";
 import toast from "react-hot-toast";
@@ -60,7 +61,26 @@ const courtReducer = createSlice({
         state.loading = false;
         state.err = payload as string;
         toast.error(state.err);
-      });
+      })
+      .addCase(editCourt.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(editCourt.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.courts = state.courts?.map((court) => {
+          if (court?._id == payload.courtId) {
+            return payload.court;
+          } else {
+            return court;
+          }
+        }) as Court[];
+        state.err = false;
+      })
+      .addCase(editCourt.rejected,(state,{payload})=>{
+        state.loading=false
+        state.err=payload as string
+        toast.error(state.err)
+      })
   },
 });
 export default courtReducer.reducer;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { axiosInstance } from "@/constants/axiosInstance";
 import { Court } from "@/types/courtReducerInitial";
 import { handleError } from "@/utils/handleError";
@@ -32,6 +33,26 @@ export const deleteCourt = createAsyncThunk(
   async (courtId: string, { rejectWithValue }) => {
     try {
       const { data } = await axiosInstance.delete(`/delete-court/${courtId}`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(handleError(error));
+    }
+  }
+);
+
+export const editCourt = createAsyncThunk(
+  "court/edit-court",
+  async (
+    { courtId, courtData }: { courtId: string; courtData: any },
+    { rejectWithValue }
+  ) => {
+    try {
+      
+      
+      const { data } = await axiosInstance.patch(`/edit-court`, {
+        courtId,
+        data: courtData,
+      });
       return data;
     } catch (error) {
       return rejectWithValue(handleError(error));

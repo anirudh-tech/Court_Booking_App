@@ -25,7 +25,7 @@ import { useGenerateStartTime } from "@/hooks/generateMorningtime";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Switch } from "@/shadcn/ui/switch";
-import { courtAddAction } from "@/redux/actions/courtAction";
+import { editCourt } from "@/redux/actions/courtAction";
 import { Court } from "@/types/courtReducerInitial";
 
 interface ChildProp {
@@ -128,17 +128,20 @@ export const EditCourt = ({ closeModal, courtDetail }: ChildProp) => {
   );
   endTimeSlot;
   const submitCourtForm = (values: z.infer<typeof addCourtSchema>) => {
-    console.log("🚀 ~ submitCourtForm ~ values:", values);
-    dispatch(courtAddAction(values)).then((res) => {
+    dispatch(
+      editCourt({ courtData: values, courtId: String(courtDetail._id) })
+    ).then((res) => {
       if (res.type.endsWith("fulfilled")) {
         closeModal();
       }
     });
   };
 
+  const [selectedSport, setSelectedSport] = useState<string>("");
   useEffect(() => {
     setValue("courtName", courtDetail?.courtName);
-    setValue("sportId", courtDetail.sportId.split("[(*)]")[0]);
+    setValue("sportId", String(courtDetail.sport));
+    setSelectedSport(String(courtDetail.sportId));
     setValue("normalcost.price", courtDetail.normalcost.price);
     setValue("normalcost.day", courtDetail.normalcost.day);
     setValue("normalcost.time", courtDetail.normalcost.time);
@@ -243,7 +246,18 @@ export const EditCourt = ({ closeModal, courtDetail }: ChildProp) => {
             }}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder={watch("sportId")} />
+              <SelectValue
+                placeholder={
+                  <div className="flex gap-2">
+                    <img
+                      src={selectedSport.split("[(*)]")[1]}
+                      className="w-5"
+                      alt=""
+                    />
+                    {selectedSport.split("[(*)]")[0]}
+                  </div>
+                }
+              />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -468,7 +482,7 @@ export const EditCourt = ({ closeModal, courtDetail }: ChildProp) => {
       {spcialCostoption && (
         <>
           <div className="w-full px-3 py-2 border rounded-md mt-3">
-            <div className="w-full py-2 border-b flex justify-start">
+            <div className="w-full py-2 border-b flex items-start flex-col">
               <span className="text-[12px]">Special price (Optional)</span>
             </div>
             <div className="w-full mt-3 flex flex-col">
