@@ -504,31 +504,35 @@ export function Booking() {
           </div>
           <div className="w-full flex justify-between min-h-10 sm:items-center sm:flex-row flex-col">
             <label htmlFor="">Duration</label>
-            <div className="sm:w-64 w-full h-10  rounded-md flex justify-between items-center">
-              <div
+            <div className="sm:w-64 w-full h-10  rounded-md flex justify-between items-center" onClick={()=>{
+              if(!watch('court')){
+                return toast.error("Please selecte court and sports")
+              }
+            }}>
+              <button type="button"
                 onClick={decrementDuration}
-                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
+                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${!watch("court")&&"pointer-events-none"} ${
                   watch("duration") <= 1
                     ? "pointer-events-none bg-slate-300 border"
                     : "bg-custom-gradient"
                 }  text-white transition-all duration-200`}
               >
                 <Minus className="w-5" />
-              </div>
+              </button>
               
               <span className="sm:text-[13px] font-semibold">
                 {formatDuration(watch("duration"))}
               </span>
-              <div
+              <button type="button"
                 onClick={incrementDuration}
-                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
+                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${!watch("court")&&"pointer-events-none"} ${
                   watch("duration") >= 20
                     ? "pointer-events-none bg-slate-300 border"
                     : "bg-custom-gradient"
                 }  text-white transition-all duration-200`}
               >
                 <Plus className="w-5" />
-              </div>
+              </button>
             </div>
           </div>
           <div className="w-full flex justify-between min-h-10 sm:items-center sm:flex-row flex-col">
