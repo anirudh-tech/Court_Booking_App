@@ -14,7 +14,7 @@ export interface Court {
     };
   };
   specialcost?: {
-    type: "day" | "time";
+    category: "day" | "time";
     price: number;
     diff: {
       from: string;

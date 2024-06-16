@@ -254,8 +254,8 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
               </SelectContent>
             </Select>
             <span className="text-[12px] text-red-600 h-4">
-              {errors && errors.normalcost?.day?.from && (
-                <>{errors.normalcost?.day.from.message as ReactNode}</>
+              {errors && errors.normalcost?.day?.to && (
+                <>{errors.normalcost?.day.to.message as ReactNode}</>
               )}
             </span>
           </div>
