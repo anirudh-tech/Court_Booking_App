@@ -1,3 +1,4 @@
+import { LoaderButton } from "@/components/custom/LoaderButton";
 import { axiosInstance } from "@/constants/axiosInstance";
 import { useGenerateTimSlot } from "@/hooks/generateTimeslot";
 import { cn } from "@/lib/utils";
@@ -27,13 +28,14 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 export function Booking() {
   const isDateDisabled = (day: Date): boolean => {
     const now = new Date();
     const currentHour = now.getHours();
-  
+
     if (currentHour >= 23) {
       // After 11:00 PM, start disabling from the next day
       const nextDay = addDays(startOfDay(now), 1);
@@ -46,58 +48,78 @@ export function Booking() {
   };
 
   useEffect(() => {
-    console.log(formatTime(timeSlots[0])," FORM");
-    
+    console.log(formatTime(timeSlots[0]), " FORM");
+
     setValue("startTime", formatTime(timeSlots[0]));
   }, []);
 
   const popoverCloseRef = useRef<HTMLButtonElement>(null);
 
-  const demoAmount = {
-    amount: 500,
-    currency: "INR",
-    // receiptId: "testid",
-  };
-
+  const { user } = useSelector((state: RootState) => state.user);
+  const navigate=useNavigate()
+  const [submitionLoad, setSubmitionLoad] = useState<boolean>(false);
   const handleBooking = async (values: z.infer<typeof bookingSchema>) => {
-    values;
-    alert("()")
-    return
-    const { data } = await axiosInstance.post(`/book-court`, demoAmount);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const order: any = data.order;
-    console.log("🚀 ~ handleBooking ~ order:", order);
-    //     VITE_RAZORPAY_KEY_ID
-    // VITE_RAZORPAY_SECRET
-
-    const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
-      amount: order.amount.toString(),
-      currency: order.currency,
-      name: "tester.",
-      description: "Test Transaction",
-      order_id: order.id,
+    try {
+      values;
+      setSubmitionLoad(true);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      handler: async function (response: any) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const data = {
-          orderCreationId: order.id,
-          razorpayPaymentId: response.razorpay_payment_id,
-          razorpayOrderId: response.razorpay_order_id,
-          razorpaySignature: response.razorpay_signature,
+      const valueCopy = { ...values } as any;
+      valueCopy.endTIme = formatEndTimeWithDuration(
+        parseTime(values.startTime as string),
+        values.duration
+      );
+      valueCopy.courtId = values.court;
+      valueCopy.userId = String(user?._id);
+      valueCopy.paymentStatus = "Pending";
+      valueCopy.paymentMethod = values.paymentmode;
+      console.log(valueCopy, " copy");
+      if (values.paymentmode == "Online") {
+        const { data } = await axiosInstance.post(`/book-court`, valueCopy);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const order: any = data.order;
+        console.log("🚀 ~ handleBooking ~ order:", order);
+        //     VITE_RAZORPAY_KEY_ID
+        // VITE_RAZORPAY_SECRET
+
+        const options = {
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
+          amount: order.amount,
+          currency: order.currency,
+          name: "tester.",
+          description: "Test Transaction",
+          order_id: order.id,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          handler: async function (response: any) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const data = {
+              orderCreationId: order.id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpaySignature: response.razorpay_signature,
+            };
+            await axiosInstance.post(`/validate-payment`, data);
+            data;
+            toast.error("HEo");
+          },
         };
-        await axiosInstance.post(`/validate-payment`, data);
-        data
-        toast.error("HEo")
-      },
-    };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const paymentObject = new (window as any).Razorpay(options);
-    paymentObject.open();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const paymentObject = new (window as any).Razorpay(options);
+        paymentObject.open();
+      } else {
+        const { data } = await axiosInstance.post(`/book-court`, valueCopy);
+        if(data.status){
+          navigate("/mybooking")
+        }
+      }
+      setSubmitionLoad(false);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setSubmitionLoad(false);
+    }
   };
 
-
-  
   const dispatch: AppDispatch = useDispatch();
   useEffect(() => {
     dispatch(listAlsports());
@@ -108,8 +130,9 @@ export function Booking() {
     court: z.string().nonempty(),
     startTime: z.string(),
     duration: z.number(),
-    bookedDate: z.date(),
+    date: z.date(),
     amount: z.number(),
+    paymentmode: z.string().nonempty(),
   });
   const {
     handleSubmit,
@@ -183,8 +206,8 @@ export function Booking() {
     const selecteCourt = courts?.find((court) => court._id == value);
     if (
       selecteCourt?.specialcost?.category == "day" &&
-      watch("bookedDate") &&
-      isSpecialDay(watch("bookedDate"), selecteCourt)
+      watch("date") &&
+      isSpecialDay(watch("date"), selecteCourt)
     ) {
       setValue("amount", Number(selecteCourt?.specialcost?.price));
       trigger("amount");
@@ -192,9 +215,10 @@ export function Booking() {
       setValue("amount", Number(selecteCourt?.normalcost.price));
       trigger("amount");
     }
-  }, [watch("bookedDate")]);
+  }, [watch("date")]);
 
   useEffect(() => {
+    // alert("time")
     const value = getValues("court");
     const selecteCourt = courts?.find((court) => court._id == value);
     if (
@@ -217,14 +241,14 @@ export function Booking() {
       // If it's after 11:00 PM, set the date to the next day
       const nextDay = new Date(now);
       nextDay.setDate(now.getDate() + 1);
-      setValue("bookedDate", nextDay);
+      setValue("date", nextDay);
     } else {
       // Otherwise, set it to the current date
-      setValue("bookedDate", now);
+      setValue("date", now);
     }
   }, [setValue]);
   const timeSlots = useGenerateTimSlot(
-    watch("bookedDate") ? watch("bookedDate") : new Date()
+    watch("date") ? watch("date") : new Date()
   );
   // useEffect(() => {
   //   console.log("()");
@@ -234,7 +258,7 @@ export function Booking() {
   // }, [watch("bookingdate")]);
   console.log(errors);
   return (
-    <main className="w-full h-screen flex  justify-center items-start">
+    <main className="w-full h-screen flex  justify-center items-start text-[15px] ">
       <form
         className="w-[90%] sm:w-[70%] md:w-[60%] lg:w-[38%]  border rounded-md shadow-sm "
         onSubmit={handleSubmit(handleBooking)}
@@ -252,7 +276,7 @@ export function Booking() {
         <div className="h-10 w-full flex items-center justify-center bg-custom-gradient text-white text-[13px]">
           Book a court
         </div>
-        <div className="w-full flex flex-col px-3 py-5 gap-6">
+        <div className="w-full flex flex-col px-3 py-5 gap-4">
           <div className="w-full flex justify-between h-10 items-center">
             <label htmlFor="">Select Sports</label>
             <div className="flex flex-col">
@@ -261,7 +285,7 @@ export function Booking() {
                   setValue("sport", value);
                   setValue("court", "");
                   trigger("sport");
-                  trigger("court")
+                  trigger("court");
                 }}
               >
                 <SelectTrigger className="sm:w-64 w-52 outline-none ring-0">
@@ -297,7 +321,7 @@ export function Booking() {
                 disabled={!courts || courts.length <= 0}
                 onValueChange={(value) => {
                   setValue("court", value);
-                  trigger("court")
+                  trigger("court");
                   const selecteCourt = courts.find(
                     (court) => court._id == value
                   );
@@ -314,17 +338,26 @@ export function Booking() {
 
                   if (
                     selecteCourt?.specialcost?.category == "day" &&
-                    format(new Date(), "PPP") ==
-                      format(watch("bookedDate"), "PPP")
+                    format(new Date(), "PPP") == format(watch("date"), "PPP")
                   ) {
                     if (isSpecialDay(new Date(), selecteCourt)) {
                       setValue("amount", selecteCourt.specialcost.price);
                       trigger("amount");
+                    } else {
+                      setValue(
+                        "amount",
+                        Number(selecteCourt?.normalcost.price)
+                      );
                     }
                   } else if (selecteCourt?.specialcost?.category == "time") {
                     if (isSpecialTime(watch("startTime"), selecteCourt)) {
                       setValue("amount", selecteCourt.specialcost.price);
                       trigger("amount");
+                    } else {
+                      setValue(
+                        "amount",
+                        Number(selecteCourt?.normalcost.price)
+                      );
                     }
                   } else {
                     console.log("Reach");
@@ -383,12 +416,12 @@ export function Booking() {
                     variant={"outline"}
                     className={cn(
                       "sm:w-64 w-52 justify-start text-left font-normal",
-                      !watch("bookedDate") && "text-muted-foreground "
+                      !watch("date") && "text-muted-foreground "
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {watch("bookedDate") ? (
-                      format(watch("bookedDate"), "PPP")
+                    {watch("date") ? (
+                      format(watch("date"), "PPP")
                     ) : (
                       <span>Pick a date</span>
                     )}
@@ -397,19 +430,19 @@ export function Booking() {
                 <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
-                    selected={watch("bookedDate")}
+                    selected={watch("date")}
                     onSelect={(date) => {
-                      date && setValue("bookedDate", new Date(date));
+                      date && setValue("date", new Date(date));
                     }}
                     disabled={isDateDisabled}
                     initialFocus
                   />
                 </PopoverContent>
               </Popover>
-              {errors && errors.bookedDate && errors.bookedDate.message && (
+              {errors && errors.date && errors.date.message && (
                 <>
                   <span className="text-[12px] text-red-600">
-                    {errors.bookedDate.message}
+                    {errors.date.message}
                   </span>
                 </>
               )}
@@ -425,7 +458,7 @@ export function Booking() {
                     ref={popoverCloseRef}
                     className={cn(
                       "sm:w-64 w-52 justify-start text-left font-normal",
-                      !watch("bookedDate") && "text-muted-foreground "
+                      !watch("date") && "text-muted-foreground "
                     )}
                   >
                     <Clock className="mr-2 h-4 w-4" />
@@ -507,6 +540,36 @@ export function Booking() {
               </span>
             </div>
           </div>
+          <div className="w-full flex justify-between h-10 items-center">
+            <label htmlFor="">Payment method</label>
+            <div className="flex flex-col">
+              <Select
+                onValueChange={(value) => {
+                  setValue("paymentmode", value);
+                  trigger("paymentmode");
+                }}
+              >
+                <SelectTrigger className="sm:w-64 w-52 outline-none ring-0">
+                  <SelectValue placeholder="💳 Select payment option" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem key={"Online"} value={"Online"}>
+                    Online
+                  </SelectItem>
+                  <SelectItem key={"Offline"} value={"Offline"}>
+                    Pay after play
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              {errors && errors.paymentmode && errors.paymentmode.message && (
+                <>
+                  <span className="text-[12px] text-red-600">
+                    {errors.paymentmode.message}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
           <div className="w-full flex justify-between  items-center border border-r-0 border-l-0 p-2">
             <label htmlFor="">Total amount </label>
             <div className="flex flex-col">
@@ -518,13 +581,14 @@ export function Booking() {
               </div>
             </div>
           </div>
-          <button
+          <LoaderButton
             type="submit"
+            loading={submitionLoad}
             // onClick={handleBooking}
             className="w-full h-12 flex items-center justify-center bg-custom-gradient rounded-md text-white"
           >
             Proceed to payment
-          </button>
+          </LoaderButton>
         </div>
       </form>
     </main>
