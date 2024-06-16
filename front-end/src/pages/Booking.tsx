@@ -56,7 +56,7 @@ export function Booking() {
   const popoverCloseRef = useRef<HTMLButtonElement>(null);
 
   const { user } = useSelector((state: RootState) => state.user);
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const [submitionLoad, setSubmitionLoad] = useState<boolean>(false);
   const handleBooking = async (values: z.infer<typeof bookingSchema>) => {
     try {
@@ -107,8 +107,8 @@ export function Booking() {
         paymentObject.open();
       } else {
         const { data } = await axiosInstance.post(`/book-court`, valueCopy);
-        if(data.status){
-          navigate("/mybooking")
+        if (data.status) {
+          navigate("/mybooking");
         }
       }
       setSubmitionLoad(false);
@@ -258,7 +258,7 @@ export function Booking() {
   // }, [watch("bookingdate")]);
   console.log(errors);
   return (
-    <main className="w-full h-screen flex  justify-center items-start text-[15px] ">
+    <main className="w-full min-h-screen flex  justify-center items-start text-[15px] ">
       <form
         className="w-[90%] sm:w-[70%] md:w-[60%] lg:w-[38%]  border rounded-md shadow-sm "
         onSubmit={handleSubmit(handleBooking)}
@@ -277,9 +277,9 @@ export function Booking() {
           Book a court
         </div>
         <div className="w-full flex flex-col px-3 py-5 gap-4">
-          <div className="w-full flex justify-between h-10 items-center">
+          <div className="w-full flex justify-between min-h-10 sm:items-center flex-col sm:flex-row items-start">
             <label htmlFor="">Select Sports</label>
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full sm:w-auto ">
               <Select
                 onValueChange={(value) => {
                   setValue("sport", value);
@@ -288,7 +288,7 @@ export function Booking() {
                   trigger("court");
                 }}
               >
-                <SelectTrigger className="sm:w-64 w-52 outline-none ring-0">
+                <SelectTrigger className="sm:w-64 w-full outline-none ring-0">
                   <SelectValue placeholder="🍳 Select sports" />
                 </SelectTrigger>
                 <SelectContent>
@@ -305,18 +305,20 @@ export function Booking() {
                   ))}
                 </SelectContent>
               </Select>
-              {errors && errors.sport && errors.sport.message && (
-                <>
-                  <span className="text-[12px] text-red-600">
-                    {errors.sport.message}
-                  </span>
-                </>
-              )}
+              <div>
+                {errors && errors.sport && errors.sport.message && (
+                  <>
+                    <span className="text-[12px] text-red-600">
+                      {errors.sport.message}
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-          <div className="w-full flex justify-between h-10 items-center">
+          <div className="w-full flex justify-between min-h-10  sm:items-center flex-col sm:flex-row">
             <label htmlFor="">Select Courts</label>
-            <div className="flex flex-col">
+            <div className="flex flex-col sm:w-auto w-full ">
               <Select
                 disabled={!courts || courts.length <= 0}
                 onValueChange={(value) => {
@@ -367,7 +369,7 @@ export function Booking() {
                 }}
               >
                 <SelectTrigger
-                  className={`sm:w-64 w-52 outline-none ring-0 ${
+                  className={`sm:w-64 w-full outline-none ring-0 ${
                     !courts || (courts.length <= 0 && "pointer-events-none")
                   } `}
                 >
@@ -395,27 +397,29 @@ export function Booking() {
                   ))}
                 </SelectContent>
               </Select>
-              {errors && errors.court && errors.court.message && (
-                <>
-                  <span className="text-[12px] text-red-600">
-                    {errors.court.message}
-                  </span>
-                </>
-              )}
+              <div>
+                {errors && errors.court && errors.court.message && (
+                  <>
+                    <span className="text-[12px] text-red-600">
+                      {errors.court.message}
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-          <div className="w-full flex justify-between h-10 items-center">
+          <div className="w-full flex justify-between min-h-10 sm:items-center sm:flex-row flex-col">
             <label htmlFor="" className="capitalize">
               Select date
             </label>
-            <div className="flex flex-col">
+            <div className="flex flex-col sm:w-auto w-full">
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     disabled={!watch("court") || watch("court") == ""}
                     variant={"outline"}
                     className={cn(
-                      "sm:w-64 w-52 justify-start text-left font-normal",
+                      "sm:w-64 w-full justify-start text-left font-normal",
                       !watch("date") && "text-muted-foreground "
                     )}
                   >
@@ -448,16 +452,16 @@ export function Booking() {
               )}
             </div>
           </div>
-          <div className="w-full flex justify-between h-10 items-center">
+          <div className="w-full flex justify-between min-h-10 sm:items-center sm:flex-row flex-col">
             <label htmlFor="">Start Time</label>
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full sm:w-auto">
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant={"outline"}
                     ref={popoverCloseRef}
                     className={cn(
-                      "sm:w-64 w-52 justify-start text-left font-normal",
+                      "sm:w-64 w-full justify-start text-left font-normal",
                       !watch("date") && "text-muted-foreground "
                     )}
                   >
@@ -498,9 +502,9 @@ export function Booking() {
               )}
             </div>
           </div>
-          <div className="w-full flex justify-between h-10 items-center">
+          <div className="w-full flex justify-between min-h-10 sm:items-center sm:flex-row flex-col">
             <label htmlFor="">Duration</label>
-            <div className="sm:w-64 w-52 h-10  rounded-md flex justify-between items-center">
+            <div className="sm:w-64 w-full h-10  rounded-md flex justify-between items-center">
               <div
                 onClick={decrementDuration}
                 className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
@@ -511,7 +515,8 @@ export function Booking() {
               >
                 <Minus className="w-5" />
               </div>
-              <span className="text-[13px] font-semibold">
+              
+              <span className="sm:text-[13px] font-semibold">
                 {formatDuration(watch("duration"))}
               </span>
               <div
@@ -526,9 +531,9 @@ export function Booking() {
               </div>
             </div>
           </div>
-          <div className="w-full flex justify-between h-10 items-center">
+          <div className="w-full flex justify-between min-h-10 sm:items-center sm:flex-row flex-col">
             <label htmlFor="">End time</label>
-            <div className="sm:w-64 w-52 h-10  rounded-md flex justify-start gap-2 items-center border px-4 pointer-events-none">
+            <div className="sm:w-64 w-full h-10  rounded-md flex justify-start gap-2 items-center border px-4 pointer-events-none">
               <Clock className="w-4" />{" "}
               <span className="text-[13px]">
                 {formatEndTimeWithDuration(
@@ -540,16 +545,16 @@ export function Booking() {
               </span>
             </div>
           </div>
-          <div className="w-full flex justify-between h-10 items-center">
+          <div className="w-full flex justify-between min-h-10 sm:items-center sm:flex-row flex-col">
             <label htmlFor="">Payment method</label>
-            <div className="flex flex-col">
+            <div className="flex flex-col sm:w-auto w-full">
               <Select
                 onValueChange={(value) => {
                   setValue("paymentmode", value);
                   trigger("paymentmode");
                 }}
               >
-                <SelectTrigger className="sm:w-64 w-52 outline-none ring-0">
+                <SelectTrigger className="sm:w-64 w-full outline-none ring-0">
                   <SelectValue placeholder="💳 Select payment option" />
                 </SelectTrigger>
                 <SelectContent>
@@ -587,7 +592,9 @@ export function Booking() {
             // onClick={handleBooking}
             className="w-full h-12 flex items-center justify-center bg-custom-gradient rounded-md text-white"
           >
-            Proceed to payment
+            {watch("paymentmode") == "Online"
+              ? "Proceed to payment"
+              : "Confirm booking"}
           </LoaderButton>
         </div>
       </form>
