@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/shadcn/ui/table";
 
-import { Edit, Trash, X } from "lucide-react";
+import { Trash, X } from "lucide-react";
 import { CustomModal } from "@/components/Moda";
 
 import { AppDispatch, RootState } from "@/redux/store";
