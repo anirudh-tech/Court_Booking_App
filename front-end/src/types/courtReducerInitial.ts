@@ -1,6 +1,6 @@
 export interface Court {
   _id?: string;
-  courtName: string;
+  courtName?: string;
   sportId: string;
   normalcost: {
     price: number;
