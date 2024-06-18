@@ -25,7 +25,7 @@ export function LoginOrSignupPage() {
   const [otp, setOtp] = useState<string>();
 
   const dispatch: AppDispatch = useDispatch();
-  const { verification, loading, user } = useSelector(
+  const { verification, loading } = useSelector(
     (state: RootState) => state.user
   );
 
