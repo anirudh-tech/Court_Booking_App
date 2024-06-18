@@ -1,7 +1,7 @@
 import { Court } from "./courtReducerInitial";
 import { User } from "./userReducerInitial";
 
-interface Booking {
+export interface Booking {
   _id?:string;
   courtId: Court;
   date: Date;
