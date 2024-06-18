@@ -77,7 +77,7 @@ export function Booking() {
         const { data } = await axiosInstance.post(`/book-court`, valueCopy);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const order: any = data.order;
-        console.log("🚀 ~ handleBooking ~ order:", order);
+
         //     VITE_RAZORPAY_KEY_ID
         // VITE_RAZORPAY_SECRET
 
@@ -90,16 +90,26 @@ export function Booking() {
           order_id: order.id,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           handler: async function (response: any) {
+            try {
+              const data = {
+                orderCreationId: order.id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpaySignature: response.razorpay_signature,
+              };
+              await axiosInstance
+                .post(`/validate-payment`, data)
+                .then((res) => {
+                  toast.success("Court booking successfull");
+                  if (res.data.status) {
+                    navigate("/mybooking");
+                  }
+                });
+            } catch (error) {
+              console.error("Payment validation error:", error);
+              toast.error("Payment validation error");
+            }
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const data = {
-              orderCreationId: order.id,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpayOrderId: response.razorpay_order_id,
-              razorpaySignature: response.razorpay_signature,
-            };
-            await axiosInstance.post(`/validate-payment`, data);
-            data;
-            toast.error("HEo");
           },
         };
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -108,6 +118,7 @@ export function Booking() {
       } else {
         const { data } = await axiosInstance.post(`/book-court`, valueCopy);
         if (data.status) {
+          toast.success("Court booking successfull");
           navigate("/mybooking");
         }
       }
@@ -250,6 +261,30 @@ export function Booking() {
   const timeSlots = useGenerateTimSlot(
     watch("date") ? watch("date") : new Date()
   );
+
+  const [bookedSlots, setBookedSlot] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (watch("date") && watch("court")) {
+      axiosInstance
+        .post("/booked-slots", {
+          date: watch("date"),
+          courtId: watch("court"),
+        })
+        .then((res) => {
+          setBookedSlot(res.data.data);
+          console.log(timeSlots);
+          console.log("🚀 ~ .then ~ res:", res.data.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [watch("court"), watch("date")]);
+
+  useEffect(() => {
+    console.log(bookedSlots, " in hook");
+  }, [bookedSlots, timeSlots]);
   // useEffect(() => {
   //   console.log("()");
   //   if (!timeSlots.includes(parseTime(getValues("startTime")))) {
@@ -484,9 +519,13 @@ export function Booking() {
                             setValue("startTime", formatTime(time));
                             popoverCloseRef.current?.click();
                           }}
-                          className="h-10 rounded-md cursor-pointer hover:bg-[#4cd681] transition-all duration-200 w-full flex items-center justify-center text-[13px] border"
+                          className={`h-10 rounded-md cursor-pointer hover:bg-[#4cd681] transition-all duration-200 w-full flex items-center justify-center text-[13px] border ${
+                            bookedSlots.includes(formatTime(time)) &&
+                            "pointer-events-none bg-green-700 text-white relative"
+                          }`}
                         >
                           {formatTime(time)}
+                          
                         </div>
                       ))}
                     </div>
@@ -504,14 +543,20 @@ export function Booking() {
           </div>
           <div className="w-full flex justify-between min-h-10 sm:items-center sm:flex-row flex-col">
             <label htmlFor="">Duration</label>
-            <div className="sm:w-64 w-full h-10  rounded-md flex justify-between items-center" onClick={()=>{
-              if(!watch('court')){
-                return toast.error("Please selecte court and sports")
-              }
-            }}>
-              <button type="button"
+            <div
+              className="sm:w-64 w-full h-10  rounded-md flex justify-between items-center"
+              onClick={() => {
+                if (!watch("court")) {
+                  return toast.error("Please selecte court and sports");
+                }
+              }}
+            >
+              <button
+                type="button"
                 onClick={decrementDuration}
-                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${!watch("court")&&"pointer-events-none"} ${
+                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
+                  !watch("court") && "pointer-events-none"
+                } ${
                   watch("duration") <= 1
                     ? "pointer-events-none bg-slate-300 border"
                     : "bg-custom-gradient"
@@ -519,13 +564,16 @@ export function Booking() {
               >
                 <Minus className="w-5" />
               </button>
-              
+
               <span className="sm:text-[13px] font-semibold">
                 {formatDuration(watch("duration"))}
               </span>
-              <button type="button"
+              <button
+                type="button"
                 onClick={incrementDuration}
-                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${!watch("court")&&"pointer-events-none"} ${
+                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
+                  !watch("court") && "pointer-events-none"
+                } ${
                   watch("duration") >= 20
                     ? "pointer-events-none bg-slate-300 border"
                     : "bg-custom-gradient"

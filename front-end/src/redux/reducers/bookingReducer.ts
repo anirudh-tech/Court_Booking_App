@@ -1,6 +1,6 @@
 import { BookingInitial } from "@/types/bookingReducerInitial";
 import { createSlice } from "@reduxjs/toolkit";
-import { listAllBookings } from "../actions/bookingAction";
+import { fetchBookedSlots, listAllBookings } from "../actions/bookingAction";
 
 const initialState: BookingInitial = {
   loading: false,
@@ -27,7 +27,12 @@ const bookingReducer = createSlice({
         state.err = payload as string;
         state.bookings = null;
       })
-      
+      .addCase(fetchBookedSlots.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchBookedSlots.fulfilled, (state) => {
+        state.loading = false;
+      });
   },
 });
 export default bookingReducer.reducer;
