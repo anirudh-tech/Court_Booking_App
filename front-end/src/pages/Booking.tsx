@@ -597,7 +597,7 @@ export function Booking() {
             className="w-full h-12 flex items-center justify-center bg-custom-gradient rounded-md text-white"
           >
             {watch("paymentmode") == "Online"
-              ? "Proceed to payment"
+              ? "Proceed to payment 💳"
               : "Confirm booking"}
           </LoaderButton>
         </div>
