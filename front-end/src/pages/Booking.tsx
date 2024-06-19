@@ -56,7 +56,7 @@ export function Booking() {
   const popoverCloseRef = useRef<HTMLButtonElement>(null);
 
   const { user } = useSelector((state: RootState) => state.user);
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const [submitionLoad, setSubmitionLoad] = useState<boolean>(false);
   const handleBooking = async (values: z.infer<typeof bookingSchema>) => {
     try {
@@ -77,7 +77,7 @@ export function Booking() {
         const { data } = await axiosInstance.post(`/book-court`, valueCopy);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const order: any = data.order;
-        console.log("🚀 ~ handleBooking ~ order:", order);
+
         //     VITE_RAZORPAY_KEY_ID
         // VITE_RAZORPAY_SECRET
 
@@ -90,16 +90,26 @@ export function Booking() {
           order_id: order.id,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           handler: async function (response: any) {
+            try {
+              const data = {
+                orderCreationId: order.id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpaySignature: response.razorpay_signature,
+              };
+              await axiosInstance
+                .post(`/validate-payment`, data)
+                .then((res) => {
+                  toast.success("Court booking successfull");
+                  if (res.data.status) {
+                    navigate("/mybooking");
+                  }
+                });
+            } catch (error) {
+              console.error("Payment validation error:", error);
+              toast.error("Payment validation error");
+            }
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const data = {
-              orderCreationId: order.id,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpayOrderId: response.razorpay_order_id,
-              razorpaySignature: response.razorpay_signature,
-            };
-            await axiosInstance.post(`/validate-payment`, data);
-            data;
-            toast.error("HEo");
           },
         };
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -107,8 +117,9 @@ export function Booking() {
         paymentObject.open();
       } else {
         const { data } = await axiosInstance.post(`/book-court`, valueCopy);
-        if(data.status){
-          navigate("/mybooking")
+        if (data.status) {
+          toast.success("Court booking successfull");
+          navigate("/mybooking");
         }
       }
       setSubmitionLoad(false);
@@ -250,6 +261,30 @@ export function Booking() {
   const timeSlots = useGenerateTimSlot(
     watch("date") ? watch("date") : new Date()
   );
+
+  const [bookedSlots, setBookedSlot] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (watch("date") && watch("court")) {
+      axiosInstance
+        .post("/booked-slots", {
+          date: watch("date"),
+          courtId: watch("court"),
+        })
+        .then((res) => {
+          setBookedSlot(res.data.data);
+          console.log(timeSlots);
+          console.log("🚀 ~ .then ~ res:", res.data.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [watch("court"), watch("date")]);
+
+  useEffect(() => {
+    console.log(bookedSlots, " in hook");
+  }, [bookedSlots, timeSlots]);
   // useEffect(() => {
   //   console.log("()");
   //   if (!timeSlots.includes(parseTime(getValues("startTime")))) {
@@ -258,7 +293,7 @@ export function Booking() {
   // }, [watch("bookingdate")]);
   console.log(errors);
   return (
-    <main className="w-full h-screen flex  justify-center items-start text-[15px] ">
+    <main className="w-full min-h-screen flex  justify-center items-start text-[15px] ">
       <form
         className="w-[90%] sm:w-[70%] md:w-[60%] lg:w-[38%]  border rounded-md shadow-sm "
         onSubmit={handleSubmit(handleBooking)}
@@ -277,9 +312,9 @@ export function Booking() {
           Book a court
         </div>
         <div className="w-full flex flex-col px-3 py-5 gap-4">
-          <div className="w-full flex justify-between h-10 items-center">
+          <div className="w-full flex justify-between min-h-10 sm:items-center flex-col sm:flex-row items-start">
             <label htmlFor="">Select Sports</label>
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full sm:w-auto ">
               <Select
                 onValueChange={(value) => {
                   setValue("sport", value);
@@ -288,7 +323,7 @@ export function Booking() {
                   trigger("court");
                 }}
               >
-                <SelectTrigger className="sm:w-64 w-52 outline-none ring-0">
+                <SelectTrigger className="sm:w-64 w-full outline-none ring-0">
                   <SelectValue placeholder="🍳 Select sports" />
                 </SelectTrigger>
                 <SelectContent>
@@ -305,18 +340,20 @@ export function Booking() {
                   ))}
                 </SelectContent>
               </Select>
-              {errors && errors.sport && errors.sport.message && (
-                <>
-                  <span className="text-[12px] text-red-600">
-                    {errors.sport.message}
-                  </span>
-                </>
-              )}
+              <div>
+                {errors && errors.sport && errors.sport.message && (
+                  <>
+                    <span className="text-[12px] text-red-600">
+                      {errors.sport.message}
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-          <div className="w-full flex justify-between h-10 items-center">
+          <div className="w-full flex justify-between min-h-10  sm:items-center flex-col sm:flex-row">
             <label htmlFor="">Select Courts</label>
-            <div className="flex flex-col">
+            <div className="flex flex-col sm:w-auto w-full ">
               <Select
                 disabled={!courts || courts.length <= 0}
                 onValueChange={(value) => {
@@ -367,7 +404,7 @@ export function Booking() {
                 }}
               >
                 <SelectTrigger
-                  className={`sm:w-64 w-52 outline-none ring-0 ${
+                  className={`sm:w-64 w-full outline-none ring-0 ${
                     !courts || (courts.length <= 0 && "pointer-events-none")
                   } `}
                 >
@@ -395,27 +432,29 @@ export function Booking() {
                   ))}
                 </SelectContent>
               </Select>
-              {errors && errors.court && errors.court.message && (
-                <>
-                  <span className="text-[12px] text-red-600">
-                    {errors.court.message}
-                  </span>
-                </>
-              )}
+              <div>
+                {errors && errors.court && errors.court.message && (
+                  <>
+                    <span className="text-[12px] text-red-600">
+                      {errors.court.message}
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-          <div className="w-full flex justify-between h-10 items-center">
+          <div className="w-full flex justify-between min-h-10 sm:items-center sm:flex-row flex-col">
             <label htmlFor="" className="capitalize">
               Select date
             </label>
-            <div className="flex flex-col">
+            <div className="flex flex-col sm:w-auto w-full">
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     disabled={!watch("court") || watch("court") == ""}
                     variant={"outline"}
                     className={cn(
-                      "sm:w-64 w-52 justify-start text-left font-normal",
+                      "sm:w-64 w-full justify-start text-left font-normal",
                       !watch("date") && "text-muted-foreground "
                     )}
                   >
@@ -448,16 +487,16 @@ export function Booking() {
               )}
             </div>
           </div>
-          <div className="w-full flex justify-between h-10 items-center">
+          <div className="w-full flex justify-between min-h-10 sm:items-center sm:flex-row flex-col">
             <label htmlFor="">Start Time</label>
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full sm:w-auto">
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant={"outline"}
                     ref={popoverCloseRef}
                     className={cn(
-                      "sm:w-64 w-52 justify-start text-left font-normal",
+                      "sm:w-64 w-full justify-start text-left font-normal",
                       !watch("date") && "text-muted-foreground "
                     )}
                   >
@@ -480,9 +519,13 @@ export function Booking() {
                             setValue("startTime", formatTime(time));
                             popoverCloseRef.current?.click();
                           }}
-                          className="h-10 rounded-md cursor-pointer hover:bg-[#4cd681] transition-all duration-200 w-full flex items-center justify-center text-[13px] border"
+                          className={`h-10 rounded-md cursor-pointer hover:bg-[#4cd681] transition-all duration-200 w-full flex items-center justify-center text-[13px] border ${
+                            bookedSlots.includes(formatTime(time)) &&
+                            "pointer-events-none bg-green-700 text-white relative"
+                          }`}
                         >
                           {formatTime(time)}
+                          
                         </div>
                       ))}
                     </div>
@@ -498,37 +541,51 @@ export function Booking() {
               )}
             </div>
           </div>
-          <div className="w-full flex justify-between h-10 items-center">
+          <div className="w-full flex justify-between min-h-10 sm:items-center sm:flex-row flex-col">
             <label htmlFor="">Duration</label>
-            <div className="sm:w-64 w-52 h-10  rounded-md flex justify-between items-center">
-              <div
+            <div
+              className="sm:w-64 w-full h-10  rounded-md flex justify-between items-center"
+              onClick={() => {
+                if (!watch("court")) {
+                  return toast.error("Please selecte court and sports");
+                }
+              }}
+            >
+              <button
+                type="button"
                 onClick={decrementDuration}
                 className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
+                  !watch("court") && "pointer-events-none"
+                } ${
                   watch("duration") <= 1
                     ? "pointer-events-none bg-slate-300 border"
                     : "bg-custom-gradient"
                 }  text-white transition-all duration-200`}
               >
                 <Minus className="w-5" />
-              </div>
-              <span className="text-[13px] font-semibold">
+              </button>
+
+              <span className="sm:text-[13px] font-semibold">
                 {formatDuration(watch("duration"))}
               </span>
-              <div
+              <button
+                type="button"
                 onClick={incrementDuration}
                 className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
+                  !watch("court") && "pointer-events-none"
+                } ${
                   watch("duration") >= 20
                     ? "pointer-events-none bg-slate-300 border"
                     : "bg-custom-gradient"
                 }  text-white transition-all duration-200`}
               >
                 <Plus className="w-5" />
-              </div>
+              </button>
             </div>
           </div>
-          <div className="w-full flex justify-between h-10 items-center">
+          <div className="w-full flex justify-between min-h-10 sm:items-center sm:flex-row flex-col">
             <label htmlFor="">End time</label>
-            <div className="sm:w-64 w-52 h-10  rounded-md flex justify-start gap-2 items-center border px-4 pointer-events-none">
+            <div className="sm:w-64 w-full h-10  rounded-md flex justify-start gap-2 items-center border px-4 pointer-events-none">
               <Clock className="w-4" />{" "}
               <span className="text-[13px]">
                 {formatEndTimeWithDuration(
@@ -540,16 +597,16 @@ export function Booking() {
               </span>
             </div>
           </div>
-          <div className="w-full flex justify-between h-10 items-center">
+          <div className="w-full flex justify-between min-h-10 sm:items-center sm:flex-row flex-col">
             <label htmlFor="">Payment method</label>
-            <div className="flex flex-col">
+            <div className="flex flex-col sm:w-auto w-full">
               <Select
                 onValueChange={(value) => {
                   setValue("paymentmode", value);
                   trigger("paymentmode");
                 }}
               >
-                <SelectTrigger className="sm:w-64 w-52 outline-none ring-0">
+                <SelectTrigger className="sm:w-64 w-full outline-none ring-0">
                   <SelectValue placeholder="💳 Select payment option" />
                 </SelectTrigger>
                 <SelectContent>
@@ -587,7 +644,9 @@ export function Booking() {
             // onClick={handleBooking}
             className="w-full h-12 flex items-center justify-center bg-custom-gradient rounded-md text-white"
           >
-            Proceed to payment
+            {watch("paymentmode") == "Online"
+              ? "Proceed to payment 💳"
+              : "Confirm booking"}
           </LoaderButton>
         </div>
       </form>

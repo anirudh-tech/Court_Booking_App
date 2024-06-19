@@ -138,7 +138,7 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
   const { loading } = useSelector((state: RootState) => state.court);
   return (
     <form
-      className="w-full max-h-[690px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 p-6 bg-white rounded-md "
+      className="w-full max-h-[680px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 p-6 bg-white rounded-md "
       onSubmit={handleSubmit(submitCourtForm)}
     >
       <div className="w-full">
