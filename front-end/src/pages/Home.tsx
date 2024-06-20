@@ -63,11 +63,18 @@ export const Home = () => {
             </div>
           </motion.div>
         </motion.div>
-        <motion.div className="w-full lg:w-[90%] mx-auto mt-5">
+        <motion.div
+          className="w-full lg:w-[90%] mx-auto mt-5"
+          data-aos="fade-up"
+        >
           <div className="w-full">
             <h1 className="uppercase font-semibold text-3xl">Preview</h1>
           </div>
-          <div className="w-full grid sm:grid-cols-2 lg:grid-cols-4 md:grid-cols-3 grid-cols-1 mt-3 gap-3">
+          <div
+            className="w-full grid sm:grid-cols-2 lg:grid-cols-4 md:grid-cols-3 grid-cols-1 mt-3 gap-3"
+            data-aos="fade-up"
+            data-aos-delay="250"
+          >
             <div className="w-full h-80 md:h-56 rounded-md p-3 bg-slate-100">
               <img
                 src={court1}
@@ -133,7 +140,10 @@ export const Home = () => {
             </h1>
           </div>
           <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 ">
-            <div className="w-full min-h-38  rounded-md p-4 border-2 shadow-md relative">
+            <div
+              className="w-full min-h-38  rounded-md p-4 border-2 shadow-md relative"
+              data-aos="fade-up"
+            >
               <div className="w-full flex gap-2 items-center">
                 <img src={badmintonIcon} className="w-6" alt="" />
                 <span className="font-semibold">Badminton</span>
@@ -182,7 +192,10 @@ export const Home = () => {
                 </button>
               </div>
             </div>
-            <div className="w-full min-h-28  rounded-md p-4 border-2 shadow-md relative ">
+            <div
+              className="w-full min-h-28  rounded-md p-4 border-2 shadow-md relative "
+              data-aos="fade-down"
+            >
               <div className="w-full flex gap-2 items-center">
                 <img src={volleyBall} className="w-6" alt="" />
 
@@ -228,7 +241,11 @@ export const Home = () => {
                 </button>
               </div>
             </div>
-            <div className="w-full min-h-28  rounded-md p-4 border-2 shadow-md relative">
+            <div
+              className="w-full min-h-28  rounded-md p-4 border-2 shadow-md relative"
+              data-aos="fade-up"
+              dat-aos-delay={`100`}
+            >
               <div className="w-full flex gap-2 items-center">
                 <img src={cricket} className="w-6" alt="" />
 
