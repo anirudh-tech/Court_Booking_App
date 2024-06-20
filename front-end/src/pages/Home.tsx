@@ -50,7 +50,7 @@ export const Home = () => {
       <div className="mx-auto w-[90%] min-h-96">
         <motion.div
           initial={{ translateY: -300 }}
-          transition={{ duration: 0.75, ease: "easeIn" }} // Add transition properties here
+          transition={{ duration: 0.75, ease: "easeIn" }}
           animate={{ translateY: 0 }}
           className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-0 lg:w-[90%] mx-auto"
         >

@@ -42,9 +42,6 @@ export function AdminLayout() {
             >
               <CreditCard className="w-5" />
               <span>Bookings</span>
-              <div className="absolute right-0 size-6 text-[13px] rounded-full flex items-center justify-center bg-green-500 text-white">
-                5
-              </div>
             </NavLink>
           </div>
           <div className="absolute left-0 bottom-0 h-28 w-full bg-white px-2">
