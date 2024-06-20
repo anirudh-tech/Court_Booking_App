@@ -18,6 +18,10 @@ import toast from "react-hot-toast";
 import { formatOtpTime } from "@/utils/formatOtpTIme";
 import { LoaderPinwheel } from "lucide-react";
 import { userAuthAction } from "@/redux/actions/userActions";
+import {
+  firebaseErrorMessages,
+  firebaseOtpErrorMessages,
+} from "@/constants/error";
 export function LoginOrSignupPage() {
   const [numberErr, setNumberErr] = useState<string>("");
   const [phonenumber, setPhoneNumber] = useState<string>("");
@@ -78,7 +82,9 @@ export function LoginOrSignupPage() {
       console.log("🚀 ~ sendOTp ~ confirmation:", confirmationresult);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      setNumberErr(error.message.split(":")[1].trim());
+      const errorMessage =
+        firebaseErrorMessages[error.code] || firebaseErrorMessages["default"];
+      setNumberErr(errorMessage);
       console.log(error);
     } finally {
       dispatch(setLoading(false));
@@ -92,8 +98,11 @@ export function LoginOrSignupPage() {
       dispatch(userAuthAction({ phoneNumber: phonenumber })).then(() => {});
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.log("🚀 ~ verifyOtp ~ error:", error);
-      toast.error(error?.message);
+      const errorMessage =
+        firebaseOtpErrorMessages[error.code] ||
+        firebaseOtpErrorMessages["default"];
+
+      toast.error(errorMessage);
     } finally {
       dispatch(setLoading(false));
     }
