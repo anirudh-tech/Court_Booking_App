@@ -142,7 +142,8 @@ export const Home = () => {
           <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 ">
             <div
               className="w-full min-h-38  rounded-md p-4 border-2 shadow-md relative"
-              data-aos="fade-up"
+              data-aos="fade-down"
+              dat-aos-delay={`100`}
             >
               <div className="w-full flex gap-2 items-center">
                 <img src={badmintonIcon} className="w-6" alt="" />
@@ -195,6 +196,7 @@ export const Home = () => {
             <div
               className="w-full min-h-28  rounded-md p-4 border-2 shadow-md relative "
               data-aos="fade-down"
+              dat-aos-delay={`200`}
             >
               <div className="w-full flex gap-2 items-center">
                 <img src={volleyBall} className="w-6" alt="" />
@@ -243,8 +245,8 @@ export const Home = () => {
             </div>
             <div
               className="w-full min-h-28  rounded-md p-4 border-2 shadow-md relative"
-              data-aos="fade-up"
-              dat-aos-delay={`100`}
+              data-aos="fade-down"
+              dat-aos-delay={`300`}
             >
               <div className="w-full flex gap-2 items-center">
                 <img src={cricket} className="w-6" alt="" />
