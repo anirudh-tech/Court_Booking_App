@@ -42,7 +42,7 @@ export const Home = () => {
       toast.error("Please create an account");
       loginModalRef.current?.click();
     } else {
-      navigate("/booking");
+      navigate(`/booking?sport=${sport}&spId=${sportId}`);
     }
   };
   return (
@@ -273,7 +273,7 @@ export const Home = () => {
                   <button
                     onClick={() =>
                       handleNavigateWithSport(
-                        String(String(court?.sportId?.split("[(*)]")[0])),
+                        String(String(court?.sportId)),
                         String(court?.sportdetail?._id)
                       )
                     }

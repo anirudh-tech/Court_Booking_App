@@ -47,10 +47,22 @@ export function Booking() {
     }
   };
 
+  const [defaultSport, setDefaultSport] = useState<string | undefined>();
   useEffect(() => {
-    console.log(formatTime(timeSlots[0]), " FORM");
-
     setValue("startTime", formatTime(timeSlots[0]));
+    const searchParam = new URLSearchParams(window.location.search);
+    const sportId = searchParam.get("spId");
+    const sport = searchParam.get("sport");
+    if (sportId) {
+      setValue("sport", sportId);
+    }
+    if (sportId && sport) {
+      setDefaultSport(`${sport}`);
+    }
+    setTimeout(()=>{
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },0)
   }, []);
 
   const popoverCloseRef = useRef<HTMLButtonElement>(null);
@@ -317,6 +329,7 @@ export function Booking() {
             <div className="flex flex-col w-full sm:w-auto ">
               <Select
                 onValueChange={(value) => {
+                  setDefaultSport(undefined)
                   setValue("sport", value);
                   setValue("court", "");
                   trigger("sport");
@@ -324,7 +337,26 @@ export function Booking() {
                 }}
               >
                 <SelectTrigger className="sm:w-64 w-full outline-none ring-0">
-                  <SelectValue placeholder="🍳 Select sports" />
+                  <SelectValue
+                    placeholder={
+                      !defaultSport ? (
+                        <>
+                          <div>🍳 Select sports</div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex gap-4 py-1 ">
+                            <img
+                              src={defaultSport?.split("[(*)]")[1]}
+                              className="w-5"
+                              alt=""
+                            />
+                            <span>{defaultSport?.split("[(*)]")[0]}</span>
+                          </div>
+                        </>
+                      )
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {sports?.map((sport) => (
@@ -525,7 +557,6 @@ export function Booking() {
                           }`}
                         >
                           {formatTime(time)}
-                          
                         </div>
                       ))}
                     </div>
