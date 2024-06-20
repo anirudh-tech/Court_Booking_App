@@ -59,10 +59,9 @@ export function Booking() {
     if (sportId && sport) {
       setDefaultSport(`${sport}`);
     }
-    setTimeout(()=>{
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    },0)
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 0);
   }, []);
 
   const popoverCloseRef = useRef<HTMLButtonElement>(null);
@@ -86,9 +85,12 @@ export function Booking() {
       valueCopy.paymentMethod = values.paymentmode;
       console.log(valueCopy, " copy");
       if (values.paymentmode == "Online") {
-        const { data } = await axiosInstance.post(`/book-court`, valueCopy);
+        const { data: bookingdata } = await axiosInstance.post(
+          `/book-court`,
+          valueCopy
+        );
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const order: any = data.order;
+        const order: any = bookingdata.order;
 
         //     VITE_RAZORPAY_KEY_ID
         // VITE_RAZORPAY_SECRET
@@ -108,6 +110,7 @@ export function Booking() {
                 razorpayPaymentId: response.razorpay_payment_id,
                 razorpayOrderId: response.razorpay_order_id,
                 razorpaySignature: response.razorpay_signature,
+                bookingId: bookingdata.bookingId,
               };
               await axiosInstance
                 .post(`/validate-payment`, data)
@@ -329,7 +332,7 @@ export function Booking() {
             <div className="flex flex-col w-full sm:w-auto ">
               <Select
                 onValueChange={(value) => {
-                  setDefaultSport(undefined)
+                  setDefaultSport(undefined);
                   setValue("sport", value);
                   setValue("court", "");
                   trigger("sport");
