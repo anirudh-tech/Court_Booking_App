@@ -24,6 +24,9 @@ export interface Court {
   sport?: string;
   updatedAt?: Date;
   createdAt?: Date;
+  sportdetail?: {
+    _id: string;
+  };
 }
 
 export interface CourtInitial {

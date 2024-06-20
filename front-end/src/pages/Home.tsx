@@ -8,18 +8,17 @@ import court5 from "../assets/Images/court5.jpg";
 import court6 from "../assets/Images/court6.jpg";
 import court7 from "../assets/Images/court7.jpg";
 import court8 from "../assets/Images/court8.jpg";
-import badmintonIcon from "../assets/icons/BadMinton.svg";
-import volleyBall from "../assets/icons/Volleyball.svg";
-import cricket from "../assets/icons/cricket2.webp";
+
 import { Calendar, Clock, IndianRupee, MoveRight, X } from "lucide-react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
 import toast from "react-hot-toast";
 import { CustomModal } from "@/components/Moda";
 
 import { LoginOrSignupPage } from "@/components/auth/LoginOrSignup";
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { listAllCourts } from "@/redux/actions/courtAction";
 export const Home = () => {
   const { isVerified, user } = useSelector((state: RootState) => state.user);
   useEffect(() => {
@@ -27,10 +26,25 @@ export const Home = () => {
       loginModalCloseRef.current?.click();
     }
   }, [user]);
+  const dispatch: AppDispatch = useDispatch();
+  useEffect(() => {
+    dispatch(listAllCourts());
+  }, [dispatch]);
   const loginModalRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const loginModalCloseRef = useRef<HTMLDivElement>(null);
 
+  const { courts } = useSelector((state: RootState) => state.court);
+  const handleNavigateWithSport = (sport: string, sportId: string) => {
+    sport;
+    sportId;
+    if (!isVerified) {
+      toast.error("Please create an account");
+      loginModalRef.current?.click();
+    } else {
+      navigate("/booking");
+    }
+  };
   return (
     <main className="w-full ">
       <div className="mx-auto w-[90%] min-h-96">
@@ -71,39 +85,37 @@ export const Home = () => {
                 </p>
               </div>
               <div className="md:mt-10 mt-4 w-full flex justify-start">
-            
-                  <>
-                    <CustomModal
-                      className="w-[90%] sm:w-[75%] md:w-[66%] lg:w-[80%] xl:w-[60%] p-0"
-                      TriggerComponent={
-                        <button
-                          onClick={() => {
-                            if (!isVerified) {
-                              toast.error("Please create an account");
-                              loginModalRef.current?.click();
-                            } else {
-                              navigate("/booking");
-                            }
-                          }}
-                          className="h-12 uppercase w-full md:w-48 text-sm font-semibold flex items-center text-black
+                <>
+                  <CustomModal
+                    className="w-[90%] sm:w-[75%] md:w-[66%] lg:w-[80%] xl:w-[60%] p-0"
+                    TriggerComponent={
+                      <button
+                        onClick={() => {
+                          if (!isVerified) {
+                            toast.error("Please create an account");
+                            loginModalRef.current?.click();
+                          } else {
+                            navigate("/booking");
+                          }
+                        }}
+                        className="h-12 uppercase w-full md:w-48 text-sm font-semibold flex items-center text-black
                 tracking-wider justify-center bg-[#4cd681] hover:bg-[#464a49] hover:text-white transition-all duration-200"
-                        >
-                          book now
-                        </button>
-                      }
-                      closeComponent={
-                        <div
-                          className="cursor-pointer z-20"
-                          ref={loginModalCloseRef}
-                        >
-                          <X className="w-6" />
-                        </div>
-                      }
-                    >
-                      <LoginOrSignupPage />
-                    </CustomModal>
-                  </>
-                
+                      >
+                        book now
+                      </button>
+                    }
+                    closeComponent={
+                      <div
+                        className="cursor-pointer z-20"
+                        ref={loginModalCloseRef}
+                      >
+                        <X className="w-6" />
+                      </div>
+                    }
+                  >
+                    <LoginOrSignupPage />
+                  </CustomModal>
+                </>
               </div>
             </div>
           </motion.div>
@@ -185,60 +197,94 @@ export const Home = () => {
             </h1>
           </div>
           <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 ">
-            <div
-              className="w-full min-h-38  rounded-md p-4 border-2 shadow-md relative"
-              data-aos="fade-down"
-              dat-aos-delay={`100`}
-            >
-              <div className="w-full flex gap-2 items-center">
-                <img src={badmintonIcon} className="w-6" alt="" />
-                <span className="font-semibold">Badminton</span>
-              </div>
-              <div className="w-full pl-8 flex flex-col text-[14px] text-[#2a2a2a] ">
-                <div className="flex flex-col mt-2">
-                  <div className="flex gap-1 items-center ">
-                    <Calendar className="w-5" />
-                    <span>Monday - Friday</span>
-                  </div>
-                  <div className="flex gap-1 items-center">
-                    <Clock className="w-5" />
+            {courts?.map((court) => (
+              <div
+                className="w-full min-h-38  rounded-md p-4 border-2 shadow-md relative"
+                data-aos="fade-down"
+                dat-aos-delay={`100`}
+              >
+                <div className="w-full flex gap-2 items-center">
+                  <img
+                    src={court?.sportId?.split("[(*)]")[1]}
+                    className="w-6"
+                    alt=""
+                  />
+                  <span className="font-semibold">
+                    {court?.sportId?.split("[(*)]")[0]}
+                  </span>
+                </div>
+                <div className="w-full pl-8 flex flex-col text-[14px] text-[#2a2a2a] ">
+                  <div className="flex flex-col mt-2">
+                    <div className="flex gap-1 items-center ">
+                      <Calendar className="w-5" />
+                      <span>
+                        {court.normalcost.day.from} - {court.normalcost.day.to}
+                      </span>
+                    </div>
+                    <div className="flex gap-1 items-center">
+                      <Clock className="w-5" />
+                      <div className="flex gap-1">
+                        <span>{court.normalcost.time.from}</span>
+                        <span>-</span>
+                        <span>{court.normalcost.time.to}</span>
+                      </div>
+                    </div>
                     <div className="flex gap-1">
-                      <span>05:00 AM </span>
-                      <span>-</span>
-                      <span>11:00 PM </span>
+                      <IndianRupee className="w-5" />
+                      <span>{court.normalcost.price} / Hour</span>
                     </div>
                   </div>
-                  <div className="flex gap-1">
-                    <IndianRupee className="w-5" />
-                    <span>300.00 / Hour</span>
-                  </div>
-                </div>
-                <div className="flex flex-col mt-3">
-                  <div className="flex gap-1 items-center ">
-                    <Calendar className="w-5" />
-                    <span>Saturday - Sunday</span>
-                  </div>
-                  <div className="flex gap-1 items-center">
-                    <Clock className="w-5" />
-                    <div className="flex gap-1">
-                      <span>05:00 AM </span>
-                      <span>-</span>
-                      <span>11:00 PM </span>
+                  <div className="flex flex-col mt-3">
+                    <div className="flex gap-1 items-center min-h-5 ">
+                      {court?.specialcost?.category == "time" ? (
+                        <>
+                          <Clock className="w-5" />
+                          <div className="flex gap-1">
+                            <span>{court?.specialcost?.diff?.from} </span>
+                            <span>-</span>
+                            <span>{court?.specialcost?.diff?.to} </span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex gap-1 items-center h-6 ">
+                          {court?.specialcost?.category == "day" && (
+                            <>
+                              <Calendar className="w-5" />
+                              <span>
+                                {court?.specialcost?.diff?.from} -{" "}
+                                {court?.specialcost?.diff?.to}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex gap-1 min-h-5 ">
+                      {court?.specialcost?.price && (
+                        <>
+                          <IndianRupee className="w-5" />
+                          <span>{court?.specialcost?.price} / Hour</span>
+                        </>
+                      )}
                     </div>
                   </div>
-                  <div className="flex gap-1">
-                    <IndianRupee className="w-5" />
-                    <span>350.00 / Hour</span>
-                  </div>
+                </div>
+                <div className="pl-8 w-full mt-3">
+                  <button
+                    onClick={() =>
+                      handleNavigateWithSport(
+                        String(String(court?.sportId?.split("[(*)]")[0])),
+                        String(court?.sportdetail?._id)
+                      )
+                    }
+                    className="h-10  w-[60%] gap-2 items-center rounded-md flex tracking-wider justify-center bg-[#4cd681] hover:bg-[#008855] hover:text-white transition-all duration-200"
+                  >
+                    Book now <MoveRight className="w-5 mt-[3px]" />
+                  </button>
                 </div>
               </div>
-              <div className="pl-8 w-full mt-3">
-                <button className="h-10  w-[60%] gap-2 items-center rounded-md flex tracking-wider justify-center bg-[#4cd681] hover:bg-[#008855] hover:text-white transition-all duration-200">
-                  Book now <MoveRight className="w-5 mt-[3px]" />
-                </button>
-              </div>
-            </div>
-            <div
+            ))}
+            {/* <div
               className="w-full min-h-28  rounded-md p-4 border-2 shadow-md relative "
               data-aos="fade-down"
               dat-aos-delay={`200`}
@@ -287,8 +333,8 @@ export const Home = () => {
                   Book now <MoveRight className="w-5 mt-[3px]" />
                 </button>
               </div>
-            </div>
-            <div
+            </div> */}
+            {/* <div
               className="w-full min-h-28  rounded-md p-4 border-2 shadow-md relative"
               data-aos="fade-down"
               dat-aos-delay={`300`}
@@ -323,7 +369,7 @@ export const Home = () => {
                   Book now <MoveRight className="w-5 mt-[3px]" />
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
         </motion.div>
       </div>

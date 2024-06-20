@@ -10,7 +10,7 @@ import { AppDispatch, RootState } from "@/redux/store";
 import { adminLogin } from "@/redux/actions/userActions";
 export const adminFormSchema = z.object({
   username: z.string().max(120).min(3),
-  password: z.string().min(12),
+  password: z.string().min(8),
 });
 export function AdminLogin() {
   const [passShow, setPassShow] = useState<boolean>(false);
