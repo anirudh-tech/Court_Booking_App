@@ -7,6 +7,7 @@ interface ChildProp {
   title?: string;
   children: ReactNode;
   className?: string;
+  typeOfBtn?: "mainButton" | "other";
 }
 
 const modalVariants = {
@@ -18,6 +19,7 @@ export const CustomModal = ({
   closeComponent,
   children,
   className,
+  typeOfBtn,
 }: ChildProp) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -26,8 +28,8 @@ export const CustomModal = ({
 
   const closeRef = useRef<HTMLDivElement>(null);
   return (
-    <main>
-      <div onClick={openModal} className="cursor-pointer">
+    <main className={typeOfBtn == "mainButton" && "w-full md:w-auto"}>
+      <div onClick={openModal} className="cursor-pointer ">
         {TriggerComponent}
       </div>
       <AnimatePresence>

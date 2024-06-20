@@ -84,9 +84,9 @@ export const Home = () => {
                   wellness.
                 </p>
               </div>
-              <div className="md:mt-10 mt-4 w-full flex justify-start">
+              <div className="md:mt-10 mt-4 w-full flex justify-start ">
                 <>
-                  <CustomModal
+                  <CustomModal typeOfBtn="mainButton"
                     className="w-[90%] sm:w-[75%] md:w-[66%] lg:w-[80%] xl:w-[60%] p-0"
                     TriggerComponent={
                       <button
@@ -94,11 +94,12 @@ export const Home = () => {
                           if (!isVerified) {
                             toast.error("Please create an account");
                             loginModalRef.current?.click();
+                            return;
                           } else {
                             navigate("/booking");
                           }
                         }}
-                        className="h-12 uppercase w-full md:w-48 text-sm font-semibold flex items-center text-black
+                        className="h-12 uppercase min-w-full px-4 md:w-48 text-sm font-semibold flex items-center text-black
                 tracking-wider justify-center bg-[#4cd681] hover:bg-[#464a49] hover:text-white transition-all duration-200"
                       >
                         book now
