@@ -42,7 +42,7 @@ export const Home = () => {
       toast.error("Please create an account");
       loginModalRef.current?.click();
     } else {
-      navigate("/booking");
+      navigate(`/booking?sport=${sport}&spId=${sportId}`);
     }
   };
   return (
@@ -84,9 +84,9 @@ export const Home = () => {
                   wellness.
                 </p>
               </div>
-              <div className="md:mt-10 mt-4 w-full flex justify-start">
+              <div className="md:mt-10 mt-4 w-full flex justify-start ">
                 <>
-                  <CustomModal
+                  <CustomModal typeOfBtn="mainButton"
                     className="w-[90%] sm:w-[75%] md:w-[66%] lg:w-[80%] xl:w-[60%] p-0"
                     TriggerComponent={
                       <button
@@ -94,11 +94,12 @@ export const Home = () => {
                           if (!isVerified) {
                             toast.error("Please create an account");
                             loginModalRef.current?.click();
+                            return;
                           } else {
                             navigate("/booking");
                           }
                         }}
-                        className="h-12 uppercase w-full md:w-48 text-sm font-semibold flex items-center text-black
+                        className="h-12 uppercase min-w-full px-4 md:w-48 text-sm font-semibold flex items-center text-black
                 tracking-wider justify-center bg-[#4cd681] hover:bg-[#464a49] hover:text-white transition-all duration-200"
                       >
                         book now
@@ -273,7 +274,7 @@ export const Home = () => {
                   <button
                     onClick={() =>
                       handleNavigateWithSport(
-                        String(String(court?.sportId?.split("[(*)]")[0])),
+                        String(String(court?.sportId)),
                         String(court?.sportdetail?._id)
                       )
                     }
@@ -284,92 +285,6 @@ export const Home = () => {
                 </div>
               </div>
             ))}
-            {/* <div
-              className="w-full min-h-28  rounded-md p-4 border-2 shadow-md relative "
-              data-aos="fade-down"
-              dat-aos-delay={`200`}
-            >
-              <div className="w-full flex gap-2 items-center">
-                <img src={volleyBall} className="w-6" alt="" />
-
-                <span className="font-semibold">Volleyball</span>
-              </div>
-              <div className="w-full pl-8 flex flex-col text-[14px] text-[#2a2a2a] ">
-                <div className="flex flex-col mt-2">
-                  <div className="flex gap-1 items-center ">
-                    <Calendar className="w-5" />
-                    <span>Monday - Sunday</span>
-                  </div>
-                  <div className="flex gap-1 items-center">
-                    <Clock className="w-5" />
-                    <div className="flex gap-1">
-                      <span>05:00 AM </span>
-                      <span>-</span>
-                      <span>6:00 PM </span>
-                    </div>
-                  </div>
-                  <div className="flex gap-1">
-                    <IndianRupee className="w-5" />
-                    <span>350.00 / Hour</span>
-                  </div>
-                </div>
-                <div className="flex flex-col mt-3">
-                  <div className="flex gap-1 items-center">
-                    <Clock className="w-5" />
-                    <div className="flex gap-1">
-                      <span>06:00 AM </span>
-                      <span>-</span>
-                      <span>11:00 PM </span>
-                    </div>
-                  </div>
-                  <div className="flex gap-1">
-                    <IndianRupee className="w-5" />
-                    <span>450.00 / Hour</span>
-                  </div>
-                </div>
-              </div>
-              <div className="pl-8 w-full mt-3 md:absolute bottom-4">
-                <button className="h-10  w-[60%] gap-2 items-center rounded-md flex tracking-wider justify-center bg-[#4cd681] hover:bg-[#008855] hover:text-white transition-all duration-200">
-                  Book now <MoveRight className="w-5 mt-[3px]" />
-                </button>
-              </div>
-            </div> */}
-            {/* <div
-              className="w-full min-h-28  rounded-md p-4 border-2 shadow-md relative"
-              data-aos="fade-down"
-              dat-aos-delay={`300`}
-            >
-              <div className="w-full flex gap-2 items-center">
-                <img src={cricket} className="w-6" alt="" />
-
-                <span className="font-semibold">Indoor Cricket</span>
-              </div>
-              <div className="w-full pl-8 flex flex-col text-[14px] text-[#2a2a2a] ">
-                <div className="flex flex-col mt-2">
-                  <div className="flex gap-1 items-center ">
-                    <Calendar className="w-5" />
-                    <span>Monday - Sunday</span>
-                  </div>
-                  <div className="flex gap-1 items-center">
-                    <Clock className="w-5" />
-                    <div className="flex gap-1">
-                      <span>05:00 AM </span>
-                      <span>-</span>
-                      <span>6:00 PM </span>
-                    </div>
-                  </div>
-                  <div className="flex gap-1">
-                    <IndianRupee className="w-5" />
-                    <span>600.00 / Hour</span>
-                  </div>
-                </div>
-              </div>
-              <div className="pl-8 w-full mt-3 md:absolute bottom-4">
-                <button className="h-10  w-[60%] gap-2 items-center rounded-md flex tracking-wider justify-center bg-[#4cd681] hover:bg-[#008855] hover:text-white transition-all duration-200">
-                  Book now <MoveRight className="w-5 mt-[3px]" />
-                </button>
-              </div>
-            </div> */}
           </div>
         </motion.div>
       </div>
