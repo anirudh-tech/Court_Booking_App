@@ -11,10 +11,53 @@ import court8 from "../assets/Images/court8.jpg";
 import badmintonIcon from "../assets/icons/BadMinton.svg";
 import volleyBall from "../assets/icons/Volleyball.svg";
 import cricket from "../assets/icons/cricket2.webp";
-import { Calendar, Clock, IndianRupee, MoveRight } from "lucide-react";
+import { Calendar, Clock, IndianRupee, MoveRight, X } from "lucide-react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import toast from "react-hot-toast";
+import { CustomModal } from "@/components/Moda";
+import { LoginOrSignup } from "@/components/LoginSingup";
+import { LoginOrSignupPage } from "@/components/auth/LoginOrSignup";
+import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 export const Home = () => {
+  const { isVerified, user } = useSelector(
+    (state: RootState) => state.user
+  );
+  useEffect(() => {
+    if (user && user?._id) {
+      loginModalCloseRef.current?.click();
+    }
+  }, [user]);
+  const loginModalRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const loginModalCloseRef = useRef<HTMLDivElement>(null);
+
   return (
     <main className="w-full ">
+      {
+        !isVerified &&
+        <>
+          <CustomModal
+            className="w-[90%] sm:w-[75%] md:w-[66%] lg:w-[80%] xl:w-[60%] p-0"
+            TriggerComponent={
+              <div ref={loginModalRef}>
+                <LoginOrSignup />
+              </div>
+            }
+            closeComponent={
+              <div
+                className="cursor-pointer z-20"
+                ref={loginModalCloseRef}
+              >
+                <X className="w-6" />
+              </div>
+            }
+          >
+            <LoginOrSignupPage />
+          </CustomModal>
+        </>
+      }
       <div className="mx-auto w-[90%] min-h-96">
         <motion.div
           initial={{ translateY: -300 }}
@@ -54,6 +97,14 @@ export const Home = () => {
               </div>
               <div className="md:mt-10 mt-4 w-full flex justify-start">
                 <button
+                  onClick={() => {
+                    if (!isVerified) {
+                      toast.error("Please create an account");
+                      loginModalRef.current?.click();
+                    } else {
+                      navigate("/booking");
+                    }
+                  }}
                   className="h-12 uppercase w-full md:w-48 text-sm font-semibold flex items-center text-black
                 tracking-wider justify-center bg-[#4cd681] hover:bg-[#008855] hover:text-white transition-all duration-200"
                 >
