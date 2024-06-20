@@ -1,3 +1,3 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "https://lal-sports-academy.vercel.app/" }]
+  "rewrites": [{ "source": "/(.*)", "destination": "lalsportsacademy.com/" }]
 }
