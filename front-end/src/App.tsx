@@ -14,12 +14,16 @@ import { AdminLayout } from "./Layouts/AdminLayout";
 import { AdminSports } from "./pages/Admin/AdminSports";
 import { Bookings } from "./pages/Admin/Bookings";
 import { AdminCourts } from "./pages/Admin/AdminCourts";
-
+import Aos from "aos";
+import "aos/dist/aos.css";
 function App() {
   const dispatch: AppDispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchUser());
   }, [dispatch]);
+  useEffect(() => {
+    Aos.init({ duration: 800 });
+  }, []);
   const { user } = useSelector((state: RootState) => state.user);
   return (
     <main className="w-full">
@@ -30,11 +34,14 @@ function App() {
             path="/booking"
             element={!user?._id ? <Navigate to={"/"} /> : <Booking />}
           />
-          <Route path="/mybooking" element={
-            // user?._id?
-          <MyBooking />
-          // :<Navigate to={"/"}/>
-          } />
+          <Route
+            path="/mybooking"
+            element={
+              // user?._id?
+              <MyBooking />
+              // :<Navigate to={"/"}/>
+            }
+          />
           <Route
             path="/adminlogin"
             element={
