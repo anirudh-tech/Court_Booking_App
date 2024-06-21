@@ -11,7 +11,7 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
+import moment from 'moment-timezone';
 export function Bookings() {
     const dispatch: AppDispatch = useDispatch();
     const [localBookings, setLocalBookings] = useState([]);
@@ -38,6 +38,11 @@ export function Bookings() {
     const handlePaymentStatusChange = (bookingId, value) => {
         dispatch(updateBookingPaymentStatus({ bookingId, value }));
     };
+
+    const formatDate = (date) => {
+        const formattedDate = moment.tz(date, 'UTC').format('MMMM D, YYYY');
+        return formattedDate
+    }
 
     return (
         <main className="w-full h-full p-5 flex flex-col gap-2 justify-center">
@@ -117,7 +122,7 @@ export function Bookings() {
                                             {booking?.amount}
                                         </TableCell>
                                         <TableCell>
-                                            {booking?.date && format(String(booking?.date), "PPP")}
+                                            {formatDate(booking?.date)}
                                         </TableCell>
                                         <TableCell className="text-right">
                                             {booking?.createdAt && format(String(booking?.createdAt), "PPP")}
