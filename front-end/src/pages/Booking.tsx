@@ -49,7 +49,6 @@ export function Booking() {
 
   const [defaultSport, setDefaultSport] = useState<string | undefined>();
   useEffect(() => {
-    setValue("startTime", formatTime(timeSlots[0]));
     const searchParam = new URLSearchParams(window.location.search);
     const sportId = searchParam.get("spId");
     const sport = searchParam.get("sport");
@@ -62,6 +61,7 @@ export function Booking() {
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }, 0);
+    setValue("startTime", formatTime(timeSlots[0]));
   }, []);
 
   const popoverCloseRef = useRef<HTMLButtonElement>(null);
@@ -71,6 +71,20 @@ export function Booking() {
   const [submitionLoad, setSubmitionLoad] = useState<boolean>(false);
   const handleBooking = async (values: z.infer<typeof bookingSchema>) => {
     try {
+      if (
+        bookedSlots.includes(
+          formatEndTimeWithDuration(
+            values.startTime
+              ? parseTime(values.startTime as string)
+              : new Date(),
+            values.duration
+          )
+        )
+      ) {
+        return toast.error(
+          "This time duration already booked Please select other time"
+        );
+      }
       values;
       setSubmitionLoad(true);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -274,12 +288,13 @@ export function Booking() {
       setValue("date", now);
     }
   }, [setValue]);
-  let timeSlots = useGenerateTimSlot(
-    watch("date") ? watch("date") : new Date()
-  );
 
   const [bookedSlots, setBookedSlot] = useState<string[]>([]);
 
+  const timeSlots = useGenerateTimSlot(
+    watch("date") ? watch("date") : new Date(),
+    bookedSlots ? bookedSlots : []
+  );
   useEffect(() => {
     if (watch("date") && watch("court")) {
       axiosInstance
@@ -294,24 +309,17 @@ export function Booking() {
         })
         .catch((err) => {
           console.log(err);
+        })
+        .finally(() => {
+          setValue("startTime", formatTime(timeSlots[0]));
         });
     }
   }, [watch("court"), watch("date")]);
 
   useEffect(() => {
-    timeSlots = timeSlots.filter((val) => {
-      if (!bookedSlots.includes(formatTime(val))) {
-        return val;
-      }
-    });
     setValue("startTime", formatTime(timeSlots[0]));
-  }, [bookedSlots, timeSlots]);
-  // useEffect(() => {
-  //   console.log("()");
-  //   if (!timeSlots.includes(parseTime(getValues("startTime")))) {
-  //     setValue("startTime", formatTime(timeSlots[0]));
-  //   }
-  // }, [watch("bookingdate")]);
+  }, [bookedSlots]);
+
   console.log(errors);
   return (
     <main className="w-full min-h-screen flex  justify-center items-start text-[15px] ">
@@ -534,6 +542,7 @@ export function Booking() {
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
+                    disabled={!watch("court")}
                     variant={"outline"}
                     ref={popoverCloseRef}
                     className={cn(
