@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from "@/lib/utils";
-import { bookingsByDate, listAllBookings, updateBookingPaymentStatus } from "@/redux/actions/bookingAction";
+import { bookingsByDate, listAllBookings } from "@/redux/actions/bookingAction";
 import { AppDispatch, RootState } from "@/redux/store";
 import { Button } from "@/shadcn/ui/button";
 import { Calendar } from "@/shadcn/ui/calendar";
 import { Input } from "@/shadcn/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shadcn/ui/select";
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shadcn/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shadcn/ui/table";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
@@ -55,9 +55,9 @@ export function Bookings() {
         setSearch('');  // Clear the search input when a new date is picked
     };
 
-    const handlePaymentStatusChange = (bookingId: string, value: string) => {
-        dispatch(updateBookingPaymentStatus({ bookingId, value }));
-    };
+    // const handlePaymentStatusChange = (bookingId: string, value: string) => {
+    //     dispatch(updateBookingPaymentStatus({ bookingId, value }));
+    // };
 
     const formatDate = (date: string) => {
         const formattedDate = moment.tz(date, 'UTC').format('MMMM D, YYYY');
