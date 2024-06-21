@@ -35,12 +35,12 @@ export function AdminSports() {
   };
   return (
     <main className="w-full h-full p-5 flex flex-col gap-2 justify-center">
-      <h1 className="text-center text-3xl font-semibold underline">All Sports</h1>
+      <h1 className="text-center text-3xl font-semibold underline">ALL SPORTS</h1>
       <div className="mx-auto h-14 flex items-center justify-end w-[90%]">
         <CustomModal
           TriggerComponent={
             <button className="h-10 flex items-center justify-center px-4 bg-green-500 rounded-md text-white">
-              Add sports
+              ADD SPORTS
             </button>
           }
           className="w-[90%] sm:w-[75%] md:w-[66%] lg:w-[40%] xl:w-[34%] p-0 rounded-md"
@@ -54,16 +54,16 @@ export function AdminSports() {
         </CustomModal>
       </div>
       <Table className="w-[90%]  p-3 border rounded-md mx-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-        <TableCaption>listing all sports </TableCaption>
+        <TableCaption>Listing all Sports </TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[190px]">name</TableHead>
-            <TableHead className="">Image</TableHead>
-            <TableHead className="min-w-[150px] ">Added At</TableHead>
+            <TableHead className="w-[190px]">NAME</TableHead>
+            <TableHead className="">IMAGE</TableHead>
+            <TableHead className="min-w-[150px] ">ADDED AT</TableHead>
             <TableHead className="text-right min-w-[150px] md:w-auto">
-              Updated At
+              UPDATED AT
             </TableHead>
-            <TableHead className="text-right ">Actions</TableHead>
+            <TableHead className="text-right ">ACTIONS</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

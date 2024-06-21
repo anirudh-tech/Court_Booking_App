@@ -24,29 +24,29 @@ export function Bookings() {
 
     return (
         <main className="w-full h-full p-5 flex flex-col gap-2 justify-center">
-            <h1 className="text-center text-3xl font-semibold underline">All Bookings</h1>
+            <h1 className="text-center text-3xl font-semibold underline">ALL BOOKINGS</h1>
             <Table className="w-[90%]  p-3 border rounded-md mx-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[190px]">Court name</TableHead>
-                        <TableHead className="min-w-[150px] ">Amount</TableHead>
+                        <TableHead className="w-[190px]">COURT NAME</TableHead>
+                        <TableHead className="min-w-[150px] ">AMOUNT</TableHead>
                         <TableHead className=" min-w-[150px] md:w-auto">
-                            Date
+                            DATE
                         </TableHead>
                         <TableHead className="text-right min-w-[150px] md:w-auto">
-                            Date of Booking
+                            DATE OF BOOKING
                         </TableHead>
                         <TableHead className=" min-w-[150px] md:w-auto">
-                            Payment Method
+                            PAYMENT METHOD
                         </TableHead>
                         <TableHead className=" min-w-[150px] md:w-auto">
-                            Payment Status
+                            PAYMENT STATUS
                         </TableHead>
                         <TableHead className=" min-w-[150px] md:w-auto">
-                            Booking Status
+                            BOOKING STATUS
                         </TableHead>
                         <TableHead className=" min-w-[150px] md:w-auto">
-                            User Information
+                            USER INFORMATION
                         </TableHead>
                     </TableRow>
                 </TableHeader>
