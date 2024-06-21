@@ -1,21 +1,31 @@
-import { listAllBookings } from "@/redux/actions/bookingAction";
+import { listAllBookings, updateBookingPaymentStatus } from "@/redux/actions/bookingAction";
 import { AppDispatch, RootState } from "@/redux/store";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/shadcn/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shadcn/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shadcn/ui/table";
 import { format } from "date-fns";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 export function Bookings() {
     const dispatch: AppDispatch = useDispatch();
+    const [localBookings, setLocalBookings] = useState([]);
     useEffect(() => {
         dispatch(listAllBookings());
     }, [dispatch]);
     const { bookings } = useSelector((state: RootState) => state.booking);
 
+    useEffect(() => {
+        setLocalBookings(bookings);
+    }, [bookings]);
+
+    const handlePaymentStatusChange = (bookingId, value) => {
+        dispatch(updateBookingPaymentStatus({bookingId, value}));
+    };
+
     return (
         <main className="w-full h-full p-5 flex flex-col gap-2 justify-center">
+            <h1 className="text-center text-3xl font-semibold underline">All Bookings</h1>
             <Table className="w-[90%]  p-3 border rounded-md mx-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                <TableCaption>listing all Bookings </TableCaption>
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-[190px]">Court name</TableHead>
@@ -41,7 +51,7 @@ export function Bookings() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {bookings?.map((booking) => {
+                    {localBookings?.map((booking) => {
                         return (
                             <TableRow key={booking?._id}>
                                 <TableCell className="font-medium">
@@ -60,7 +70,18 @@ export function Bookings() {
                                     {booking?.paymentMethod}
                                 </TableCell>
                                 <TableCell className="font-medium">
-                                    {booking?.paymentStatus}
+                                    <Select
+                                        onValueChange={(value) => handlePaymentStatusChange(booking._id, value)}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder={<div>{booking?.paymentStatus}  </div>} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Pending">Pending</SelectItem>
+                                            <SelectItem value="Success">Success</SelectItem>
+                                            <SelectItem value="Refunded">Refunded</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </TableCell>
                                 <TableCell className="font-medium">
                                     {booking?.status}
@@ -68,7 +89,6 @@ export function Bookings() {
                                 <TableCell className="font-medium">
                                     {booking?.userId?.phoneNumber}
                                 </TableCell>
-                                
                             </TableRow>
                         );
                     })}

@@ -1,6 +1,6 @@
 import { BookingInitial } from "@/types/bookingReducerInitial";
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchBookedSlots, listAllBookings } from "../actions/bookingAction";
+import { fetchBookedSlots, listAllBookings, updateBookingPaymentStatus } from "../actions/bookingAction";
 
 const initialState: BookingInitial = {
   loading: false,
@@ -23,6 +23,20 @@ const bookingReducer = createSlice({
         state.err = false;
       })
       .addCase(listAllBookings.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.err = payload as string;
+        state.bookings = null;
+      })
+      .addCase(updateBookingPaymentStatus.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateBookingPaymentStatus.fulfilled, (state, { payload }) => {
+        console.log("🚀 ~ .addCase ~ payload:", payload);
+        state.loading = false;
+        state.bookings = payload.data;
+        state.err = false;
+      })
+      .addCase(updateBookingPaymentStatus.rejected, (state, { payload }) => {
         state.loading = false;
         state.err = payload as string;
         state.bookings = null;

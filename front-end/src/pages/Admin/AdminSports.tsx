@@ -35,6 +35,7 @@ export function AdminSports() {
   };
   return (
     <main className="w-full h-full p-5 flex flex-col gap-2 justify-center">
+      <h1 className="text-center text-3xl font-semibold underline">All Sports</h1>
       <div className="mx-auto h-14 flex items-center justify-end w-[90%]">
         <CustomModal
           TriggerComponent={

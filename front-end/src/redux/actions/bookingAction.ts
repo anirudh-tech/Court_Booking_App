@@ -26,3 +26,15 @@ export const fetchBookedSlots = createAsyncThunk(
     }
   }
 );
+
+export const updateBookingPaymentStatus = createAsyncThunk(
+  "bookings/update-payment-status",
+  async ({ bookingId, value }: { bookingId: string; value: any }, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.post("/update-payment-status", {bookingId,value});
+      return data;
+    } catch (error) {
+      return rejectWithValue(handleError(error));
+    }
+  }
+);
