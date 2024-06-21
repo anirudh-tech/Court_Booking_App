@@ -85,7 +85,7 @@ export function Booking() {
       valueCopy.paymentMethod = values.paymentmode;
 
       console.log(valueCopy, " copy");
-      if (values.paymentmode == "Online") {
+      if (values.paymentmode == "FullPayment") {
         const { data: bookingdata } = await axiosInstance.post(
           `/book-court`,
           valueCopy
@@ -445,9 +445,8 @@ export function Booking() {
                 }}
               >
                 <SelectTrigger
-                  className={`sm:w-64 w-full outline-none ring-0 ${
-                    !courts || (courts.length <= 0 && "pointer-events-none")
-                  } `}
+                  className={`sm:w-64 w-full outline-none ring-0 ${!courts || (courts.length <= 0 && "pointer-events-none")
+                    } `}
                 >
                   <SelectValue
                     placeholder={
@@ -560,10 +559,9 @@ export function Booking() {
                             setValue("startTime", formatTime(time));
                             popoverCloseRef.current?.click();
                           }}
-                          className={`h-10 rounded-md cursor-pointer hover:bg-[#4cd681] transition-all duration-200 w-full flex items-center justify-center text-[13px] border ${
-                            bookedSlots.includes(formatTime(time)) &&
+                          className={`h-10 rounded-md cursor-pointer hover:bg-[#4cd681] transition-all duration-200 w-full flex items-center justify-center text-[13px] border ${bookedSlots.includes(formatTime(time)) &&
                             "pointer-events-none bg-green-700 text-white relative"
-                          }`}
+                            }`}
                         >
                           {formatTime(time)}
                         </div>
@@ -594,13 +592,11 @@ export function Booking() {
               <button
                 type="button"
                 onClick={decrementDuration}
-                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
-                  !watch("court") && "pointer-events-none"
-                } ${
-                  watch("duration") <= 1
+                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${!watch("court") && "pointer-events-none"
+                  } ${watch("duration") <= 1
                     ? "pointer-events-none bg-slate-300 border"
                     : "bg-custom-gradient"
-                }  text-white transition-all duration-200`}
+                  }  text-white transition-all duration-200`}
               >
                 <Minus className="w-5" />
               </button>
@@ -611,13 +607,11 @@ export function Booking() {
               <button
                 type="button"
                 onClick={incrementDuration}
-                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
-                  !watch("court") && "pointer-events-none"
-                } ${
-                  watch("duration") >= 20
+                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${!watch("court") && "pointer-events-none"
+                  } ${watch("duration") >= 20
                     ? "pointer-events-none bg-slate-300 border"
                     : "bg-custom-gradient"
-                }  text-white transition-all duration-200`}
+                  }  text-white transition-all duration-200`}
               >
                 <Plus className="w-5" />
               </button>
@@ -642,6 +636,9 @@ export function Booking() {
             <div className="flex flex-col sm:w-auto w-full">
               <Select
                 onValueChange={(value) => {
+                  if(value == "AdvancePayment") {
+                    setValue("amount", watch("amount")* 0.2);
+                  }
                   setValue("paymentmode", value);
                   trigger("paymentmode");
                 }}
@@ -650,11 +647,11 @@ export function Booking() {
                   <SelectValue placeholder="💳 Select payment option" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem key={"Online"} value={"Online"}>
-                    Online
+                  <SelectItem key={"FullPayment"} value={"FullPayment"}>
+                    Full Payment
                   </SelectItem>
-                  <SelectItem key={"Offline"} value={"Offline"}>
-                    Pay after play
+                  <SelectItem key={"AdvancePayment"} value={"AdvancePayment"}>
+                    Pay 20% Advance
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -673,20 +670,41 @@ export function Booking() {
               <div className="sm:w-64 w-52 h-10  rounded-md flex justify-end gap-1  items-center  px-4 pointer-events-none">
                 <IndianRupee className="w-4 font-bold" />{" "}
                 <span className="text-[15px] font-semibold">
-                  {watch("amount") ? watch("amount") : "---"}
+                  {watch("amount") ? (
+                    watch("paymentmode") === "FullPayment" ? (
+                      watch("amount")
+                    ) : (
+                      `${watch("amount")}`
+                    )
+                  ) : (
+                    "---"
+                  )}
                 </span>
               </div>
             </div>
           </div>
+          {
+            watch("paymentmode") === "AdvancePayment" && (
+              <div className="w-full flex justify-between  items-center border border-r-0 border-l-0 border-t-0 px-2">
+                <label htmlFor="">Amount Payable </label>
+                <div className="flex flex-col">
+                  <div className="sm:w-64 w-52 h-10  rounded-md flex justify-end gap-1  items-center  px-4 pointer-events-none">
+                    <IndianRupee className="w-4 font-bold" />{" "}
+                    <span className="text-[15px] font-semibold">
+                      {watch("amount")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )
+          }
           <LoaderButton
             type="submit"
             loading={submitionLoad}
             // onClick={handleBooking}
             className="w-full h-12 flex items-center justify-center bg-custom-gradient rounded-md text-white"
           >
-            {watch("paymentmode") == "Online"
-              ? "Proceed to payment 💳"
-              : "Confirm booking"}
+            Proceed to payment 💳
           </LoaderButton>
         </div>
       </form>

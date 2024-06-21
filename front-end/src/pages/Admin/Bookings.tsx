@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from "@/lib/utils";
 import { bookingsByDate, listAllBookings, updateBookingPaymentStatus } from "@/redux/actions/bookingAction";
 import { AppDispatch, RootState } from "@/redux/store";
@@ -12,37 +13,56 @@ import { CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from 'moment-timezone';
+
 export function Bookings() {
     const dispatch: AppDispatch = useDispatch();
     const [localBookings, setLocalBookings] = useState([]);
     const [search, setSearch] = useState<string>('');
-    const [date, setDate] = useState<Date>()
+    const [date, setDate] = useState<Date | null>(null);
     const { bookings } = useSelector((state: RootState) => state.booking);
+
     useEffect(() => {
         dispatch(listAllBookings(search));
-    }, [dispatch, search]);
+    }, [dispatch]);
 
     useEffect(() => {
-        setLocalBookings(bookings);
-    }, [bookings]);
+        if (date) {
+            dispatch(bookingsByDate(date));
+        } else {
+            dispatch(listAllBookings(search));
+        }
+    }, [dispatch, date, search]);
 
+    useEffect(() => {
+        filterBookings();
+    }, [bookings, search]);
 
-    const handleDateClick = (date) => {
-        console.log("🚀 ~ file: Bookings.tsx:29 ~ handleDateClick ~ date:", date)
-        const localDate = new Date(date);
-        console.log("🚀 ~ file: Bookings.tsx:31 ~ handleDateClick ~ localDate:", localDate)
-        setDate(localDate);
-        dispatch(bookingsByDate(localDate))
-    }
+    const filterBookings = () => {
+        let filteredBookings = bookings;
 
-    const handlePaymentStatusChange = (bookingId, value) => {
+        if (search) {
+            filteredBookings = bookings.filter((booking: any) => {
+                return booking?.courtId?.courtName.toLowerCase().includes(search.toLowerCase())
+                    || booking?.userId?.phoneNumber.includes(search);
+            });
+        }
+
+        setLocalBookings(filteredBookings);
+    };
+
+    const handleDateClick = (date: Date) => {
+        setDate(date);
+        setSearch('');  // Clear the search input when a new date is picked
+    };
+
+    const handlePaymentStatusChange = (bookingId: string, value: string) => {
         dispatch(updateBookingPaymentStatus({ bookingId, value }));
     };
 
-    const formatDate = (date) => {
+    const formatDate = (date: string) => {
         const formattedDate = moment.tz(date, 'UTC').format('MMMM D, YYYY');
-        return formattedDate
-    }
+        return formattedDate;
+    };
 
     return (
         <main className="w-full h-full p-5 flex flex-col gap-2 justify-center">
@@ -81,83 +101,60 @@ export function Bookings() {
                 </div>
             </div>
 
-
-            {
-                localBookings?.length == 0 ? (
-                    <p className="text-center">No bookings found</p>
-                ) : (
-                    <Table className="w-[90%]  p-3 border rounded-md mx-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[190px]">COURT NAME</TableHead>
-                                <TableHead className="min-w-[150px] ">AMOUNT</TableHead>
-                                <TableHead className=" min-w-[150px] md:w-auto">
-                                    DATE
-                                </TableHead>
-                                <TableHead className="text-right min-w-[150px] md:w-auto">
-                                    DATE OF BOOKING
-                                </TableHead>
-                                <TableHead className=" min-w-[150px] md:w-auto">
-                                    PAYMENT METHOD
-                                </TableHead>
-                                <TableHead className=" min-w-[150px] md:w-auto">
-                                    PAYMENT STATUS
-                                </TableHead>
-                                <TableHead className=" min-w-[150px] md:w-auto">
-                                    BOOKING STATUS
-                                </TableHead>
-                                <TableHead className=" min-w-[150px] md:w-auto">
-                                    USER INFORMATION
-                                </TableHead>
+            {localBookings?.length === 0 ? (
+                <p className="text-center">No bookings found</p>
+            ) : (
+                <Table className="w-[90%] p-3 border rounded-md mx-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[190px]">COURT NAME</TableHead>
+                            <TableHead className="min-w-[150px]">AMOUNT</TableHead>
+                            <TableHead className="min-w-[150px] md:w-auto">DATE</TableHead>
+                            <TableHead className="min-w-[150px] md:w-auto">PAYMENT METHOD</TableHead>
+                            <TableHead className="min-w-[150px] md:w-auto">PAYMENT STATUS</TableHead>
+                            <TableHead className="min-w-[150px] md:w-auto">BOOKING STATUS</TableHead>
+                            <TableHead className="min-w-[150px] md:w-auto">USER INFORMATION</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {localBookings.map((booking: any) => (
+                            <TableRow key={booking?._id}>
+                                <TableCell className="font-medium">
+                                    {booking?.courtId?.courtName}
+                                </TableCell>
+                                <TableCell className="font-medium">
+                                    {booking?.amount}
+                                </TableCell>
+                                <TableCell>
+                                    {formatDate(booking?.date)}
+                                </TableCell>
+                                <TableCell className="font-medium">
+                                    {booking?.paymentMethod}
+                                </TableCell>
+                                <TableCell className="font-medium">
+                                    <Select
+                                        onValueChange={(value) => handlePaymentStatusChange(booking._id, value)}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder={<div className={`${booking?.paymentStatus === 'Pending' ? 'text-orange-500' : 'text-green-500'}`}>{booking?.paymentStatus}</div>} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Pending">Pending</SelectItem>
+                                            <SelectItem value="Success">Success</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </TableCell>
+                                <TableCell className="font-medium">
+                                    {booking?.status}
+                                </TableCell>
+                                <TableCell className="font-medium">
+                                    {booking?.userId?.phoneNumber}
+                                </TableCell>
                             </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {localBookings?.map((booking) => {
-                                return (
-                                    <TableRow key={booking?._id}>
-                                        <TableCell className="font-medium">
-                                            {booking?.courtId?.courtName}
-                                        </TableCell>
-                                        <TableCell className="font-medium">
-                                            {booking?.amount}
-                                        </TableCell>
-                                        <TableCell>
-                                            {formatDate(booking?.date)}
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            {booking?.createdAt && format(String(booking?.createdAt), "PPP")}
-                                        </TableCell>
-                                        <TableCell className="font-medium">
-                                            {booking?.paymentMethod}
-                                        </TableCell>
-                                        <TableCell className="font-medium">
-                                            <Select
-                                                onValueChange={(value) => handlePaymentStatusChange(booking._id, value)}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder={<div className={`${booking?.paymentStatus == 'Pending' ? 'text-orange-500': 'text-green-500'}`}>{booking?.paymentStatus}  </div>} />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="Pending">Pending</SelectItem>
-                                                    <SelectItem value="Success">Success</SelectItem>
-                                                    <SelectItem value="Refunded">Refunded</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </TableCell>
-                                        <TableCell className="font-medium">
-                                            {booking?.status}
-                                        </TableCell>
-                                        <TableCell className="font-medium">
-                                            {booking?.userId?.phoneNumber}
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
-                )
-            }
-
+                        ))}
+                    </TableBody>
+                </Table>
+            )}
         </main>
-    )
+    );
 }

@@ -203,7 +203,7 @@ export function LoginOrSignupPage() {
               </div>
             </div>
             <div className="h-full   flex flex-col gap-4">
-              <div className="h-16 flex items-center justify-center mt-8">
+              <div className="h-16 flex items-center justify-center px-2 sm:px-0 mt-8">
                 <InputOTP maxLength={6} onChange={(value) => setOtp(value)}>
                   <InputOTPGroup className="flex gap-2">
                     <InputOTPSlot
