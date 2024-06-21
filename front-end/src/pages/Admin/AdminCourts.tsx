@@ -42,7 +42,7 @@ export function AdminCourts() {
         <CustomModal
           TriggerComponent={
             <button className="h-10 flex items-center justify-center px-4 bg-green-500 rounded-md text-white">
-              Add court
+              ADD COURT
             </button>
           }
           className="w-[90%] sm:w-[75%] md:w-[76%] lg:w-[48%] xl:w-[40%] p-0 rounded-md"

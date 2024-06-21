@@ -40,7 +40,7 @@ export function AdminSports() {
         <CustomModal
           TriggerComponent={
             <button className="h-10 flex items-center justify-center px-4 bg-green-500 rounded-md text-white">
-              ADD SPORTS
+              ADD SPORT
             </button>
           }
           className="w-[90%] sm:w-[75%] md:w-[66%] lg:w-[40%] xl:w-[34%] p-0 rounded-md"
