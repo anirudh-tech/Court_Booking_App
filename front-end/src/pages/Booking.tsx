@@ -75,7 +75,7 @@ export function Booking() {
       setSubmitionLoad(true);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const valueCopy = { ...values } as any;
-      valueCopy.endTIme = formatEndTimeWithDuration(
+      valueCopy.endTime = formatEndTimeWithDuration(
         parseTime(values.startTime as string),
         values.duration
       );
@@ -83,6 +83,7 @@ export function Booking() {
       valueCopy.userId = String(user?._id);
       valueCopy.paymentStatus = "Pending";
       valueCopy.paymentMethod = values.paymentmode;
+      
       console.log(valueCopy, " copy");
       if (values.paymentmode == "Online") {
         const { data: bookingdata } = await axiosInstance.post(
