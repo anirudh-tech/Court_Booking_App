@@ -1,9 +1,11 @@
-export const useGenerateTimSlot =(date: Date) => {
-  const slots = [];
+import { formatTime } from "@/utils/formatTime";
+
+export const useGenerateTimSlot = (date: Date, existArray: string[]) => {
+  const slots: Date[] = [];
   const now = new Date();
   const isToday = now.toDateString() === date.toDateString();
 
-  // Check if it's today and the current time is after 11:00 PM
+  // Adjust the start time based on the current time and date
   if (isToday && now.getHours() >= 23) {
     now.setDate(now.getDate() + 1); // Move to the next day
     now.setHours(5, 0, 0, 0); // Set the time to 5:00 AM of the next day
@@ -20,7 +22,11 @@ export const useGenerateTimSlot =(date: Date) => {
 
   // Generate slots from start time to end time
   while (startTime <= endTime) {
-    slots.push(new Date(startTime));
+    // Check if the slot is not in the existArray before adding
+    if (!existArray.includes(formatTime(startTime))) {
+      slots.push(new Date(startTime));
+    }
+
     startTime.setMinutes(startTime.getMinutes() + 30);
   }
 
