@@ -17,10 +17,10 @@ export function Bookings() {
     const [localBookings, setLocalBookings] = useState([]);
     const [search, setSearch] = useState<string>('');
     const [date, setDate] = useState<Date>()
+    const { bookings } = useSelector((state: RootState) => state.booking);
     useEffect(() => {
         dispatch(listAllBookings(search));
     }, [dispatch, search]);
-    const { bookings } = useSelector((state: RootState) => state.booking);
 
     useEffect(() => {
         setLocalBookings(bookings);
@@ -135,7 +135,7 @@ export function Bookings() {
                                                 onValueChange={(value) => handlePaymentStatusChange(booking._id, value)}
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder={<div>{booking?.paymentStatus}  </div>} />
+                                                    <SelectValue placeholder={<div className={`${booking?.paymentStatus == 'Pending' ? 'text-orange-500': 'text-green-500'}`}>{booking?.paymentStatus}  </div>} />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectItem value="Pending">Pending</SelectItem>

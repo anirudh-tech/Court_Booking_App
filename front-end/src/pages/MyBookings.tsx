@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PaymentProcessing } from "@/components/custom/PaymentProcess";
 import { PaymentCompleted } from "@/components/custom/Paymentcomplete";
 import { axiosInstance } from "@/constants/axiosInstance";
@@ -41,7 +42,7 @@ export function MyBooking() {
           </div>
         ) : (
           <>
-            {bookings?.map((booking, index) => (
+            {bookings?.map((booking: any, index) => (
               <div key={index} className="w-full flex justify-center">
                 <div className="min-h-96 space-y-4 rounded-xl py-3 shadow-md sm:w-full border px-2 w-[80%] ">
                   <div className="w-full px-3 py-5 border-b">
@@ -79,8 +80,8 @@ export function MyBooking() {
                       <span className="">{booking.paymentMethod}</span>
                     </div>
                     <div className="w-full flex justify-between text-[14px]">
-                      <span className="text-[#474747]">Sports</span>
-                      <span className="">{booking.courtId.sport}</span>
+                      <span className="text-[#474747]">Sport</span>
+                      <span className="">{booking.sportDetails.sportName}</span>
                     </div>
                     <div className="w-full flex justify-between text-[14px]">
                       <span className="text-[#474747]">Start time</span>

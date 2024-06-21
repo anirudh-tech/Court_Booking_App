@@ -1,4 +1,5 @@
 import logo from "@/assets/Images/lsa-logo.png";
+import { listAllBookings } from "@/redux/actions/bookingAction";
 import { logoutUser } from "@/redux/actions/userActions";
 import { AppDispatch } from "@/redux/store";
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTrigger } from "@/shadcn/ui/sheet";
@@ -11,6 +12,7 @@ export function AdminLayout() {
   const navigate = useNavigate();
   const closeRef = useRef(null);
   const handleClose = () => {
+    dispatch(listAllBookings(""))
     if (closeRef.current) {
       closeRef.current.click();
     }
@@ -46,7 +48,7 @@ export function AdminLayout() {
             </NavLink>
             <NavLink
               to={"bookings"}
-
+              onClick={() => dispatch(listAllBookings(""))}
               className="w-full flex gap-2 h-10 items-center relative  pl-3 hover:bg-slate-200 hover:px-3 transition-all duration-200 rounded-md cursor-pointer"
             >
               <CreditCard className="w-5" />
