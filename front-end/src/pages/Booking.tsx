@@ -83,7 +83,7 @@ export function Booking() {
       valueCopy.userId = String(user?._id);
       valueCopy.paymentStatus = "Pending";
       valueCopy.paymentMethod = values.paymentmode;
-      
+
       console.log(valueCopy, " copy");
       if (values.paymentmode == "Online") {
         const { data: bookingdata } = await axiosInstance.post(
@@ -274,7 +274,7 @@ export function Booking() {
       setValue("date", now);
     }
   }, [setValue]);
-  const timeSlots = useGenerateTimSlot(
+  let timeSlots = useGenerateTimSlot(
     watch("date") ? watch("date") : new Date()
   );
 
@@ -299,7 +299,12 @@ export function Booking() {
   }, [watch("court"), watch("date")]);
 
   useEffect(() => {
-    console.log(bookedSlots, " in hook");
+    timeSlots = timeSlots.filter((val) => {
+      if (!bookedSlots.includes(formatTime(val))) {
+        return val;
+      }
+    });
+    setValue("startTime", formatTime(timeSlots[0]));
   }, [bookedSlots, timeSlots]);
   // useEffect(() => {
   //   console.log("()");
