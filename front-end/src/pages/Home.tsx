@@ -50,7 +50,7 @@ export const Home = () => {
       <div className="mx-auto w-[90%] min-h-96">
         <motion.div
           initial={{ translateY: -300 }}
-          transition={{ duration: 0.75, ease: "easeIn" }} // Add transition properties here
+          transition={{ duration: 0.75, ease: "easeIn" }}
           animate={{ translateY: 0 }}
           className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-0 lg:w-[90%] mx-auto"
         >
@@ -58,7 +58,7 @@ export const Home = () => {
             <img src={womenImage} className="w-full md:w-[78%]" alt="" />
             <div className="md:absolute right-0 bottom-0 w-full md:w-80 min-h-14 md:h-40 flex items-center px-5 justify-center md:py-0   text-white bg-black shadow-md">
               <h1 className="font-bold  md:text-2xl text-center uppercase leading-8 ">
-                Our courts make the world’s top 10
+              Step onto Greatness, Play Beyond Limits!
               </h1>
             </div>
           </motion.div>

@@ -1,7 +1,6 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -37,11 +36,12 @@ export function AdminCourts() {
   };
   return (
     <main className="w-full h-full p-5 flex flex-col gap-2 justify-center">
+      <h1 className="text-center text-3xl font-semibold underline">ALL COURTS</h1>
       <div className="mx-auto h-14 flex items-center justify-end w-[90%]">
         <CustomModal
           TriggerComponent={
             <button className="h-10 flex items-center justify-center px-4 bg-green-500 rounded-md text-white">
-              Add court
+              ADD COURT
             </button>
           }
           className="w-[90%] sm:w-[75%] md:w-[76%] lg:w-[48%] xl:w-[40%] p-0 rounded-md"
@@ -55,19 +55,18 @@ export function AdminCourts() {
         </CustomModal>
       </div>
       <Table className="w-[90%]  p-3 border rounded-md mx-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-        <TableCaption>listing all sports </TableCaption>
         <TableHeader>
-          <TableRow>
-            <TableHead className="w-[270px]">court name</TableHead>
-            <TableHead className="">sports</TableHead>
-            <TableHead className="min-w-[150px] ">normal price</TableHead>
-            <TableHead className="text-right min-w-[150px] md:w-auto">
-              special price
+          <TableRow className="">
+            <TableHead className="w-[270px] font-bold ">COURT NAME</TableHead>
+            <TableHead className="font-bold ">SPORTS</TableHead>
+            <TableHead className="min-w-[150px] font-bold">NORMAL PRICE</TableHead>
+            <TableHead className="text-right min-w-[150px] md:w-auto font-bold">
+              SPECIAL PRICE
             </TableHead>
-            <TableHead className="text-right min-w-[150px] md:w-auto">
-              added at
+            <TableHead className="text-right min-w-[150px] md:w-auto font-bold">
+              ADDED AT
             </TableHead>
-            <TableHead className="text-right ">Action</TableHead>
+            <TableHead className="text-right font-bold">ACTION</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
