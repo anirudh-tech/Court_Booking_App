@@ -54,7 +54,6 @@ export function AdminSports() {
         </CustomModal>
       </div>
       <Table className="w-[90%]  p-3 border rounded-md mx-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-        <TableCaption>Listing all Sports </TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead className="w-[190px]">NAME</TableHead>

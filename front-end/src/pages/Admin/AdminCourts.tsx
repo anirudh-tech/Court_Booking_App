@@ -56,7 +56,6 @@ export function AdminCourts() {
         </CustomModal>
       </div>
       <Table className="w-[90%]  p-3 border rounded-md mx-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-        <TableCaption>listing all sports </TableCaption>
         <TableHeader>
           <TableRow className="">
             <TableHead className="w-[270px] font-bold ">COURT NAME</TableHead>
