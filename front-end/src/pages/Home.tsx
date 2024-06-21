@@ -58,7 +58,7 @@ export const Home = () => {
             <img src={womenImage} className="w-full md:w-[78%]" alt="" />
             <div className="md:absolute right-0 bottom-0 w-full md:w-80 min-h-14 md:h-40 flex items-center px-5 justify-center md:py-0   text-white bg-black shadow-md">
               <h1 className="font-bold  md:text-2xl text-center uppercase leading-8 ">
-                Our courts make the world’s top 10
+              Step onto Greatness, Play Beyond Limits!
               </h1>
             </div>
           </motion.div>
