@@ -111,13 +111,15 @@ export function Bookings() {
                             <TableHead className="min-w-[150px]">AMOUNT</TableHead>
                             <TableHead className="min-w-[150px] md:w-auto">DATE</TableHead>
                             <TableHead className="min-w-[150px] md:w-auto">PAYMENT METHOD</TableHead>
-                            <TableHead className="min-w-[150px] md:w-auto">PAYMENT STATUS</TableHead>
-                            <TableHead className="min-w-[150px] md:w-auto">BOOKING STATUS</TableHead>
+                            <TableHead className="min-w-[150px] md:w-auto">TIME SLOT</TableHead>
+                            <TableHead className="min-w-[150px] md:w-auto">DURATION</TableHead>
+                            {/* <TableHead className="min-w-[150px] md:w-auto">PAYMENT STATUS</TableHead> */}
+                            {/* <TableHead className="min-w-[150px] md:w-auto">BOOKING STATUS</TableHead> */}
                             <TableHead className="min-w-[150px] md:w-auto">USER INFORMATION</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {localBookings.map((booking: any) => (
+                        {localBookings?.map((booking: any) => (
                             <TableRow key={booking?._id}>
                                 <TableCell className="font-medium">
                                     {booking?.courtId?.courtName}
@@ -132,6 +134,12 @@ export function Bookings() {
                                     {booking?.paymentMethod}
                                 </TableCell>
                                 <TableCell className="font-medium">
+                                    {booking?.startTime}
+                                </TableCell>
+                                <TableCell className="font-medium">
+                                    {booking?.duration}Hr
+                                </TableCell>
+                                {/* <TableCell className="font-medium">
                                     <Select
                                         onValueChange={(value) => handlePaymentStatusChange(booking._id, value)}
                                     >
@@ -143,10 +151,10 @@ export function Bookings() {
                                             <SelectItem value="Success">Success</SelectItem>
                                         </SelectContent>
                                     </Select>
-                                </TableCell>
-                                <TableCell className="font-medium">
+                                </TableCell> */}
+                                {/* <TableCell className="font-medium">
                                     {booking?.status}
-                                </TableCell>
+                                </TableCell> */}
                                 <TableCell className="font-medium">
                                     {booking?.userId?.phoneNumber}
                                 </TableCell>

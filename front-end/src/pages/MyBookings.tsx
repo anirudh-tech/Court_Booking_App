@@ -100,7 +100,7 @@ export function MyBooking() {
         >
           {bookings.length <= 0 ? (
             <div className="w-full flex-col gap-2 h-screen flex items-center justify-center bg">
-              <h1 className="text-3xl font-semibold">No bookings you have</h1>
+              <h1 className="text-3xl font-semibold">Sorry, No Bookings yet</h1>
               <Link to={'/booking'} className="flex items-center justify-center px-4 h-10 bg-green-500 text-white rounded-md">
                 Go to Booking
               </Link>
