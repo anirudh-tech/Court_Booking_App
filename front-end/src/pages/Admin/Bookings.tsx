@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from "@/lib/utils";
-import { bookingsByDate, listAllBookings } from "@/redux/actions/bookingAction";
+import { bookingsByDate, listAllBookings, updateBookingPaymentStatus } from "@/redux/actions/bookingAction";
 import { AppDispatch, RootState } from "@/redux/store";
 import { Button } from "@/shadcn/ui/button";
 import { Calendar } from "@/shadcn/ui/calendar";
@@ -13,6 +13,7 @@ import { CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from 'moment-timezone';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shadcn/ui/select";
 
 export function Bookings() {
     const dispatch: AppDispatch = useDispatch();
@@ -55,9 +56,9 @@ export function Bookings() {
         setSearch('');  // Clear the search input when a new date is picked
     };
 
-    // const handlePaymentStatusChange = (bookingId: string, value: string) => {
-    //     dispatch(updateBookingPaymentStatus({ bookingId, value }));
-    // };
+    const handlePaymentStatusChange = (bookingId: string, value: string) => {
+        dispatch(updateBookingPaymentStatus({ bookingId, value }));
+    };
 
     const formatDate = (date: string) => {
         const formattedDate = moment.tz(date, 'UTC').format('MMMM D, YYYY');
@@ -107,57 +108,65 @@ export function Bookings() {
                 <Table className="w-[90%] p-3 border rounded-md mx-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[190px]">COURT NAME</TableHead>
-                            <TableHead className="min-w-[150px]">AMOUNT</TableHead>
-                            <TableHead className="min-w-[150px] md:w-auto">DATE</TableHead>
-                            <TableHead className="min-w-[150px] md:w-auto">PAYMENT METHOD</TableHead>
-                            <TableHead className="min-w-[150px] md:w-auto">TIME SLOT</TableHead>
-                            <TableHead className="min-w-[150px] md:w-auto">DURATION</TableHead>
-                            {/* <TableHead className="min-w-[150px] md:w-auto">PAYMENT STATUS</TableHead> */}
-                            {/* <TableHead className="min-w-[150px] md:w-auto">BOOKING STATUS</TableHead> */}
                             <TableHead className="min-w-[150px] md:w-auto">USER INFORMATION</TableHead>
+                            <TableHead className="w-[190px]">COURT NAME</TableHead>
+                            <TableHead className="min-w-[150px] md:w-auto">DATE AND TIME</TableHead>
+                            <TableHead className="min-w-[150px] md:w-auto">DURATION</TableHead>
+                            <TableHead className="min-w-[150px]">TOTAL AMOUNT</TableHead>
+                            <TableHead className="min-w-[150px] md:w-auto">PAYMENT METHOD</TableHead>
+                            <TableHead className="min-w-[150px] md:w-auto">AMOUNT PAID</TableHead>
+                            <TableHead className="min-w-[150px] md:w-auto">BALANCE</TableHead>
+                            <TableHead className="min-w-[150px] md:w-auto">PAYMENT STATUS</TableHead>
+                            {/* <TableHead className="min-w-[150px] md:w-auto">BOOKING STATUS</TableHead> */}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {localBookings?.map((booking: any) => (
                             <TableRow key={booking?._id}>
                                 <TableCell className="font-medium">
-                                    {booking?.courtId?.courtName}
+                                    {booking?.userId?.phoneNumber}
                                 </TableCell>
                                 <TableCell className="font-medium">
-                                    {booking?.amount}
+                                    {booking?.courtId?.courtName}
                                 </TableCell>
                                 <TableCell>
-                                    {formatDate(booking?.date)}
+                                    {formatDate(booking?.date)} - {booking?.startTime}
+                                </TableCell>
+                                <TableCell className="font-medium">
+                                    {booking?.duration}Hr
+                                </TableCell>
+                                <TableCell className="font-medium">
+                                    ₹{booking?.totalAmount}
                                 </TableCell>
                                 <TableCell className="font-medium">
                                     {booking?.paymentMethod}
                                 </TableCell>
                                 <TableCell className="font-medium">
-                                    {booking?.startTime}
+                                    ₹{booking?.amountPaid}
                                 </TableCell>
                                 <TableCell className="font-medium">
-                                    {booking?.duration}Hr
+                                    {booking?.totalAmount - booking?.amountPaid === 0 ? (
+                                        <span>Nil</span>
+                                    ) : (
+                                        <span>₹{booking?.totalAmount - booking?.amountPaid}</span>
+                                    )}
                                 </TableCell>
-                                {/* <TableCell className="font-medium">
+                                <TableCell className="font-medium">
                                     <Select
                                         onValueChange={(value) => handlePaymentStatusChange(booking._id, value)}
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder={<div className={`${booking?.paymentStatus === 'Pending' ? 'text-orange-500' : 'text-green-500'}`}>{booking?.paymentStatus}</div>} />
+                                            <SelectValue placeholder={<div className={`${booking?.paymentStatus === 'Advance Paid' ? 'text-orange-500' : 'text-green-500'}`}>{booking?.paymentStatus}</div>} />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="Pending">Pending</SelectItem>
-                                            <SelectItem value="Success">Success</SelectItem>
+                                            <SelectItem value="Paid">Paid</SelectItem>
+                                            <SelectItem value="Advance Paid">Advance Paid</SelectItem>
                                         </SelectContent>
                                     </Select>
-                                </TableCell> */}
+                                </TableCell>
                                 {/* <TableCell className="font-medium">
                                     {booking?.status}
                                 </TableCell> */}
-                                <TableCell className="font-medium">
-                                    {booking?.userId?.phoneNumber}
-                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

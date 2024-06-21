@@ -8,7 +8,7 @@ export function PaymentProcessing() {
           <CircleDot className="w-5" />
         </div>
       </div>
-      <span className="tracking-wide text-[#474747]">Payment Pending !</span>
+      <span className="tracking-wide text-[#474747]">Partially Paid !</span>
     </div>
   );
 }

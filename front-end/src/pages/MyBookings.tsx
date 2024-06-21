@@ -112,9 +112,9 @@ export function MyBooking() {
                   <div className="min-h-96 space-y-4 rounded-xl py-3 shadow-md sm:w-full border px-2 w-[80%] ">
                     <div className="w-full px-3 py-5 border-b">
                       <div className="w-full flex justify-center flex-col gap-2 ">
-                        {booking?.paymentStatus == "Success" ? (
+                        {booking?.paymentStatus == "Paid" ? (
                           <PaymentCompleted />
-                        ) : booking?.paymentStatus == "Pending" ? (
+                        ) : booking?.paymentStatus == "Advance Paid" ? (
                           <PaymentProcessing />
                         ) : booking.paymentStatus == "Failed" ? (
                           <PaymentProcessing />
@@ -122,8 +122,11 @@ export function MyBooking() {
                           ""
                         )}
 
-                        <div className="w-full flex justify-center text-[14px] font-semibold">
-                          ₹ {booking.amount}
+                        <div className="w-full flex justify-center text-[14px] text-green-600 font-semibold">
+                          AMOUNT PAID - ₹ {booking.amountPaid}
+                        </div>
+                        <div className="w-full flex justify-center text-[14px] text-red-500 font-semibold">
+                          AMOUNT DUE - ₹ {booking.totalAmount - booking.amountPaid}
                         </div>
                       </div>
                     </div>

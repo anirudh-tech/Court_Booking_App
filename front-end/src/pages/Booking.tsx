@@ -100,6 +100,7 @@ export function Booking() {
       if (values.paymentmode == "Full Payment") {
         valueCopy.amount = values.amount
       } else {
+        valueCopy.totalAmount = values.amount
         valueCopy.amount = values.deductedAmount
       }
       console.log(valueCopy, " copy");
@@ -171,6 +172,7 @@ export function Booking() {
     amount: z.number(),
     deductedAmount: z.number().optional(),
     paymentmode: z.string().nonempty(),
+    totalAmount: z.number().optional()
   });
   const {
     handleSubmit,
