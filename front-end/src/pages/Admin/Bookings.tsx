@@ -68,31 +68,36 @@ export function Bookings() {
     return (
         <main className="w-full h-full p-5 flex flex-col gap-2 justify-center">
             <h1 className="text-center text-3xl font-semibold underline">ALL BOOKINGS</h1>
-            <div className="flex w-[90%] justify-between">
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button
-                            variant={"outline"}
-                            className={cn(
-                                "sm:w-64 w-full justify-start text-left font-normal ms-14",
-                            )}
-                        >
-                            <CalendarIcon className="mr-2 h-4 w-4 " />
-                            {date ? (
-                                format(date, "PPP")
-                            ) : (
-                                <span>Pick a date</span>
-                            )}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                        <Calendar
-                            onSelect={(date) => handleDateClick(new Date(date))}
-                            mode="single"
-                            initialFocus
-                        />
-                    </PopoverContent>
-                </Popover>
+            <div className="flex w-[100%]  mb-5 justify-between">
+                <div className="flex gap-8 justify-start ">
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant={"outline"}
+                                className={cn(
+                                    "sm:w-64 w-full justify-start text-left font-normal ",
+                                )}
+                            >
+                                <CalendarIcon className="mr-2 h-4 w-4 " />
+                                {date ? (
+                                    format(date, "PPP")
+                                ) : (
+                                    <span>Pick a date</span>
+                                )}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                            <Calendar
+                                onSelect={(date) => handleDateClick(new Date(date))}
+                                mode="single"
+                                initialFocus
+                            />
+                        </PopoverContent>
+                    </Popover>
+                    <div className="h-10">
+                        <button onClick={() => setDate(null)} className="h-full px-4 items-center justify-center flex bg-blue-500 rounded-lg text-white">Clear FIlter</button>
+                    </div>
+                </div>
                 <div>
                     <Input
                         placeholder="Search here"
