@@ -124,7 +124,7 @@ export const EditCourt = ({ closeModal, courtDetail }: ChildProp) => {
   const [normalStartTime, setNormalStartTime] = useState<Date>();
   const startTimeslot = useGenerateStartTime(new Date());
   const endTimeSlot = useGenerateTimSlot(
-    normalStartTime ? normalStartTime : new Date()
+    normalStartTime ? normalStartTime : new Date(),[]
   );
   endTimeSlot;
   const submitCourtForm = (values: z.infer<typeof addCourtSchema>) => {

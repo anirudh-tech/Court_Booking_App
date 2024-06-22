@@ -97,61 +97,58 @@ export function Booking() {
       valueCopy.userId = String(user?._id);
       valueCopy.paymentStatus = "Pending";
       valueCopy.paymentMethod = values.paymentmode;
-
-      console.log(valueCopy, " copy");
-      if (values.paymentmode == "Online") {
-        const { data: bookingdata } = await axiosInstance.post(
-          `/book-court`,
-          valueCopy
-        );
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const order: any = bookingdata.order;
-
-        //     VITE_RAZORPAY_KEY_ID
-        // VITE_RAZORPAY_SECRET
-
-        const options = {
-          key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
-          amount: order.amount,
-          currency: order.currency,
-          name: "tester.",
-          description: "Test Transaction",
-          order_id: order.id,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          handler: async function (response: any) {
-            try {
-              const data = {
-                orderCreationId: order.id,
-                razorpayPaymentId: response.razorpay_payment_id,
-                razorpayOrderId: response.razorpay_order_id,
-                razorpaySignature: response.razorpay_signature,
-                bookingId: bookingdata.bookingId,
-              };
-              await axiosInstance
-                .post(`/validate-payment`, data)
-                .then((res) => {
-                  toast.success("Court booking successfull");
-                  if (res.data.status) {
-                    navigate("/mybooking");
-                  }
-                });
-            } catch (error) {
-              console.error("Payment validation error:", error);
-              toast.error("Payment validation error");
-            }
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          },
-        };
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const paymentObject = new (window as any).Razorpay(options);
-        paymentObject.open();
+      if (values.paymentmode == "Full Payment") {
+        valueCopy.amount = values.amount
       } else {
-        const { data } = await axiosInstance.post(`/book-court`, valueCopy);
-        if (data.status) {
-          toast.success("Court booking successfull");
-          navigate("/mybooking");
-        }
+        valueCopy.totalAmount = values.amount
+        valueCopy.amount = values.deductedAmount
       }
+      console.log(valueCopy, " copy");
+      const { data: bookingdata } = await axiosInstance.post(
+        `/book-court`,
+        valueCopy
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const order: any = bookingdata.order;
+
+      //     VITE_RAZORPAY_KEY_ID
+      // VITE_RAZORPAY_SECRET
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
+        amount: order.amount,
+        currency: order.currency,
+        name: "tester.",
+        description: "Test Transaction",
+        order_id: order.id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        handler: async function (response: any) {
+          try {
+            const data = {
+              orderCreationId: order.id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpaySignature: response.razorpay_signature,
+              bookingId: bookingdata.bookingId,
+            };
+            await axiosInstance
+              .post(`/validate-payment`, data)
+              .then((res) => {
+                toast.success("Court booking successfull");
+                if (res.data.status) {
+                  navigate("/mybooking");
+                }
+              });
+          } catch (error) {
+            console.error("Payment validation error:", error);
+            toast.error("Payment validation error");
+          }
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        },
+      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const paymentObject = new (window as any).Razorpay(options);
+      paymentObject.open();
       setSubmitionLoad(false);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -173,7 +170,9 @@ export function Booking() {
     duration: z.number(),
     date: z.date(),
     amount: z.number(),
+    deductedAmount: z.number().optional(),
     paymentmode: z.string().nonempty(),
+    totalAmount: z.number().optional()
   });
   const {
     handleSubmit,
@@ -201,7 +200,9 @@ export function Booking() {
       // Maximum duration limit
       const newDuration = currentDuration + 0.5;
       const newAmount = (currentAmount / currentDuration) * newDuration;
-
+      const newDeductedAmount = newAmount * 0.2;
+      setValue("deductedAmount", newDeductedAmount)
+      trigger("deductedAmount")
       setValue("duration", newDuration); // Increment by half an hour
       trigger("duration");
       setValue("amount", newAmount); // Update amount with new duration
@@ -453,9 +454,8 @@ export function Booking() {
                 }}
               >
                 <SelectTrigger
-                  className={`sm:w-64 w-full outline-none ring-0 ${
-                    !courts || (courts.length <= 0 && "pointer-events-none")
-                  } `}
+                  className={`sm:w-64 w-full outline-none ring-0 ${!courts || (courts.length <= 0 && "pointer-events-none")
+                    } `}
                 >
                   <SelectValue
                     placeholder={
@@ -569,10 +569,9 @@ export function Booking() {
                             setValue("startTime", formatTime(time));
                             popoverCloseRef.current?.click();
                           }}
-                          className={`h-10 rounded-md cursor-pointer hover:bg-[#4cd681] transition-all duration-200 w-full flex items-center justify-center text-[13px] border ${
-                            bookedSlots.includes(formatTime(time)) &&
+                          className={`h-10 rounded-md cursor-pointer hover:bg-[#4cd681] transition-all duration-200 w-full flex items-center justify-center text-[13px] border ${bookedSlots.includes(formatTime(time)) &&
                             "pointer-events-none bg-green-700 text-white relative"
-                          }`}
+                            }`}
                         >
                           {formatTime(time)}
                         </div>
@@ -603,13 +602,11 @@ export function Booking() {
               <button
                 type="button"
                 onClick={decrementDuration}
-                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
-                  !watch("court") && "pointer-events-none"
-                } ${
-                  watch("duration") <= 1
+                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${!watch("court") && "pointer-events-none"
+                  } ${watch("duration") <= 1
                     ? "pointer-events-none bg-slate-300 border"
                     : "bg-custom-gradient"
-                }  text-white transition-all duration-200`}
+                  }  text-white transition-all duration-200`}
               >
                 <Minus className="w-5" />
               </button>
@@ -620,13 +617,11 @@ export function Booking() {
               <button
                 type="button"
                 onClick={incrementDuration}
-                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
-                  !watch("court") && "pointer-events-none"
-                } ${
-                  watch("duration") >= 20
+                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${!watch("court") && "pointer-events-none"
+                  } ${watch("duration") >= 20
                     ? "pointer-events-none bg-slate-300 border"
                     : "bg-custom-gradient"
-                }  text-white transition-all duration-200`}
+                  }  text-white transition-all duration-200`}
               >
                 <Plus className="w-5" />
               </button>
@@ -651,6 +646,9 @@ export function Booking() {
             <div className="flex flex-col sm:w-auto w-full">
               <Select
                 onValueChange={(value) => {
+                  if (value == "Advance Payment") {
+                    setValue("deductedAmount", watch("amount") * 0.2);
+                  }
                   setValue("paymentmode", value);
                   trigger("paymentmode");
                 }}
@@ -659,11 +657,11 @@ export function Booking() {
                   <SelectValue placeholder="💳 Select payment option" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem key={"Online"} value={"Online"}>
-                    Online
+                  <SelectItem key={"Full Payment"} value={"Full Payment"}>
+                    Full Payment
                   </SelectItem>
-                  <SelectItem key={"Offline"} value={"Offline"}>
-                    Pay after play
+                  <SelectItem key={"Advance Payment"} value={"Advance Payment"}>
+                    Pay 20% Advance
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -682,20 +680,41 @@ export function Booking() {
               <div className="sm:w-64 w-52 h-10  rounded-md flex justify-end gap-1  items-center  px-4 pointer-events-none">
                 <IndianRupee className="w-4 font-bold" />{" "}
                 <span className="text-[15px] font-semibold">
-                  {watch("amount") ? watch("amount") : "---"}
+                  {watch("amount") ? (
+                    watch("paymentmode") === "Full Payment" ? (
+                      watch("amount")
+                    ) : (
+                      `${watch("amount")}`
+                    )
+                  ) : (
+                    "---"
+                  )}
                 </span>
               </div>
             </div>
           </div>
+          {
+            watch("paymentmode") === "Advance Payment" && (
+              <div className="w-full flex justify-between  items-center border border-r-0 border-l-0 border-t-0 px-2">
+                <label htmlFor="">Amount Payable </label>
+                <div className="flex flex-col">
+                  <div className="sm:w-64 w-52 h-10  rounded-md flex justify-end gap-1  items-center  px-4 pointer-events-none">
+                    <IndianRupee className="w-4 font-bold" />{" "}
+                    <span className="text-[15px] font-semibold">
+                      {watch("deductedAmount")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )
+          }
           <LoaderButton
             type="submit"
             loading={submitionLoad}
             // onClick={handleBooking}
             className="w-full h-12 flex items-center justify-center bg-custom-gradient rounded-md text-white"
           >
-            {watch("paymentmode") == "Online"
-              ? "Proceed to payment 💳"
-              : "Confirm booking"}
+            Proceed to payment 💳
           </LoaderButton>
         </div>
       </form>
