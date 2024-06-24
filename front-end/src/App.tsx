@@ -25,7 +25,7 @@ function App() {
   useEffect(() => {
     Aos.init({ duration: 800 });
   }, []);
-  const { user } = useSelector((state: RootState) => state.user);
+  const { user, isVerified } = useSelector((state: RootState) => state.user);
   return (
     <main className="w-full">
       <Routes>
@@ -39,7 +39,8 @@ function App() {
             path="/mybooking"
             element={
               // user?._id?
-              <MyBooking />
+              isVerified ?
+                <MyBooking /> : <Navigate to={'/'} />
               // :<Navigate to={"/"}/>
             }
           />

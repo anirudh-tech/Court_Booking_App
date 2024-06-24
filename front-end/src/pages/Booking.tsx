@@ -104,7 +104,6 @@ export function Booking() {
         valueCopy.totalAmount = values.amount
         valueCopy.amount = values.deductedAmount
       }
-      console.log(valueCopy, " copy");
       const { data: bookingdata } = await axiosInstance.post(
         `/book-court`,
         valueCopy
@@ -236,7 +235,6 @@ export function Booking() {
       axiosInstance
         .post(`/getcourt-withsport`, { sportId: watch("sport") })
         .then((res) => {
-          console.log(res.data.courts);
 
           setCourts(res.data.courts);
         })
@@ -298,6 +296,7 @@ export function Booking() {
     bookedSlots ? bookedSlots : []
   );
   useEffect(() => {
+    console.log("called")
     if (watch("date") && watch("court")) {
       axiosInstance
         .post("/booked-slots", {
@@ -306,8 +305,7 @@ export function Booking() {
         })
         .then((res) => {
           setBookedSlot(res.data.data);
-          console.log(timeSlots);
-          console.log("🚀 ~ .then ~ res:", res.data.data);
+
         })
         .catch((err) => {
           console.log(err);
@@ -316,13 +314,12 @@ export function Booking() {
           setValue("startTime", formatTime(timeSlots[0]));
         });
     }
-  }, [watch("court"), watch("date")]);
+  }, [watch("court"),watch("date")]);
 
   useEffect(() => {
     setValue("startTime", formatTime(timeSlots[0]));
   }, [bookedSlots]);
 
-  console.log(errors);
   return (
     <main className="w-full min-h-screen flex  justify-center items-start text-[15px] ">
       <form
@@ -413,16 +410,8 @@ export function Booking() {
                   const selecteCourt = courts.find(
                     (court) => court._id == value
                   );
-                  console.log(
-                    "🚀 ~ Booking ~ selecteCourt:",
-                    isSpecialDay(new Date(), selecteCourt as Court)
-                  );
-                  console.log("IS sp time ", watch("startTime"));
-                  console.log("IS sp time ", selecteCourt?.specialcost);
-                  console.log(
-                    "IS sp time ",
-                    isSpecialTime(watch("startTime"), selecteCourt as Court)
-                  );
+
+
 
                   if (
                     selecteCourt?.specialcost?.category == "day" &&

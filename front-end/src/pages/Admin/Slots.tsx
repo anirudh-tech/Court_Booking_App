@@ -22,9 +22,7 @@ const Slots = () => {
   const dispatch: AppDispatch = useDispatch();
   const { sports } = useSelector((state: RootState) => state.sport);
   const { bookings } = useSelector((state: any) => state.booking);
-  console.log("🚀 ~ file: Slots.tsx:22 ~ Slots ~ bookings:", bookings)
   const { courts } = useSelector((state: any) => state.court);
-  console.log("🚀 ~ file: Slots.tsx:23 ~ Slots ~ courts:", courts)
 
   useEffect(() => {
     if (date) {

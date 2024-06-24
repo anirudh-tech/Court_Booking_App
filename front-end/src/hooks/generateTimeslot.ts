@@ -1,6 +1,7 @@
 import { formatTime } from "@/utils/formatTime";
 
 export const useGenerateTimSlot = (date: Date, existArray: string[]) => {
+  
   const slots: Date[] = [];
   const now = new Date();
   const isToday = now.toDateString() === date.toDateString();
