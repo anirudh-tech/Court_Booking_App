@@ -98,10 +98,10 @@ export function Booking() {
       valueCopy.paymentStatus = "Pending";
       valueCopy.paymentMethod = values.paymentmode;
       if (values.paymentmode == "Full Payment") {
-        valueCopy.amount = values.amount
+        valueCopy.amount = values.amount;
       } else {
-        valueCopy.totalAmount = values.amount
-        valueCopy.amount = values.deductedAmount
+        valueCopy.totalAmount = values.amount;
+        valueCopy.amount = values.deductedAmount;
       }
       console.log(valueCopy, " copy");
       const { data: bookingdata } = await axiosInstance.post(
@@ -131,14 +131,12 @@ export function Booking() {
               razorpaySignature: response.razorpay_signature,
               bookingId: bookingdata.bookingId,
             };
-            await axiosInstance
-              .post(`/validate-payment`, data)
-              .then((res) => {
-                toast.success("Court booking successfull");
-                if (res.data.status) {
-                  navigate("/mybooking");
-                }
-              });
+            await axiosInstance.post(`/validate-payment`, data).then((res) => {
+              toast.success("Court booking successfull");
+              if (res.data.status) {
+                navigate("/mybooking");
+              }
+            });
           } catch (error) {
             console.error("Payment validation error:", error);
             toast.error("Payment validation error");
@@ -172,7 +170,7 @@ export function Booking() {
     amount: z.number(),
     deductedAmount: z.number().optional(),
     paymentmode: z.string().nonempty(),
-    totalAmount: z.number().optional()
+    totalAmount: z.number().optional(),
   });
   const {
     handleSubmit,
@@ -201,8 +199,8 @@ export function Booking() {
       const newDuration = currentDuration + 0.5;
       const newAmount = (currentAmount / currentDuration) * newDuration;
       const newDeductedAmount = newAmount * 0.2;
-      setValue("deductedAmount", newDeductedAmount)
-      trigger("deductedAmount")
+      setValue("deductedAmount", newDeductedAmount);
+      trigger("deductedAmount");
       setValue("duration", newDuration); // Increment by half an hour
       trigger("duration");
       setValue("amount", newAmount); // Update amount with new duration
@@ -292,8 +290,21 @@ export function Booking() {
 
   const [bookedSlots, setBookedSlot] = useState<string[]>([]);
 
+  const adjustDateIfNeeded = (date) => {
+    const currentDate = new Date();
+    const currentHour = currentDate.getHours();
+
+    // If the current time is after 11:00 PM, adjust the date to the next day
+    if (currentHour >= 23) {
+      const adjustedDate = new Date(date);
+      adjustedDate.setDate(adjustedDate.getDate() + 1);
+      return adjustedDate;
+    }
+
+    return date;
+  };
   const timeSlots = useGenerateTimSlot(
-    watch("date") ? watch("date") : new Date(),
+    watch("date") ? watch("date") : adjustDateIfNeeded(new Date()),
     bookedSlots ? bookedSlots : []
   );
   useEffect(() => {
@@ -454,8 +465,9 @@ export function Booking() {
                 }}
               >
                 <SelectTrigger
-                  className={`sm:w-64 w-full outline-none ring-0 ${!courts || (courts.length <= 0 && "pointer-events-none")
-                    } `}
+                  className={`sm:w-64 w-full outline-none ring-0 ${
+                    !courts || (courts.length <= 0 && "pointer-events-none")
+                  } `}
                 >
                   <SelectValue
                     placeholder={
@@ -520,7 +532,9 @@ export function Booking() {
                     mode="single"
                     selected={watch("date")}
                     onSelect={(date) => {
-                      date && setValue("date", new Date(date));
+                      console.log("🚀 ~ Booking ~ date:", date)
+                      console.log("🚀 ~ Booking ~ date:", new Date(date))
+                      date && setValue("date", date);
                     }}
                     disabled={isDateDisabled}
                     initialFocus
@@ -569,9 +583,10 @@ export function Booking() {
                             setValue("startTime", formatTime(time));
                             popoverCloseRef.current?.click();
                           }}
-                          className={`h-10 rounded-md cursor-pointer hover:bg-[#4cd681] transition-all duration-200 w-full flex items-center justify-center text-[13px] border ${bookedSlots.includes(formatTime(time)) &&
+                          className={`h-10 rounded-md cursor-pointer hover:bg-[#4cd681] transition-all duration-200 w-full flex items-center justify-center text-[13px] border ${
+                            bookedSlots.includes(formatTime(time)) &&
                             "pointer-events-none bg-green-700 text-white relative"
-                            }`}
+                          }`}
                         >
                           {formatTime(time)}
                         </div>
@@ -602,11 +617,13 @@ export function Booking() {
               <button
                 type="button"
                 onClick={decrementDuration}
-                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${!watch("court") && "pointer-events-none"
-                  } ${watch("duration") <= 1
+                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
+                  !watch("court") && "pointer-events-none"
+                } ${
+                  watch("duration") <= 1
                     ? "pointer-events-none bg-slate-300 border"
                     : "bg-custom-gradient"
-                  }  text-white transition-all duration-200`}
+                }  text-white transition-all duration-200`}
               >
                 <Minus className="w-5" />
               </button>
@@ -617,11 +634,13 @@ export function Booking() {
               <button
                 type="button"
                 onClick={incrementDuration}
-                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${!watch("court") && "pointer-events-none"
-                  } ${watch("duration") >= 20
+                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
+                  !watch("court") && "pointer-events-none"
+                } ${
+                  watch("duration") >= 20
                     ? "pointer-events-none bg-slate-300 border"
                     : "bg-custom-gradient"
-                  }  text-white transition-all duration-200`}
+                }  text-white transition-all duration-200`}
               >
                 <Plus className="w-5" />
               </button>
@@ -680,34 +699,28 @@ export function Booking() {
               <div className="sm:w-64 w-52 h-10  rounded-md flex justify-end gap-1  items-center  px-4 pointer-events-none">
                 <IndianRupee className="w-4 font-bold" />{" "}
                 <span className="text-[15px] font-semibold">
-                  {watch("amount") ? (
-                    watch("paymentmode") === "Full Payment" ? (
-                      watch("amount")
-                    ) : (
-                      `${watch("amount")}`
-                    )
-                  ) : (
-                    "---"
-                  )}
+                  {watch("amount")
+                    ? watch("paymentmode") === "Full Payment"
+                      ? watch("amount")
+                      : `${watch("amount")}`
+                    : "---"}
                 </span>
               </div>
             </div>
           </div>
-          {
-            watch("paymentmode") === "Advance Payment" && (
-              <div className="w-full flex justify-between  items-center border border-r-0 border-l-0 border-t-0 px-2">
-                <label htmlFor="">Amount Payable </label>
-                <div className="flex flex-col">
-                  <div className="sm:w-64 w-52 h-10  rounded-md flex justify-end gap-1  items-center  px-4 pointer-events-none">
-                    <IndianRupee className="w-4 font-bold" />{" "}
-                    <span className="text-[15px] font-semibold">
-                      {watch("deductedAmount")}
-                    </span>
-                  </div>
+          {watch("paymentmode") === "Advance Payment" && (
+            <div className="w-full flex justify-between  items-center border border-r-0 border-l-0 border-t-0 px-2">
+              <label htmlFor="">Amount Payable </label>
+              <div className="flex flex-col">
+                <div className="sm:w-64 w-52 h-10  rounded-md flex justify-end gap-1  items-center  px-4 pointer-events-none">
+                  <IndianRupee className="w-4 font-bold" />{" "}
+                  <span className="text-[15px] font-semibold">
+                    {watch("deductedAmount")}
+                  </span>
                 </div>
               </div>
-            )
-          }
+            </div>
+          )}
           <LoaderButton
             type="submit"
             loading={submitionLoad}
