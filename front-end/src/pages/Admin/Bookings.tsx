@@ -90,7 +90,7 @@ export function Bookings() {
                         </PopoverContent>
                     </Popover>
                     <div className="h-10">
-                        <button onClick={() => setDate(null)} className="h-full px-4 items-center justify-center flex bg-blue-500 rounded-lg text-white">Clear FIlter</button>
+                        <button onClick={() => setDate(null)} className="h-full md:px-4 px-10 text-sm me-3 items-center justify-center flex bg-blue-500 rounded-lg text-white">Clear FIlter</button>
                     </div>
                 </div>
                 <div>

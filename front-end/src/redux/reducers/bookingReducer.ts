@@ -17,7 +17,6 @@ const bookingReducer = createSlice({
         state.loading = true;
       })
       .addCase(listAllBookings.fulfilled, (state, { payload }) => {
-        console.log("🚀 ~ .addCase ~ payload:", payload);
         state.loading = false;
         state.bookings = payload.data;
         state.err = false;
@@ -31,7 +30,6 @@ const bookingReducer = createSlice({
         state.loading = true;
       })
       .addCase(updateBookingPaymentStatus.fulfilled, (state, { payload }) => {
-        console.log("🚀 ~ .addCase ~ payload:", payload);
         state.loading = false;
         state.bookings = payload.data;
         state.err = false;
@@ -45,7 +43,6 @@ const bookingReducer = createSlice({
         state.loading = true;
       })
       .addCase(bookingsByDate.fulfilled, (state, { payload }) => {
-        console.log("🚀 ~ .addCase ~ payload:", payload);
         state.loading = false;
         state.bookings = payload.data;
         state.err = false;

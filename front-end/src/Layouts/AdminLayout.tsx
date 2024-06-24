@@ -108,6 +108,13 @@ export function AdminLayout() {
                       <CreditCard className="w-5" />
                       <span>Bookings</span>
                     </NavLink>
+                    <NavLink
+                      to={"slots"}
+                      className="w-full flex gap-2 h-10 items-center relative  pl-3 hover:bg-slate-200 hover:px-3 transition-all duration-200 rounded-md cursor-pointer"
+                    >
+                      <SwatchBook className="w-5" />
+                      <span>Slots</span>
+                    </NavLink>
                   </div>
                   <div className="absolute left-0 bottom-0 h-28 w-full bg-white px-2">
                     <div

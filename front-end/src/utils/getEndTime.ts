@@ -24,6 +24,5 @@ export function formatEndTimeWithDuration(
   durationHours: number
 ): string {
   const endTime = getEndTimeWithDuration(startTime, durationHours);
-  console.log("🚀 ~ endTime:", endTime)
   return formatTime(endTime);
 }

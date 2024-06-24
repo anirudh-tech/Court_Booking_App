@@ -51,7 +51,6 @@ const userReducer = createSlice({
         state.loading = true;
       })
       .addCase(fetchUser.fulfilled, (state, { payload }) => {
-        console.log("🚀 ~ .addCase ~ payload:", payload);
         state.loading = false;
         state.user = payload.data;
         state.isVerified = true;

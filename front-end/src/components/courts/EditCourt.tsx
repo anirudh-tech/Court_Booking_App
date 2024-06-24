@@ -113,7 +113,6 @@ export const EditCourt = ({ closeModal, courtDetail }: ChildProp) => {
       },
     },
   });
-  console.log(errors);
 
   const popoverCloseRef = useRef<HTMLButtonElement>(null);
   // const [date, setDate] = useState<Date>();

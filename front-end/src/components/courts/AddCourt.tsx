@@ -112,7 +112,6 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
       },
     },
   });
-  console.log(errors);
 
   const popoverCloseRef = useRef<HTMLButtonElement>(null);
   // const [date, setDate] = useState<Date>();
@@ -127,7 +126,6 @@ export const AddCourts = ({ closeModal }: ChildProp) => {
   );
   endTimeSlot;
   const submitCourtForm = (values: z.infer<typeof addCourtSchema>) => {
-    console.log("🚀 ~ submitCourtForm ~ values:", values);
     dispatch(courtAddAction(values)).then((res) => {
       if (res.type.endsWith("fulfilled")) {
         closeModal();
