@@ -10,9 +10,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/shadcn/ui/popover'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shadcn/ui/tabs'
 import { addMinutes, format, isBefore, isAfter, parse } from 'date-fns'
 import { CalendarIcon, CircleCheck, TriangleAlert, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { CustomModal } from '@/components/Moda'
+import { PopoverClose } from '@radix-ui/react-popover'
 
 const Slots = () => {
   const initialDate = new Date();
@@ -40,6 +41,7 @@ const Slots = () => {
 
   const handleDateClick = (date: Date) => {
     setDate(date);
+    popoverClose.current.click()
   };
 
   const generateIntervals = (from: string, to: string, sportName: string) => {
@@ -78,6 +80,7 @@ const Slots = () => {
     return intervals;
   };
 
+  const popoverClose = useRef<HTMLButtonElement>(null)
   const intervals = selectedSport ? generateIntervals('5:00 AM', '11:00 PM', selectedSport) : [];
   return (
     <main className="w-full h-full p-5 flex flex-col gap-2 justify-center">
@@ -103,6 +106,8 @@ const Slots = () => {
             mode="single"
             initialFocus
           />
+          <PopoverClose ref={popoverClose} className='hidden'>HEL</PopoverClose>
+
         </PopoverContent>
       </Popover>
       <div className='w-full flex justify-center'>
@@ -162,13 +167,13 @@ const Slots = () => {
                                         {
                                           booking.amountPaid == booking.totalAmount ? (
                                             <>
-                                            <CircleCheck className='w-6 text-green-500' />
-                                            <p>INR {booking.amountPaid}/{booking.totalAmount}</p>
+                                              <CircleCheck className='w-6 text-green-500' />
+                                              <p>INR {booking.amountPaid}/{booking.totalAmount}</p>
                                             </>
                                           ) : (
                                             <>
-                                            <TriangleAlert className={'w-6 text-yellow-500'} />
-                                            <p>INR {booking.amountPaid}/{booking.totalAmount}</p>
+                                              <TriangleAlert className={'w-6 text-yellow-500'} />
+                                              <p>INR {booking.amountPaid}/{booking.totalAmount}</p>
                                             </>
                                           )
                                         }

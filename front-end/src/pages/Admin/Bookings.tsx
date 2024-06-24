@@ -10,16 +10,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn/ui/popover";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shadcn/ui/table";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shadcn/ui/select";
+import { PopoverClose } from "@radix-ui/react-popover";
 
 export function Bookings() {
     const dispatch: AppDispatch = useDispatch();
     const [localBookings, setLocalBookings] = useState([]);
     const [search, setSearch] = useState<string>('');
     const [date, setDate] = useState<Date | null>(null);
+    const popoverClose = useRef<HTMLButtonElement>(null)
     const { bookings } = useSelector((state: RootState) => state.booking);
+
 
     useEffect(() => {
         dispatch(listAllBookings(search));
@@ -51,12 +54,16 @@ export function Bookings() {
     };
 
     const handleDateClick = (date: Date) => {
+        popoverClose.current.click()
         setDate(date);
         setSearch('');  // Clear the search input when a new date is picked
     };
 
-    const handlePaymentStatusChange = (bookingId: string, value: string) => {
-        dispatch(updateBookingPaymentStatus({ bookingId, value }));
+    const handlePaymentStatusChange = async(bookingId: string, value: string) => {
+        await dispatch(updateBookingPaymentStatus({ bookingId, value }));
+        if(date){
+            dispatch(bookingsByDate(date));
+        }
     };
 
 
@@ -87,6 +94,7 @@ export function Bookings() {
                                 mode="single"
                                 initialFocus
                             />
+                            <PopoverClose ref={popoverClose} className='hidden'>HEL</PopoverClose>
                         </PopoverContent>
                     </Popover>
                     <div className="h-10">
