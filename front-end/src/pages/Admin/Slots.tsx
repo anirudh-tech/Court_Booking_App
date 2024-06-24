@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from '@/lib/utils'
-import { listAllBookings } from '@/redux/actions/bookingAction'
+import { bookingsByDate } from '@/redux/actions/bookingAction'
 import { listAlsports } from '@/redux/actions/sportAcion'
 import { listAllCourts } from '@/redux/actions/courtAction' // Add this action to fetch all courts
 import { AppDispatch, RootState } from '@/redux/store'
@@ -14,19 +14,25 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 const Slots = () => {
-  const [date, setDate] = useState<Date | null>(null);
+  const initialDate = new Date();
+  initialDate.setHours(0, 0, 0, 0);
+  const [date, setDate] = useState<Date>(initialDate);
   const [selectedSport, setSelectedSport] = useState<string | null>(null);
   const dispatch: AppDispatch = useDispatch();
   const { sports } = useSelector((state: RootState) => state.sport);
   const { bookings } = useSelector((state: any) => state.booking);
+  console.log("🚀 ~ file: Slots.tsx:22 ~ Slots ~ bookings:", bookings)
   const { courts } = useSelector((state: any) => state.court);
   console.log("🚀 ~ file: Slots.tsx:23 ~ Slots ~ courts:", courts)
-  
+
   useEffect(() => {
+    if (date) {
+      alert(date)
+      dispatch(bookingsByDate(date));
+    }
     dispatch(listAlsports());
-    dispatch(listAllBookings(""));
     dispatch(listAllCourts());
-  }, [dispatch]);
+  }, [dispatch, date]);
 
   useEffect(() => {
     if (sports?.length > 0) {
@@ -35,6 +41,7 @@ const Slots = () => {
   }, [sports]);
 
   const handleDateClick = (date: Date) => {
+    alert(date)
     setDate(date);
   };
 
@@ -43,7 +50,7 @@ const Slots = () => {
     const toTime = parse(to, 'h:mm a', new Date());
     const intervals = [];
 
-    const sportCourts = courts.filter(court => court.sportdetail?.sportName === sportName);
+    const sportCourts = courts?.filter(court => court.sportdetail?.sportName === sportName);
     console.log("🚀 ~ file: Slots.tsx:40 ~ generateIntervals ~ sportCourts:", sportCourts)
     const totalCourts = sportCourts.length;
 
@@ -58,7 +65,7 @@ const Slots = () => {
 
         return booking.courtId.sportId.sportName === sportName &&
           ((isBefore(bookingStart, endTime) && isAfter(bookingEnd, time)) ||
-           (isBefore(bookingEnd, endTime) && isAfter(bookingEnd, time)));
+            (isBefore(bookingEnd, endTime) && isAfter(bookingEnd, time)));
       });
 
       const availableCourts = sportCourts.filter(court =>
@@ -100,7 +107,7 @@ const Slots = () => {
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
           <Calendar
-            onSelect={(date) => handleDateClick(new Date(date))}
+            onSelect={(date) => handleDateClick(date)}
             mode="single"
             initialFocus
           />

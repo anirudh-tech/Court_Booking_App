@@ -12,7 +12,6 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import moment from 'moment-timezone';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shadcn/ui/select";
 
 export function Bookings() {
@@ -60,10 +59,6 @@ export function Bookings() {
         dispatch(updateBookingPaymentStatus({ bookingId, value }));
     };
 
-    const formatDate = (date: string) => {
-        const formattedDate = moment.tz(date, 'UTC').format('MMMM D, YYYY');
-        return formattedDate;
-    };
 
     return (
         <main className="w-full h-full p-5 flex flex-col gap-2 justify-center">
@@ -135,7 +130,7 @@ export function Bookings() {
                                     {booking?.courtId?.courtName}
                                 </TableCell>
                                 <TableCell>
-                                    {formatDate(booking?.date)} - {booking?.startTime}
+                                    {format(booking?.date,"PPP")} - {booking?.startTime} to {booking?.endTime}
                                 </TableCell>
                                 <TableCell className="font-medium">
                                     {booking?.duration}Hr
