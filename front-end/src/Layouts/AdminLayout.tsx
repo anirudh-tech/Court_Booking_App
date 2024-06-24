@@ -3,7 +3,7 @@ import { listAllBookings } from "@/redux/actions/bookingAction";
 import { logoutUser } from "@/redux/actions/userActions";
 import { AppDispatch } from "@/redux/store";
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTrigger } from "@/shadcn/ui/sheet";
-import { CreditCard, KeyboardMusic, LogOut, Trophy } from "lucide-react";
+import { CreditCard, KeyboardMusic, LogOut, SwatchBook, Trophy } from "lucide-react";
 import { useRef } from "react";
 import { useDispatch } from "react-redux";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
@@ -53,6 +53,13 @@ export function AdminLayout() {
             >
               <CreditCard className="w-5" />
               <span>Bookings</span>
+            </NavLink>
+            <NavLink
+              to={"slots"}
+              className="w-full flex gap-2 h-10 items-center relative  pl-3 hover:bg-slate-200 hover:px-3 transition-all duration-200 rounded-md cursor-pointer"
+            >
+              <SwatchBook className="w-5" />
+              <span>Slots</span>
             </NavLink>
           </div>
           <div className="absolute left-0 bottom-0 h-28 w-full bg-white px-2">

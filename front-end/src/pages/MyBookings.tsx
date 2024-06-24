@@ -5,12 +5,12 @@ import { axiosInstance } from "@/constants/axiosInstance";
 import { RootState } from "@/redux/store";
 import { Booking } from "@/types/bookingReducerInitial";
 import { motion } from "framer-motion";
-import moment from "moment-timezone";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import { format } from "date-fns";
 
 export function MyBooking() {
   const { user } = useSelector((state: RootState) => state.user);
@@ -28,10 +28,6 @@ export function MyBooking() {
     }
   }, [user]);
 
-  const formatDate = (date) => {
-    const formattedDate = moment.tz(date, 'UTC').format('MMMM D, YYYY');
-    return formattedDate
-  }
   return (
     <motion.main className="w-full min-h-screen">
       {loading ? (
@@ -140,7 +136,7 @@ export function MyBooking() {
                       <div className="w-full flex justify-between text-[14px]">
                         <span className="text-[#474747]">Date</span>
                         <span className="">
-                          {booking.date && formatDate(booking.date)}
+                          {booking.date && format(booking.date,"PPP")}
                         </span>
                       </div>
                       <div className="w-full flex justify-between text-[14px]">

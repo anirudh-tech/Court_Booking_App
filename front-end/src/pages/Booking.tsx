@@ -98,7 +98,8 @@ export function Booking() {
       valueCopy.paymentStatus = "Pending";
       valueCopy.paymentMethod = values.paymentmode;
       if (values.paymentmode == "Full Payment") {
-        valueCopy.amount = values.amount;
+        valueCopy.totalAmount = values.amount
+        valueCopy.amount = values.amount
       } else {
         valueCopy.totalAmount = values.amount;
         valueCopy.amount = values.deductedAmount;

@@ -12,7 +12,6 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import moment from 'moment-timezone';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shadcn/ui/select";
 
 export function Bookings() {
@@ -60,39 +59,40 @@ export function Bookings() {
         dispatch(updateBookingPaymentStatus({ bookingId, value }));
     };
 
-    const formatDate = (date: string) => {
-        const formattedDate = moment.tz(date, 'UTC').format('MMMM D, YYYY');
-        return formattedDate;
-    };
 
     return (
         <main className="w-full h-full p-5 flex flex-col gap-2 justify-center">
             <h1 className="text-center text-3xl font-semibold underline">ALL BOOKINGS</h1>
-            <div className="flex w-[90%] justify-between">
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button
-                            variant={"outline"}
-                            className={cn(
-                                "sm:w-64 w-full justify-start text-left font-normal ms-14",
-                            )}
-                        >
-                            <CalendarIcon className="mr-2 h-4 w-4 " />
-                            {date ? (
-                                format(date, "PPP")
-                            ) : (
-                                <span>Pick a date</span>
-                            )}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                        <Calendar
-                            onSelect={(date) => handleDateClick(new Date(date))}
-                            mode="single"
-                            initialFocus
-                        />
-                    </PopoverContent>
-                </Popover>
+            <div className="flex w-[100%]  mb-5 justify-between">
+                <div className="flex gap-8 justify-start ">
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant={"outline"}
+                                className={cn(
+                                    "sm:w-64 w-full justify-start text-left font-normal ",
+                                )}
+                            >
+                                <CalendarIcon className="mr-2 h-4 w-4 " />
+                                {date ? (
+                                    format(date, "PPP")
+                                ) : (
+                                    <span>Pick a date</span>
+                                )}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                            <Calendar
+                                onSelect={(date) => handleDateClick(new Date(date))}
+                                mode="single"
+                                initialFocus
+                            />
+                        </PopoverContent>
+                    </Popover>
+                    <div className="h-10">
+                        <button onClick={() => setDate(null)} className="h-full px-4 items-center justify-center flex bg-blue-500 rounded-lg text-white">Clear FIlter</button>
+                    </div>
+                </div>
                 <div>
                     <Input
                         placeholder="Search here"
@@ -130,7 +130,7 @@ export function Bookings() {
                                     {booking?.courtId?.courtName}
                                 </TableCell>
                                 <TableCell>
-                                    {formatDate(booking?.date)} - {booking?.startTime}
+                                    {format(booking?.date,"PPP")} - {booking?.startTime} to {booking?.endTime}
                                 </TableCell>
                                 <TableCell className="font-medium">
                                     {booking?.duration}Hr
