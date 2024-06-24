@@ -50,7 +50,7 @@ const Slots = () => {
     const intervals = [];
 
     const sportCourts = courts?.filter(court => court.sportdetail?.sportName === sportName);
-    const totalCourts = sportCourts.length;
+    const totalCourts = sportCourts?.length;
 
     for (let time = fromTime; time < toTime; time = addMinutes(time, 30)) {
       const endTime = addMinutes(time, 30);
@@ -64,7 +64,7 @@ const Slots = () => {
             (isBefore(bookingEnd, endTime) && isAfter(bookingEnd, time)));
       });
 
-      const availableCourts = sportCourts.filter(court =>
+      const availableCourts = sportCourts?.filter(court =>
         isBefore(time, parse(court.normalcost.time.to, 'h:mm a', new Date())) &&
         isAfter(endTime, parse(court.normalcost.time.from, 'h:mm a', new Date()))
       ).length;
@@ -185,8 +185,8 @@ const Slots = () => {
                           <div className='border border-1 border-red-400 px-5 rounded w-[200px] text-center'>
                             {interval}
                           </div>
-                          <div className={` px-5 rounded opacity-50 text-white ${availableCourts - bookings.length == 0 ? 'bg-blue-700 border-2' : 'bg-green-700 text-white'}`}>
-                            {availableCourts - bookings.length}
+                          <div className={` px-5 rounded opacity-50 text-white ${availableCourts - bookings?.length == 0 ? 'bg-blue-700 border-2' : 'bg-green-700 text-white'}`}>
+                            {availableCourts - bookings?.length}
                           </div>
                         </div>
                       </div>
