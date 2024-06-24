@@ -20,7 +20,6 @@ export function MyBooking() {
     if (user) {
       setLoading(true)
       axiosInstance.get(`/user-bookings-list/${user?._id}`).then((res) => {
-        console.log(res);
         setBookings(res.data.data);
       }).finally(() => {
         setLoading(false)

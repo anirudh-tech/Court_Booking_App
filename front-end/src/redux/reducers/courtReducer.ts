@@ -38,7 +38,6 @@ const courtReducer = createSlice({
         state.loading = true;
       })
       .addCase(listAllCourts.fulfilled, (state, { payload }) => {
-        console.log("🚀 ~ .addCase ~ payload:", payload);
         state.loading = false;
         state.courts = payload.data;
         state.err = false;

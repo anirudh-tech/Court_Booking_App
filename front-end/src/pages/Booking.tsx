@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { LoaderButton } from "@/components/custom/LoaderButton";
 import { axiosInstance } from "@/constants/axiosInstance";
 import { useGenerateTimSlot } from "@/hooks/generateTimeslot";
@@ -296,7 +297,6 @@ export function Booking() {
     bookedSlots ? bookedSlots : []
   );
   useEffect(() => {
-    console.log("called")
     if (watch("date") && watch("court")) {
       axiosInstance
         .post("/booked-slots", {
@@ -307,8 +307,8 @@ export function Booking() {
           setBookedSlot(res.data.data);
 
         })
-        .catch((err) => {
-          console.log(err);
+        .catch((err: any) => {
+          toast.error(err.message)
         })
         .finally(() => {
           setValue("startTime", formatTime(timeSlots[0]));
@@ -437,7 +437,6 @@ export function Booking() {
                       );
                     }
                   } else {
-                    console.log("Reach");
                     setValue("amount", Number(selecteCourt?.normalcost.price));
                     trigger("amount");
                   }

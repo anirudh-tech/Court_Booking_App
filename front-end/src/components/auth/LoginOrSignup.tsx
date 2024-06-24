@@ -59,7 +59,6 @@ export function LoginOrSignupPage() {
         setNumberErr("Please fill phone number");
         return;
       }
-      console.log(import.meta.env);
 
       const recaptcha = new RecaptchaVerifier(auth, "recaptcha", {});
 
@@ -79,13 +78,11 @@ export function LoginOrSignupPage() {
       );
       dispatch(setVerfication(confirmationresult));
       setOtpSentTime(Date.now());
-      console.log("🚀 ~ sendOTp ~ confirmation:", confirmationresult);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const errorMessage =
         firebaseErrorMessages[error.code] || firebaseErrorMessages["default"];
       setNumberErr(errorMessage);
-      console.log(error);
     } finally {
       dispatch(setLoading(false));
     }

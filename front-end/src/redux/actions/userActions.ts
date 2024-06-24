@@ -9,7 +9,6 @@ export const userAuthAction = createAsyncThunk(
   "user/login-or-signup",
   async ({ phoneNumber }: { phoneNumber: string }, { rejectWithValue }) => {
     try {
-      console.log(phoneNumber);
 
       axiosInstance.interceptors.request.use(
         (config) => {
