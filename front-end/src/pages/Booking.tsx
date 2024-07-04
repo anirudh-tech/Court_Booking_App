@@ -649,9 +649,9 @@ export function Booking() {
                   <SelectItem key={"Full Payment"} value={"Full Payment"}>
                     Full Payment
                   </SelectItem>
-                  <SelectItem key={"Advance Payment"} value={"Advance Payment"}>
+                  {/* <SelectItem key={"Advance Payment"} value={"Advance Payment"}>
                     Pay 20% Advance
-                  </SelectItem>
+                  </SelectItem> */}
                 </SelectContent>
               </Select>
               {errors && errors.paymentmode && errors.paymentmode.message && (
