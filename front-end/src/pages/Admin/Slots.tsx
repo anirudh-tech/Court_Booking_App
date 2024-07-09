@@ -59,7 +59,7 @@ const Slots = () => {
         const bookingStart = parse(booking.startTime, 'h:mm a', new Date());
         const bookingEnd = addMinutes(bookingStart, booking.duration * 60); // Convert duration to minutes
 
-        return booking.courtId.sportId.sportName === sportName &&
+        return booking?.courtId?.sportId?.sportName === sportName &&
           ((isBefore(bookingStart, endTime) && isAfter(bookingEnd, time)) ||
             (isBefore(bookingEnd, endTime) && isAfter(bookingEnd, time)));
       });
