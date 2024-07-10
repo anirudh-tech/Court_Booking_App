@@ -1,8 +1,7 @@
 export const uploadImageToCloudinary = async (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  imageFile: any,
+  imageFile: any
 ) => {
-  
   const url: string = import.meta.env.VITE_CLOUDINARY_URL;
 
   const formData = new FormData();
@@ -18,7 +17,6 @@ export const uploadImageToCloudinary = async (
     const data = await response.json();
     return data.secure_url; // Return the URL of the uploaded image
   } catch (error) {
-    console.error("Error uploading image to Cloudinary:", error);
     return ""; // Handle the error appropriately
   }
 };

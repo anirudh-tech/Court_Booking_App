@@ -99,8 +99,8 @@ export function Booking() {
       valueCopy.paymentStatus = "Pending";
       valueCopy.paymentMethod = values.paymentmode;
       if (values.paymentmode == "Full Payment") {
-        valueCopy.totalAmount = values.amount
-        valueCopy.amount = values.amount
+        valueCopy.totalAmount = values.amount;
+        valueCopy.amount = values.amount;
       } else {
         valueCopy.totalAmount = values.amount;
         valueCopy.amount = values.deductedAmount;
@@ -136,13 +136,19 @@ export function Booking() {
               toast.success("Court booking successfull");
               if (res.data.status) {
                 navigate("/mybooking");
+              } else {
+                toast.error("Payment failed");
               }
             });
           } catch (error) {
-            console.error("Payment validation error:", error);
             toast.error("Payment validation error");
           }
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        },
+        modal: {
+          ondismiss: function () {
+            toast.error("Payment was not completed. Please try again.");
+          },
         },
       };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -234,7 +240,6 @@ export function Booking() {
       axiosInstance
         .post(`/getcourt-withsport`, { sportId: watch("sport") })
         .then((res) => {
-
           setCourts(res.data.courts);
         })
         .finally(() => setLocalLoad(false));
@@ -316,16 +321,15 @@ export function Booking() {
         })
         .then((res) => {
           setBookedSlot(res.data.data);
-
         })
         .catch((err: any) => {
-          toast.error(err.message)
+          toast.error(err.message);
         })
         .finally(() => {
           setValue("startTime", formatTime(timeSlots[0]));
         });
     }
-  }, [watch("court"),watch("date")]);
+  }, [watch("court"), watch("date")]);
 
   useEffect(() => {
     setValue("startTime", formatTime(timeSlots[0]));
@@ -421,8 +425,6 @@ export function Booking() {
                   const selecteCourt = courts.find(
                     (court) => court._id == value
                   );
-
-
 
                   if (
                     selecteCourt?.specialcost?.category == "day" &&
@@ -521,8 +523,6 @@ export function Booking() {
                     mode="single"
                     selected={watch("date")}
                     onSelect={(date) => {
-                      console.log("🚀 ~ Booking ~ date:", date)
-                      console.log("🚀 ~ Booking ~ date:", new Date(date))
                       date && setValue("date", date);
                     }}
                     disabled={isDateDisabled}
