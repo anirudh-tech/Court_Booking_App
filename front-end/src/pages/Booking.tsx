@@ -119,7 +119,7 @@ export function Booking() {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
         amount: order.amount,
         currency: order.currency,
-        name: "tester.",
+        name: "Lalsports Academy",
         description: "Test Transaction",
         order_id: order.id,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
