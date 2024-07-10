@@ -120,9 +120,9 @@ export function MyBooking() {
                         <div className="w-full flex justify-center text-[14px] text-green-600 font-semibold">
                           AMOUNT PAID - ₹ {booking.amountPaid}
                         </div>
-                        <div className="w-full flex justify-center text-[14px] text-red-500 font-semibold">
+                        {/* <div className="w-full flex justify-center text-[14px] text-red-500 font-semibold">
                           AMOUNT DUE - ₹ {booking.totalAmount - booking.amountPaid}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                     <div className="w-full flex flex-col px-2 gap-2">
@@ -138,10 +138,10 @@ export function MyBooking() {
                           {booking.date && format(booking.date,"PPP")}
                         </span>
                       </div>
-                      <div className="w-full flex justify-between text-[14px]">
+                      {/* <div className="w-full flex justify-between text-[14px]">
                         <span className="text-[#474747]">Payment method</span>
                         <span className="">{booking.paymentMethod}</span>
-                      </div>
+                      </div> */}
                       <div className="w-full flex justify-between text-[14px]">
                         <span className="text-[#474747]">Sport</span>
                         <span className="">{booking.sportDetails.sportName}</span>
@@ -152,7 +152,7 @@ export function MyBooking() {
                       </div>
                       <div className="w-full flex justify-between text-[14px]">
                         <span className="text-[#474747]">Duration</span>
-                        <span className="">{booking.duration}</span>
+                        <span className="">{booking.duration} Hr</span>
                       </div>
                       <div className="w-full flex justify-between text-[14px]">
                         <span className="text-[#474747]">End time</span>
