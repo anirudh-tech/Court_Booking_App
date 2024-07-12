@@ -703,7 +703,7 @@ export function Booking() {
 
             {/* Service Charge */}
             <div className="w-full flex justify-between items-center mt-2">
-              <label htmlFor="">Service Charge (3%)</label>
+              <label htmlFor="">Service Charge</label>
               <div className="flex flex-col">
                 <div className="sm:w-64 w-52 h-10 rounded-md flex justify-end gap-1 items-center px-4 pointer-events-none">
                   <IndianRupee className="w-4 font-bold" />{" "}
