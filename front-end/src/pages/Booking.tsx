@@ -48,6 +48,8 @@ export function Booking() {
     }
   };
 
+  
+
   const [defaultSport, setDefaultSport] = useState<string | undefined>();
   useEffect(() => {
     const searchParam = new URLSearchParams(window.location.search);
@@ -99,10 +101,10 @@ export function Booking() {
       valueCopy.paymentStatus = "Pending";
       valueCopy.paymentMethod = values.paymentmode;
       if (values.paymentmode == "Full Payment") {
-        valueCopy.totalAmount = values.amount;
-        valueCopy.amount = values.amount;
+        valueCopy.totalAmount = totalAmount;
+        valueCopy.amount = totalAmount;
       } else {
-        valueCopy.totalAmount = values.amount;
+        valueCopy.totalAmount = totalAmount;
         valueCopy.amount = values.deductedAmount;
       }
       const { data: bookingdata } = await axiosInstance.post(
@@ -335,6 +337,13 @@ export function Booking() {
     setValue("startTime", formatTime(timeSlots[0]));
   }, [bookedSlots]);
 
+  const amount:any = watch("amount");
+  
+  // Calculate values
+  const subtotal = amount ? parseFloat(amount) : 0;
+  const serviceCharge = (subtotal * 0.03).toFixed(2);
+  const totalAmount = (subtotal + parseFloat(serviceCharge)).toFixed(2);
+
   return (
     <main className="w-full min-h-screen flex  justify-center items-start text-[15px] ">
       <form
@@ -456,9 +465,8 @@ export function Booking() {
                 }}
               >
                 <SelectTrigger
-                  className={`sm:w-64 w-full outline-none ring-0 ${
-                    !courts || (courts.length <= 0 && "pointer-events-none")
-                  } `}
+                  className={`sm:w-64 w-full outline-none ring-0 ${!courts || (courts.length <= 0 && "pointer-events-none")
+                    } `}
                 >
                   <SelectValue
                     placeholder={
@@ -572,10 +580,9 @@ export function Booking() {
                             setValue("startTime", formatTime(time));
                             popoverCloseRef.current?.click();
                           }}
-                          className={`h-10 rounded-md cursor-pointer hover:bg-[#4cd681] transition-all duration-200 w-full flex items-center justify-center text-[13px] border ${
-                            bookedSlots.includes(formatTime(time)) &&
+                          className={`h-10 rounded-md cursor-pointer hover:bg-[#4cd681] transition-all duration-200 w-full flex items-center justify-center text-[13px] border ${bookedSlots.includes(formatTime(time)) &&
                             "pointer-events-none bg-green-700 text-white relative"
-                          }`}
+                            }`}
                         >
                           {formatTime(time)}
                         </div>
@@ -606,13 +613,11 @@ export function Booking() {
               <button
                 type="button"
                 onClick={decrementDuration}
-                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
-                  !watch("court") && "pointer-events-none"
-                } ${
-                  watch("duration") <= 1
+                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${!watch("court") && "pointer-events-none"
+                  } ${watch("duration") <= 1
                     ? "pointer-events-none bg-slate-300 border"
                     : "bg-custom-gradient"
-                }  text-white transition-all duration-200`}
+                  }  text-white transition-all duration-200`}
               >
                 <Minus className="w-5" />
               </button>
@@ -623,13 +628,11 @@ export function Booking() {
               <button
                 type="button"
                 onClick={incrementDuration}
-                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${
-                  !watch("court") && "pointer-events-none"
-                } ${
-                  watch("duration") >= 20
+                className={`size-9 flex justify-center items-center rounded-full cursor-pointer ${!watch("court") && "pointer-events-none"
+                  } ${watch("duration") >= 20
                     ? "pointer-events-none bg-slate-300 border"
                     : "bg-custom-gradient"
-                }  text-white transition-all duration-200`}
+                  }  text-white transition-all duration-200`}
               >
                 <Plus className="w-5" />
               </button>
@@ -682,21 +685,49 @@ export function Booking() {
               )}
             </div>
           </div>
-          <div className="w-full flex justify-between  items-center border border-r-0 border-l-0 p-2">
-            <label htmlFor="">Total amount </label>
-            <div className="flex flex-col">
-              <div className="sm:w-64 w-52 h-10  rounded-md flex justify-end gap-1  items-center  px-4 pointer-events-none">
-                <IndianRupee className="w-4 font-bold" />{" "}
-                <span className="text-[15px] font-semibold">
-                  {watch("amount")
-                    ? watch("paymentmode") === "Full Payment"
-                      ? watch("amount")
-                      : `${watch("amount")}`
-                    : "---"}
-                </span>
+          <div className="w-full flex flex-col items-center border border-r-0 border-l-0 p-2">
+            
+
+            {/* Subtotal */}
+            <div className="w-full flex justify-between items-center mt-2">
+              <label htmlFor="">Subtotal</label>
+              <div className="flex flex-col">
+                <div className="sm:w-64 w-52 h-10 rounded-md flex justify-end gap-1 items-center px-4 pointer-events-none">
+                  <IndianRupee className="w-4 font-bold" />{" "}
+                  <span className="text-[15px] font-semibold">
+                    {amount ? subtotal.toFixed(2) : "---"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Service Charge */}
+            <div className="w-full flex justify-between items-center mt-2">
+              <label htmlFor="">Service Charge (3%)</label>
+              <div className="flex flex-col">
+                <div className="sm:w-64 w-52 h-10 rounded-md flex justify-end gap-1 items-center px-4 pointer-events-none">
+                  <IndianRupee className="w-4 font-bold" />{" "}
+                  <span className="text-[15px] font-semibold">
+                    {amount ? serviceCharge : "---"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Total Amount */}
+            <div className="w-full flex justify-between items-center mt-2">
+              <label htmlFor="">Total Amount</label>
+              <div className="flex flex-col">
+                <div className="sm:w-64 w-52 h-10 rounded-md flex justify-end gap-1 items-center px-4 pointer-events-none">
+                  <IndianRupee className="w-4 font-bold" />{" "}
+                  <span className="text-[15px] font-semibold">
+                    {amount ? totalAmount : "---"}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
+
           {watch("paymentmode") === "Advance Payment" && (
             <div className="w-full flex justify-between  items-center border border-r-0 border-l-0 border-t-0 px-2">
               <label htmlFor="">Amount Payable </label>
