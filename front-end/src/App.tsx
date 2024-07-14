@@ -17,6 +17,7 @@ import { AdminCourts } from "./pages/Admin/AdminCourts";
 import Aos from "aos";
 import "aos/dist/aos.css";
 import Slots from "./pages/Admin/Slots";
+import { AdminBooking } from "./pages/Admin/AdminBooking";
 function App() {
   const dispatch: AppDispatch = useDispatch();
   useEffect(() => {
@@ -65,6 +66,7 @@ function App() {
               <Route path="bookings" element={<Bookings />} />
               <Route path="courts" element={<AdminCourts />} />
               <Route path="slots" element={<Slots />} />
+              <Route path="book-court" element={<AdminBooking />} />
             </Route>
           </>
         )}

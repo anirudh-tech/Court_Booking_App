@@ -160,24 +160,13 @@ const Slots = () => {
                                     </div>
                                     <div className='flex justify-between w-full'>
                                       <p className='font-bold'>Phone Number: </p>
-                                      <p>{booking.userId.phoneNumber}</p>
-                                    </div>
-                                    <div className='flex justify-start w-full'>
-                                      <div className='flex gap-2'>
-                                        {
-                                          booking.amountPaid == booking.totalAmount ? (
-                                            <>
-                                              <CircleCheck className='w-6 text-green-500' />
-                                              <p>INR {booking.amountPaid}/{booking.totalAmount}</p>
-                                            </>
-                                          ) : (
-                                            <>
-                                              <TriangleAlert className={'w-6 text-yellow-500'} />
-                                              <p>INR {booking.amountPaid}/{booking.totalAmount}</p>
-                                            </>
-                                          )
-                                        }
-                                      </div>
+                                      {
+                                        booking?.userId?.role == "Admin" ? (
+                                          <p>Booked By Admin</p>
+                                        ) : (
+                                          <p>{booking?.userId?.phoneNumber}</p>
+                                        )
+                                      }
                                     </div>
                                   </div>
                                 ))

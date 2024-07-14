@@ -131,21 +131,39 @@ export function Bookings() {
                     <TableBody>
                         {localBookings?.map((booking: any) => (
                             <TableRow key={booking?._id}>
-                                <TableCell className="font-medium">
-                                    {booking?.userId?.phoneNumber}
-                                </TableCell>
+                                {
+                                    booking?.userId?.role === "Admin" ? (
+                                        <TableCell className="font-medium">
+                                            Booked By Admin
+                                        </TableCell>
+                                    ) : (
+                                        <TableCell className="font-medium">
+                                            {booking?.userId?.phoneNumber}
+                                        </TableCell>
+
+                                    )
+                                }
                                 <TableCell className="font-medium">
                                     {booking?.courtId?.courtName}
                                 </TableCell>
                                 <TableCell>
-                                    {format(booking?.date,"PPP")} - {booking?.startTime} to {booking?.endTime}
+                                    {format(booking?.date, "PPP")} - {booking?.startTime} to {booking?.endTime}
                                 </TableCell>
                                 <TableCell className="font-medium">
                                     {booking?.duration}Hr
                                 </TableCell>
-                                <TableCell className="font-medium">
-                                    ₹{booking?.totalAmount}
-                                </TableCell>
+                                {
+                                    booking?.userId?.role === "Admin" ? (
+                                        <TableCell className="font-medium">
+                                            ---
+                                        </TableCell>
+                                    ) : (
+                                        <TableCell className="font-medium">
+                                            ₹{booking?.totalAmount}
+                                        </TableCell>
+                                    )
+                                }
+
                                 {/* <TableCell className="font-medium">
                                     {booking?.paymentMethod}
                                 </TableCell> */}
