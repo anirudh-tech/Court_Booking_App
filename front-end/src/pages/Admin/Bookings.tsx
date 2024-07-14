@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from "@/lib/utils";
-import { bookingsByDate, listAllBookings } from "@/redux/actions/bookingAction";
+import { bookingsByDate, deleteBooking, listAllBookings } from "@/redux/actions/bookingAction";
 import { AppDispatch, RootState } from "@/redux/store";
 import { Button } from "@/shadcn/ui/button";
 import { Calendar } from "@/shadcn/ui/calendar";
@@ -9,11 +9,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn/ui/popover";
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shadcn/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shadcn/ui/table";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shadcn/ui/select";
 import { PopoverClose } from "@radix-ui/react-popover";
+import toast from "react-hot-toast";
+import { CustomModal } from "@/components/Moda";
 
 export function Bookings() {
     const dispatch: AppDispatch = useDispatch();
@@ -22,6 +24,7 @@ export function Bookings() {
     const [date, setDate] = useState<Date | null>(null);
     const popoverClose = useRef<HTMLButtonElement>(null)
     const { bookings } = useSelector((state: RootState) => state.booking);
+    const modalCloseRef = useRef(null)
 
 
     useEffect(() => {
@@ -57,6 +60,20 @@ export function Bookings() {
         popoverClose.current.click()
         setDate(date);
         setSearch('');  // Clear the search input when a new date is picked
+    };
+
+    const handleDeleteBooking = async (bookingId: string) => {
+        try {
+            const data = await dispatch(deleteBooking(bookingId));
+            toast.success("Booking deleted successfully");
+            if (date) {
+                dispatch(bookingsByDate(date));
+            } else {
+                dispatch(listAllBookings(search));
+            }
+        } catch (error) {
+            toast.error("Failed to delete booking");
+        }
     };
 
     // const handlePaymentStatusChange = async(bookingId: string, value: string) => {
@@ -163,36 +180,32 @@ export function Bookings() {
                                         </TableCell>
                                     )
                                 }
-
-                                {/* <TableCell className="font-medium">
-                                    {booking?.paymentMethod}
-                                </TableCell> */}
-                                {/* <TableCell className="font-medium">
-                                    ₹{booking?.amountPaid}
-                                </TableCell>
                                 <TableCell className="font-medium">
-                                    {booking?.totalAmount - booking?.amountPaid === 0 ? (
-                                        <span>Nil</span>
-                                    ) : (
-                                        <span>₹{booking?.totalAmount - booking?.amountPaid}</span>
-                                    )}
-                                </TableCell> */}
-                                {/* <TableCell className="font-medium">
-                                    <Select
-                                        onValueChange={(value) => handlePaymentStatusChange(booking._id, value)}
+                                    <CustomModal TriggerComponent={<Button
+                                        variant="destructive"
+
                                     >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder={<div className={`${booking?.paymentStatus === 'Advance Paid' ? 'text-orange-500' : 'text-green-500'}`}>{booking?.paymentStatus}</div>} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Paid">Paid</SelectItem>
-                                            <SelectItem value="Advance Paid">Advance Paid</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </TableCell> */}
-                                {/* <TableCell className="font-medium">
-                                    {booking?.status}
-                                </TableCell> */}
+                                        Delete
+                                    </Button>}
+                                        closeComponent={
+                                            <div ref={modalCloseRef} className="cursor-pointer z-20" >
+                                                <X className="w-6" />
+                                            </div>
+                                        }
+                                        className="w-[90%] sm:w-[75%] md:w-[76%] lg:w-[48%] xl:w-[40%] p-0 rounded-md"
+                                    >
+                                        <div className="w-full h-full">
+                                            <div className="m-10 flex flex-col gap-4">
+                                                <h1 className="font-semibold text-xl">DELETE THIS BOOKING PERMANENTLY?</h1>
+                                                <div className="flex gap-4">
+                                                    <Button onClick={() => handleDeleteBooking(booking._id)} className="bg-green-400">Yes</Button>
+                                                    <Button onClick={() => modalCloseRef?.current?.click()} className="bg-red-400">No</Button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </CustomModal>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
