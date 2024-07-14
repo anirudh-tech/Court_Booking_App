@@ -188,6 +188,7 @@ export function Booking() {
     setValue,
     getValues,
     formState: { errors },
+    reset
   } = useForm<z.infer<typeof bookingSchema>>({
     mode: "onChange",
     reValidateMode: "onChange",
@@ -344,6 +345,24 @@ export function Booking() {
   const serviceCharge = (subtotal * 0.03).toFixed(2);
   const totalAmount = (subtotal + parseFloat(serviceCharge)).toFixed(2);
 
+  const handleReset = () => {
+    reset({
+      duration: 1,
+      startTime: formatTime(timeSlots[0]),
+      date: new Date(),
+      amount: 0,
+      deductedAmount: undefined,
+      paymentmode: "",
+      totalAmount: undefined,
+    });
+  };
+
+  const handleCourtReset = () => {
+    const sportValue = getValues("sport");
+    handleReset(); // This resets the entire form
+    setValue("sport", sportValue); // Restore the sport field value
+  };
+
   return (
     <main className="w-full min-h-screen flex  justify-center items-start text-[15px] ">
       <form
@@ -369,6 +388,7 @@ export function Booking() {
             <div className="flex flex-col w-full sm:w-auto ">
               <Select
                 onValueChange={(value) => {
+                  handleReset();
                   setDefaultSport(undefined);
                   setValue("sport", value);
                   setValue("court", "");
@@ -403,6 +423,7 @@ export function Booking() {
                     <SelectItem
                       key={String(sport?._id)}
                       value={String(sport._id)}
+                      onSelect={handleReset}
                     >
                       <div className="flex gap-4 py-1 ">
                         <img src={sport.image} className="w-5" alt="" />
@@ -429,6 +450,7 @@ export function Booking() {
               <Select
                 disabled={!courts || courts.length <= 0}
                 onValueChange={(value) => {
+                  handleCourtReset()
                   setValue("court", value);
                   trigger("court");
                   const selecteCourt = courts.find(
