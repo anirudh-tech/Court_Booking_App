@@ -64,7 +64,7 @@ export function Bookings() {
 
     const handleDeleteBooking = async (bookingId: string) => {
         try {
-            const data = await dispatch(deleteBooking(bookingId));
+            await dispatch(deleteBooking(bookingId));
             toast.success("Booking deleted successfully");
             if (date) {
                 dispatch(bookingsByDate(date));
