@@ -68,7 +68,6 @@ export function AdminBooking() {
   const popoverCloseRef = useRef<HTMLButtonElement>(null);
 
   const { user } = useSelector((state: RootState) => state.user);
-  const navigate = useNavigate();
   const [submitionLoad, setSubmitionLoad] = useState<boolean>(false);
   const handleBooking = async (values: z.infer<typeof bookingSchema>) => {
     try {
