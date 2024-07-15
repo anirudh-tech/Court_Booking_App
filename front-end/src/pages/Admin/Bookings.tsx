@@ -16,7 +16,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { PopoverClose } from "@radix-ui/react-popover";
 import toast from "react-hot-toast";
 import { CustomModal } from "@/components/Moda";
-import { motion } from "framer-motion";
 import { LoaderButton } from "@/components/custom/LoaderButton";
 
 export function Bookings() {
