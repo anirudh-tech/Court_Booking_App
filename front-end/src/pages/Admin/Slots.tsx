@@ -64,10 +64,33 @@ const Slots = () => {
             (isBefore(bookingEnd, endTime) && isAfter(bookingEnd, time)));
       });
 
-      const availableCourts = sportCourts?.filter(court =>
-        isBefore(time, parse(court.normalcost.time.to, 'h:mm a', new Date())) &&
-        isAfter(endTime, parse(court.normalcost.time.from, 'h:mm a', new Date()))
-      ).length;
+      // const availableCourts = sportCourts?.filter(court =>
+      //   isBefore(time, parse(court.normalcost.time.to, 'h:mm a', new Date())) &&
+      //   isAfter(endTime, parse(court.normalcost.time.from, 'h:mm a', new Date()))
+      // ).length;
+
+
+
+      const availableCourts = sportCourts?.filter(court => {
+        const normalStartTime = parse(court.normalcost.time.from, 'h:mm a', new Date());
+        const normalEndTime = parse(court.normalcost.time.to, 'h:mm a', new Date());
+
+        // Default condition for normal cost
+        let isAvailable = isBefore(time, normalEndTime) && isAfter(endTime, normalStartTime);
+
+        // Check if there is a special cost
+        if (court.specialcost && court.specialcost.diff) {
+          const specialStartTime = parse(court.specialcost.diff.from, 'h:mm a', new Date());
+          const specialEndTime = parse(court.specialcost.diff.to, 'h:mm a', new Date());
+
+          // Modify availability based on special cost time
+          if (court.specialcost.category === 'time') {
+            isAvailable = isAvailable || (isBefore(time, specialEndTime) && isAfter(endTime, specialStartTime));
+          }
+        }
+
+        return isAvailable;
+      }).length;
 
       intervals.push({
         interval: intervalString,
