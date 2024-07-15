@@ -16,6 +16,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { PopoverClose } from "@radix-ui/react-popover";
 import toast from "react-hot-toast";
 import { CustomModal } from "@/components/Moda";
+import { motion } from "framer-motion";
+import { LoaderButton } from "@/components/custom/LoaderButton";
 
 export function Bookings() {
     const dispatch: AppDispatch = useDispatch();
@@ -181,30 +183,57 @@ export function Bookings() {
                                     )
                                 }
                                 <TableCell className="font-medium">
-                                    <CustomModal TriggerComponent={<Button
-                                        variant="destructive"
-
-                                    >
-                                        Delete
-                                    </Button>}
-                                        closeComponent={
-                                            <div ref={modalCloseRef} className="cursor-pointer z-20" >
-                                                <X className="w-6" />
-                                            </div>
-                                        }
-                                        className="w-[90%] sm:w-[75%] md:w-[76%] lg:w-[48%] xl:w-[40%] p-0 rounded-md"
-                                    >
-                                        <div className="w-full h-full">
-                                            <div className="m-10 flex flex-col gap-4">
-                                                <h1 className="font-semibold text-xl">DELETE THIS BOOKING PERMANENTLY?</h1>
-                                                <div className="flex gap-4">
-                                                    <Button onClick={() => handleDeleteBooking(booking._id)} className="bg-green-400">Yes</Button>
-                                                    <Button onClick={() => modalCloseRef?.current?.click()} className="bg-red-400">No</Button>
+                                    
+                                    
+                                        <CustomModal
+                                            className="w-[90%] sm:w-[75%] md:w-[66%] lg:w-[40%] xl:w-[40%] p-0 rounded-md"
+                                            TriggerComponent={
+                                                <Button variant="destructive">
+                                                    Delete
+                                                </Button>
+                                            }
+                                            closeComponent={
+                                                <div
+                                                    className="cursor-pointer z-20"
+                                                    ref={modalCloseRef}
+                                                >
+                                                    <X className="w-6" />
+                                                </div>
+                                            }
+                                        >
+                                            <div className="w-full min-h-36 bg-white p-6 rounded-md">
+                                                <div className="w-full">
+                                                    <h1 className="text-[19px] font-semibold">
+                                                        Are you sure ? 
+                                                    </h1>
+                                                </div>
+                                                <div className="mt-2">
+                                                    <p className="text-[14px]">
+                                                        You are going to permanently delete the booking at the court {booking?.courtId?.courtName}. This action cannot be undone. This will
+                                                        permanently delete the booking from servers.
+                                                    </p>
+                                                </div>
+                                                <div className="w-full flex justify-end gap-2 mt-1">
+                                                    <button
+                                                        className="h-10 min-w-20  rounded-md px-4 bg-slate-100"
+                                                        onClick={() =>
+                                                            modalCloseRef.current?.click()
+                                                        }
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    <LoaderButton
+                                                        loading={false}
+                                                        type="button"
+                                                        onClick={()=>handleDeleteBooking(booking._id)}
+                                                        from="logout"
+                                                        className="h-10   rounded-md px-4 bg-red-600 hover:bg-red-700 text-white min-w-20"
+                                                    >
+                                                        Continue
+                                                    </LoaderButton>
                                                 </div>
                                             </div>
-                                        </div>
-
-                                    </CustomModal>
+                                        </CustomModal>
                                 </TableCell>
                             </TableRow>
                         ))}
