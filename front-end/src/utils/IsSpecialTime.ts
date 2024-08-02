@@ -4,9 +4,9 @@ import { isWithinInterval } from "date-fns";
 const parseTimeTo24HourFormat = (
   time: string
 ): { hours: number; minutes: number } => {
-  const [timePart, modifier] = time.split(" ");
+  const [timePart, modifier] = time?.split(" ");
   // eslint-disable-next-line prefer-const
-  let [hours, minutes] = timePart.split(":").map(Number);
+  let [hours, minutes] = timePart?.split(":").map(Number);
 
   if (modifier?.toUpperCase() === "PM" && hours !== 12) {
     hours += 12;
