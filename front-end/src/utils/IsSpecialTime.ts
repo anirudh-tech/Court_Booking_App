@@ -18,14 +18,19 @@ const parseTimeTo24HourFormat = (
 };
 
 export const isSpecialTime = (selectedTime: string, court: Court): boolean => {
+  console.log(court,"coutr in special");
+  
   const { hours: selectedHours, minutes: selectedMinutes } =
-    parseTimeTo24HourFormat(selectedTime);
+  parseTimeTo24HourFormat(selectedTime);
+  console.log(selectedHours,selectedMinutes,"coutr in special sel min hou");
   const { hours: fromHours, minutes: fromMinutes } = parseTimeTo24HourFormat(
     String(court?.specialcost?.diff?.from)
   );
+  console.log(fromHours,fromMinutes,"coutr in special sel from hm");
   const { hours: toHours, minutes: toMinutes } = parseTimeTo24HourFormat(
     String(court?.specialcost?.diff?.to)
   );
+  console.log(toHours,toMinutes,"coutr in special sel to hm");
 
   const selectedDate = new Date(1970, 0, 1, selectedHours, selectedMinutes);
   const fromDate = new Date(1970, 0, 1, fromHours, fromMinutes);
