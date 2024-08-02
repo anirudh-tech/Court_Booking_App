@@ -462,7 +462,7 @@ export function Booking() {
                     format(new Date(), "PPP") == format(watch("date"), "PPP")
                   ) {
                     if (isSpecialDay(new Date(), selecteCourt)) {
-                      setValue("amount", selecteCourt.specialcost.price);
+                      setValue("amount", selecteCourt?.specialcost?.price);
                       trigger("amount");
                     } else {
                       setValue(
@@ -472,22 +472,22 @@ export function Booking() {
                     }
                   } else if (selecteCourt?.specialcost?.category == "time") {
                     if (isSpecialTime(watch("startTime"), selecteCourt)) {
-                      setValue("amount", selecteCourt.specialcost.price);
+                      setValue("amount", selecteCourt?.specialcost?.price);
                       trigger("amount");
                     } else {
                       setValue(
                         "amount",
-                        Number(selecteCourt?.normalcost.price)
+                        Number(selecteCourt?.normalcost?.price)
                       );
                     }
                   } else {
-                    setValue("amount", Number(selecteCourt?.normalcost.price));
+                    setValue("amount", Number(selecteCourt?.normalcost?.price));
                     trigger("amount");
                   }
                 }}
               >
                 <SelectTrigger
-                  className={`sm:w-64 w-full outline-none ring-0 ${!courts || (courts.length <= 0 && "pointer-events-none")
+                  className={`sm:w-64 w-full outline-none ring-0 ${!courts || (courts?.length <= 0 && "pointer-events-none")
                     } `}
                 >
                   <SelectValue
@@ -509,16 +509,16 @@ export function Booking() {
                 <SelectContent>
                   {courts.map((court) => (
                     <SelectItem value={String(court?._id)} key={court?._id}>
-                      {court.courtName}
+                      {court?.courtName}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <div>
-                {errors && errors.court && errors.court.message && (
+                {errors && errors?.court && errors?.court.message && (
                   <>
                     <span className="text-[12px] text-red-600">
-                      {errors.court.message}
+                      {errors?.court?.message}
                     </span>
                   </>
                 )}
