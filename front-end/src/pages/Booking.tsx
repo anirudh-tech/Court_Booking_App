@@ -265,22 +265,28 @@ export function Booking() {
     }
   }, [watch("date")]);
 
-  useEffect(() => {
-    // alert("time")
-    const value = getValues("court");
-    const selecteCourt = courts?.find((court) => court._id == value);
-    if (
-      selecteCourt?.specialcost?.category === "time" &&
-      watch("startTime") &&
-      isSpecialTime(watch("startTime"), selecteCourt)
-    ) {
-      setValue("amount", Number(selecteCourt.specialcost.price));
-      trigger("amount");
+  const calculatePrice = (court, date, startTime) => {
+    if (!court) return 0;
+  
+    if (court.specialcost?.category === "day" && isSpecialDay(date, court)) {
+      return Number(court.specialcost.price);
+    } else if (court.specialcost?.category === "time" && isSpecialTime(startTime, court)) {
+      return Number(court.specialcost.price);
     } else {
-      setValue("amount", Number(selecteCourt?.normalcost?.price));
+      return Number(court.normalcost.price);
+    }
+  };
+
+  useEffect(() => {
+    if (watch("court") && watch("date")) {
+      const selectedCourt = courts.find(court => court._id === watch("court"));
+      const newPrice = calculatePrice(selectedCourt, watch("date"), watch("startTime"));
+      setValue("amount", newPrice);
       trigger("amount");
     }
-  }, [watch("startTime")]);
+  }, [watch("date"), watch("court"), watch("startTime")]);
+
+
   useEffect(() => {
     const now = new Date();
     const currentHour = now.getHours();
@@ -451,41 +457,13 @@ export function Booking() {
               <Select
                 disabled={!courts || courts.length <= 0}
                 onValueChange={(value) => {
-                  handleCourtReset()
+                  handleCourtReset();
                   setValue("court", value);
                   trigger("court");
-                  const selecteCourt = courts?.find(
-                    (court) => court?._id == value
-                  );
-                  console.log(selecteCourt,"selected Court")
-
-                  if (
-                    selecteCourt?.specialcost?.category == "day" &&
-                    format(new Date(), "PPP") == format(watch("date"), "PPP")
-                  ) {
-                    if (isSpecialDay(new Date(), selecteCourt)) {
-                      setValue("amount", selecteCourt?.specialcost?.price);
-                      trigger("amount");
-                    } else {
-                      setValue(
-                        "amount",
-                        Number(selecteCourt?.normalcost?.price)
-                      );
-                    }
-                  } else if (selecteCourt?.specialcost?.category == "time") {
-                    if (isSpecialTime(watch("startTime"), selecteCourt)) {
-                      setValue("amount", selecteCourt?.specialcost?.price);
-                      trigger("amount");
-                    } else {
-                      setValue(
-                        "amount",
-                        Number(selecteCourt?.normalcost?.price)
-                      );
-                    }
-                  } else {
-                    setValue("amount", Number(selecteCourt?.normalcost?.price));
-                    trigger("amount");
-                  }
+                  const selectedCourt = courts?.find(court => court?._id == value);
+                  const newPrice = calculatePrice(selectedCourt, watch("date"), watch("startTime"));
+                  setValue("amount", newPrice);
+                  trigger("amount");
                 }}
               >
                 <SelectTrigger
