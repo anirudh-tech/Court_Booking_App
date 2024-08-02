@@ -349,7 +349,7 @@ export function Booking() {
   const handleReset = () => {
     reset({
       duration: 1,
-      // startTime: formatTime(timeSlots[0]),
+      startTime: formatTime(timeSlots[0]),
       date: new Date(),
       amount: 0,
       deductedAmount: undefined,
