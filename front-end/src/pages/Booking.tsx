@@ -456,6 +456,7 @@ export function Booking() {
                   const selecteCourt = courts?.find(
                     (court) => court?._id == value
                   );
+                  console.log(selecteCourt,"selected Court")
 
                   if (
                     selecteCourt?.specialcost?.category == "day" &&
