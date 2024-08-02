@@ -4,6 +4,7 @@ import { isWithinInterval } from "date-fns";
 const parseTimeTo24HourFormat = (
   time: string
 ): { hours: number; minutes: number } => {
+  console.log(time,"selected time in parsetime function")
   const [timePart, modifier] = time?.split(" ");
   console.log(timePart,modifier,"timepart modifier")
   // eslint-disable-next-line prefer-const
