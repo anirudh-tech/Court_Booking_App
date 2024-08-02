@@ -20,7 +20,7 @@ const parseTimeTo24HourFormat = (
 };
 
 export const isSpecialTime = (selectedTime: string, court: Court): boolean => {
-  console.log(court,"coutr in special");
+  console.log(court,selectedTime,"coutr in special");
   
   const { hours: selectedHours, minutes: selectedMinutes } =
   parseTimeTo24HourFormat(selectedTime);
