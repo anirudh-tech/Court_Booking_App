@@ -5,8 +5,9 @@ const parseTimeTo24HourFormat = (
   time: string
 ): { hours: number; minutes: number } => {
   const [timePart, modifier] = time?.split(" ");
+  console.log(timePart,modifier,"timepart modifier")
   // eslint-disable-next-line prefer-const
-  let [hours, minutes] = timePart?.split(":").map(Number);
+  let [hours, minutes] = timePart?.split(":")?.map(Number);
 
   if (modifier?.toUpperCase() === "PM" && hours !== 12) {
     hours += 12;
