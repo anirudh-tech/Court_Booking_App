@@ -335,6 +335,7 @@ export function Booking() {
   }, [watch("court"), watch("date")]);
 
   useEffect(() => {
+    console.log(formatTime(timeSlots[0]),"formatted start Time")
     setValue("startTime", formatTime(timeSlots[0]));
   }, [bookedSlots]);
 
