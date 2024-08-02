@@ -357,11 +357,11 @@ export function Booking() {
     });
   };
 
-  const handleCourtReset = () => {
-    const sportValue = getValues("sport");
-    handleReset(); // This resets the entire form
-    setValue("sport", sportValue); // Restore the sport field value
-  };
+  // const handleCourtReset = () => {
+  //   const sportValue = getValues("sport");
+  //   handleReset(); // This resets the entire form
+  //   setValue("sport", sportValue); // Restore the sport field value
+  // };
 
   return (
     <main className="w-full min-h-screen flex  justify-center items-start text-[15px] ">
@@ -450,11 +450,11 @@ export function Booking() {
               <Select
                 disabled={!courts || courts.length <= 0}
                 onValueChange={(value) => {
-                  handleCourtReset()
+                  // handleCourtReset()
                   setValue("court", value);
                   trigger("court");
-                  const selecteCourt = courts.find(
-                    (court) => court._id == value
+                  const selecteCourt = courts?.find(
+                    (court) => court?._id == value
                   );
 
                   if (
@@ -467,7 +467,7 @@ export function Booking() {
                     } else {
                       setValue(
                         "amount",
-                        Number(selecteCourt?.normalcost.price)
+                        Number(selecteCourt?.normalcost?.price)
                       );
                     }
                   } else if (selecteCourt?.specialcost?.category == "time") {
