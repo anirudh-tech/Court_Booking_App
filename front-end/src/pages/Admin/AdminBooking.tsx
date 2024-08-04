@@ -45,7 +45,7 @@ export function AdminBooking() {
     }
   };
 
-  
+
 
   const [defaultSport, setDefaultSport] = useState<string | undefined>();
   useEffect(() => {
@@ -100,7 +100,7 @@ export function AdminBooking() {
       );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       console.log(bookingData, "booking data ------------->")
-      if(bookingData.status === true){
+      if (bookingData.status === true) {
         // reset({
         //     sport: "",
         //     court: "",
@@ -108,9 +108,9 @@ export function AdminBooking() {
         //     duration: 1,
         //     date: new Date(),
         //   });
-      
-          toast.success("Booking added successfully!");
-          window.location.reload()
+
+        toast.success("Booking added successfully!");
+        window.location.reload()
       } else {
         toast.error("Failed to book the court")
       }
@@ -158,7 +158,7 @@ export function AdminBooking() {
     const currentDuration = getValues("duration");
     if (currentDuration < 20) {
       const newDuration = currentDuration + 0.5;
-      setValue("duration", newDuration); 
+      setValue("duration", newDuration);
       trigger("duration");
     }
   };
@@ -225,6 +225,9 @@ export function AdminBooking() {
   );
   useEffect(() => {
     if (watch("date") && watch("court")) {
+      // Reset duration to 1 hour
+      setValue("duration", 1);
+
       axiosInstance
         .post("/booked-slots", {
           date: watch("date"),
@@ -249,8 +252,9 @@ export function AdminBooking() {
 
 
   const handleReset = () => {
+    const currentDuration = getValues("duration");
     reset({
-      duration: 1,
+      duration: currentDuration,
       startTime: formatTime(timeSlots[0]),
       date: new Date(),
     });
@@ -349,7 +353,7 @@ export function AdminBooking() {
               <Select
                 disabled={!courts || courts.length <= 0}
                 onValueChange={(value) => {
-                  handleCourtReset()
+                  handleCourtReset();
                   setValue("court", value);
                   trigger("court");
                 }}
@@ -396,6 +400,9 @@ export function AdminBooking() {
           <div className="w-full flex justify-between min-h-10 sm:items-center sm:flex-row flex-col">
             <label htmlFor="" className="capitalize">
               Select date
+            <div className="text-xs text-red-700 font-sans">
+              (Note!: The start time will be refreshed when the date is changed)
+            </div>
             </label>
             <div className="flex flex-col sm:w-auto w-full">
               <Popover>
@@ -421,7 +428,11 @@ export function AdminBooking() {
                     mode="single"
                     selected={watch("date")}
                     onSelect={(date) => {
-                      date && setValue("date", date);
+                      if (date) {
+                        setValue("date", date);
+                        setValue("duration", 1); // Reset duration to 1 hour
+                        trigger("duration");
+                      }
                     }}
                     disabled={isDateDisabled}
                     initialFocus

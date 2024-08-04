@@ -48,7 +48,7 @@ export function Booking() {
     }
   };
 
-  
+
 
   const [defaultSport, setDefaultSport] = useState<string | undefined>();
   useEffect(() => {
@@ -212,7 +212,7 @@ export function Booking() {
       trigger("amount");
     }
   };
-  
+
   const decrementDuration = () => {
     const currentDuration = getValues("duration");
     if (currentDuration > 1) {
@@ -259,7 +259,7 @@ export function Booking() {
 
   const calculatePrice = (court, date, startTime, duration) => {
     if (!court) return 0;
-  
+
     let basePrice;
     if (court.specialcost?.category === "day" && isSpecialDay(date, court)) {
       basePrice = Number(court.specialcost.price);
@@ -268,7 +268,7 @@ export function Booking() {
     } else {
       basePrice = Number(court.normalcost.price);
     }
-  
+
     return basePrice * duration;
   };
 
@@ -321,7 +321,7 @@ export function Booking() {
     if (watch("date") && watch("court")) {
       // Reset duration to 1 hour
       setValue("duration", 1);
-  
+
       // Existing code for fetching booked slots
       axiosInstance
         .post("/booked-slots", {
@@ -336,7 +336,7 @@ export function Booking() {
         })
         .finally(() => {
           setValue("startTime", formatTime(timeSlots[0]));
-          
+
           // Recalculate the price based on the new duration
           const selectedCourt = courts.find(court => court._id === watch("court"));
           const newPrice = calculatePrice(selectedCourt, watch("date"), watch("startTime"), 1);
@@ -347,12 +347,12 @@ export function Booking() {
   }, [watch("court"), watch("date")]);
 
   useEffect(() => {
-    console.log(formatTime(timeSlots[0]),"formatted start Time")
+    console.log(formatTime(timeSlots[0]), "formatted start Time")
     setValue("startTime", formatTime(timeSlots[0]));
   }, [bookedSlots]);
 
-  const amount:any = watch("amount");
-  
+  const amount: any = watch("amount");
+
   // Calculate values
   const subtotal = amount ? parseFloat(amount) : 0;
   const serviceCharge = (subtotal * 0.03).toFixed(2);
@@ -516,6 +516,9 @@ export function Booking() {
           <div className="w-full flex justify-between min-h-10 sm:items-center sm:flex-row flex-col">
             <label htmlFor="" className="capitalize">
               Select date
+              <div className="text-xs text-red-700 font-sans">
+                (Note!: The start time will be refreshed when the date is changed)
+              </div>
             </label>
             <div className="flex flex-col sm:w-auto w-full">
               <Popover>
@@ -696,7 +699,7 @@ export function Booking() {
             </div>
           </div>
           <div className="w-full flex flex-col items-center border border-r-0 border-l-0 p-2">
-            
+
 
             {/* Subtotal */}
             <div className="w-full flex justify-between items-center mt-2">
