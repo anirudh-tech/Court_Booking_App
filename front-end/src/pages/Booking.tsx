@@ -319,6 +319,10 @@ export function Booking() {
   );
   useEffect(() => {
     if (watch("date") && watch("court")) {
+      // Reset duration to 1 hour
+      setValue("duration", 1);
+  
+      // Existing code for fetching booked slots
       axiosInstance
         .post("/booked-slots", {
           date: watch("date"),
@@ -332,6 +336,12 @@ export function Booking() {
         })
         .finally(() => {
           setValue("startTime", formatTime(timeSlots[0]));
+          
+          // Recalculate the price based on the new duration
+          const selectedCourt = courts.find(court => court._id === watch("court"));
+          const newPrice = calculatePrice(selectedCourt, watch("date"), watch("startTime"), 1);
+          setValue("amount", newPrice);
+          trigger("amount");
         });
     }
   }, [watch("court"), watch("date")]);
