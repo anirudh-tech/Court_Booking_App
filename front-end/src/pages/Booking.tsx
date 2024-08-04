@@ -202,34 +202,26 @@ export function Booking() {
 
   const incrementDuration = () => {
     const currentDuration = getValues("duration");
-    const currentAmount = getValues("amount");
-
     if (currentDuration < 20) {
-      // Maximum duration limit
       const newDuration = currentDuration + 0.5;
-      const newAmount = (currentAmount / currentDuration) * newDuration;
-      const newDeductedAmount = newAmount * 0.2;
-      setValue("deductedAmount", newDeductedAmount);
-      trigger("deductedAmount");
-      setValue("duration", newDuration); // Increment by half an hour
+      const selectedCourt = courts.find(court => court._id === watch("court"));
+      const newPrice = calculatePrice(selectedCourt, watch("date"), watch("startTime"), newDuration);
+      setValue("duration", newDuration);
+      setValue("amount", newPrice);
       trigger("duration");
-      setValue("amount", newAmount); // Update amount with new duration
       trigger("amount");
     }
   };
-
+  
   const decrementDuration = () => {
     const currentDuration = getValues("duration");
-    const currentAmount = getValues("amount");
-
     if (currentDuration > 1) {
-      // Minimum duration limit
       const newDuration = currentDuration - 0.5;
-      const newAmount = (currentAmount / currentDuration) * newDuration;
-
-      setValue("duration", newDuration); // Decrement by half an hour
+      const selectedCourt = courts.find(court => court._id === watch("court"));
+      const newPrice = calculatePrice(selectedCourt, watch("date"), watch("startTime"), newDuration);
+      setValue("duration", newDuration);
+      setValue("amount", newPrice);
       trigger("duration");
-      setValue("amount", newAmount); // Update amount with new duration
       trigger("amount");
     }
   };
@@ -265,22 +257,26 @@ export function Booking() {
     }
   }, [watch("date")]);
 
-  const calculatePrice = (court, date, startTime) => {
+  const calculatePrice = (court, date, startTime, duration) => {
     if (!court) return 0;
   
+    let basePrice;
     if (court.specialcost?.category === "day" && isSpecialDay(date, court)) {
-      return Number(court.specialcost.price);
+      basePrice = Number(court.specialcost.price);
     } else if (court.specialcost?.category === "time" && isSpecialTime(startTime, court)) {
-      return Number(court.specialcost.price);
+      basePrice = Number(court.specialcost.price);
     } else {
-      return Number(court.normalcost.price);
+      basePrice = Number(court.normalcost.price);
     }
+  
+    return basePrice * duration;
   };
 
   useEffect(() => {
     if (watch("court") && watch("date")) {
       const selectedCourt = courts.find(court => court._id === watch("court"));
-      const newPrice = calculatePrice(selectedCourt, watch("date"), watch("startTime"));
+      const currentDuration = getValues("duration");
+      const newPrice = calculatePrice(selectedCourt, watch("date"), watch("startTime"), currentDuration);
       setValue("amount", newPrice);
       trigger("amount");
     }
@@ -353,8 +349,9 @@ export function Booking() {
   const totalAmount = (subtotal + parseFloat(serviceCharge)).toFixed(2);
 
   const handleReset = () => {
+    const currentDuration = getValues("duration");
     reset({
-      duration: 1,
+      duration: currentDuration,
       startTime: formatTime(timeSlots[0]),
       date: new Date(),
       amount: 0,
@@ -461,7 +458,8 @@ export function Booking() {
                   setValue("court", value);
                   trigger("court");
                   const selectedCourt = courts?.find(court => court?._id == value);
-                  const newPrice = calculatePrice(selectedCourt, watch("date"), watch("startTime"));
+                  const currentDuration = getValues("duration");
+                  const newPrice = calculatePrice(selectedCourt, watch("date"), watch("startTime"), currentDuration);
                   setValue("amount", newPrice);
                   trigger("amount");
                 }}
