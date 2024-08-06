@@ -9,7 +9,7 @@ import { Calendar } from '@/shadcn/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/shadcn/ui/popover'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shadcn/ui/tabs'
 import { addMinutes, format, isBefore, isAfter, parse } from 'date-fns'
-import { CalendarIcon, CircleCheck, TriangleAlert, X } from 'lucide-react'
+import { CalendarIcon, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { CustomModal } from '@/components/Moda'
@@ -64,10 +64,33 @@ const Slots = () => {
             (isBefore(bookingEnd, endTime) && isAfter(bookingEnd, time)));
       });
 
-      const availableCourts = sportCourts?.filter(court =>
-        isBefore(time, parse(court.normalcost.time.to, 'h:mm a', new Date())) &&
-        isAfter(endTime, parse(court.normalcost.time.from, 'h:mm a', new Date()))
-      ).length;
+      // const availableCourts = sportCourts?.filter(court =>
+      //   isBefore(time, parse(court.normalcost.time.to, 'h:mm a', new Date())) &&
+      //   isAfter(endTime, parse(court.normalcost.time.from, 'h:mm a', new Date()))
+      // ).length;
+
+
+
+      const availableCourts = sportCourts?.filter(court => {
+        const normalStartTime = parse(court.normalcost.time.from, 'h:mm a', new Date());
+        const normalEndTime = parse(court.normalcost.time.to, 'h:mm a', new Date());
+
+        // Default condition for normal cost
+        let isAvailable = isBefore(time, normalEndTime) && isAfter(endTime, normalStartTime);
+
+        // Check if there is a special cost
+        if (court.specialcost && court.specialcost.diff) {
+          const specialStartTime = parse(court.specialcost.diff.from, 'h:mm a', new Date());
+          const specialEndTime = parse(court.specialcost.diff.to, 'h:mm a', new Date());
+
+          // Modify availability based on special cost time
+          if (court.specialcost.category === 'time') {
+            isAvailable = isAvailable || (isBefore(time, specialEndTime) && isAfter(endTime, specialStartTime));
+          }
+        }
+
+        return isAvailable;
+      }).length;
 
       intervals.push({
         interval: intervalString,
@@ -160,24 +183,13 @@ const Slots = () => {
                                     </div>
                                     <div className='flex justify-between w-full'>
                                       <p className='font-bold'>Phone Number: </p>
-                                      <p>{booking.userId.phoneNumber}</p>
-                                    </div>
-                                    <div className='flex justify-start w-full'>
-                                      <div className='flex gap-2'>
-                                        {
-                                          booking.amountPaid == booking.totalAmount ? (
-                                            <>
-                                              <CircleCheck className='w-6 text-green-500' />
-                                              <p>INR {booking.amountPaid}/{booking.totalAmount}</p>
-                                            </>
-                                          ) : (
-                                            <>
-                                              <TriangleAlert className={'w-6 text-yellow-500'} />
-                                              <p>INR {booking.amountPaid}/{booking.totalAmount}</p>
-                                            </>
-                                          )
-                                        }
-                                      </div>
+                                      {
+                                        booking?.userId?.role == "Admin" ? (
+                                          <p>Booked By Admin</p>
+                                        ) : (
+                                          <p>{booking?.userId?.phoneNumber}</p>
+                                        )
+                                      }
                                     </div>
                                   </div>
                                 ))

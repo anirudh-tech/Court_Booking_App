@@ -16,23 +16,20 @@ import {
   SelectValue,
 } from "@/shadcn/ui/select";
 import { Court } from "@/types/courtReducerInitial";
-import { isSpecialTime } from "@/utils/IsSpecialTime";
 import { formatDuration } from "@/utils/formatDuration";
 import { formatTime } from "@/utils/formatTime";
 import { formatEndTimeWithDuration } from "@/utils/getEndTime";
-import { isSpecialDay } from "@/utils/isSpecialday";
 import { parseTime } from "@/utils/stringToTIme";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays, format, isBefore, startOfDay } from "date-fns";
-import { CalendarIcon, Clock, IndianRupee, Minus, Plus } from "lucide-react";
+import { CalendarIcon, Clock, Minus, Plus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
-export function Booking() {
+export function AdminBooking() {
   const isDateDisabled = (day: Date): boolean => {
     const now = new Date();
     const currentHour = now.getHours();
@@ -70,7 +67,6 @@ export function Booking() {
   const popoverCloseRef = useRef<HTMLButtonElement>(null);
 
   const { user } = useSelector((state: RootState) => state.user);
-  const navigate = useNavigate();
   const [submitionLoad, setSubmitionLoad] = useState<boolean>(false);
   const handleBooking = async (values: z.infer<typeof bookingSchema>) => {
     try {
@@ -98,66 +94,28 @@ export function Booking() {
       );
       valueCopy.courtId = values.court;
       valueCopy.userId = String(user?._id);
-      valueCopy.paymentStatus = "Pending";
-      valueCopy.paymentMethod = values.paymentmode;
-      if (values.paymentmode == "Full Payment") {
-        valueCopy.totalAmount = totalAmount;
-        valueCopy.amount = totalAmount;
-      } else {
-        valueCopy.totalAmount = totalAmount;
-        valueCopy.amount = values.deductedAmount;
-      }
-      const { data: bookingdata } = await axiosInstance.post(
+      const { data: bookingData } = await axiosInstance.post(
         `/book-court`,
         valueCopy
       );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const order: any = bookingdata.order;
+      console.log(bookingData, "booking data ------------->")
+      if (bookingData.status === true) {
+        // reset({
+        //     sport: "",
+        //     court: "",
+        //     // startTime: formatTime(timeSlots[0]),
+        //     duration: 1,
+        //     date: new Date(),
+        //   });
 
-      //     VITE_RAZORPAY_KEY_ID
-      // VITE_RAZORPAY_SECRET
+        toast.success("Booking added successfully!");
+        window.location.reload()
+      } else {
+        toast.error("Failed to book the court")
+      }
 
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
-        amount: order.amount,
-        currency: order.currency,
-        name: "Lal Sports Academy",
-        description: "Transaction",
-        order_id: order.id,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        handler: async function (response: any) {
-          try {
-            const data = {
-              orderCreationId: order.id,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpayOrderId: response.razorpay_order_id,
-              razorpaySignature: response.razorpay_signature,
-              bookingId: bookingdata.bookingId,
-            };
-            await axiosInstance.post(`/validate-payment`, data).then((res) => {
-              toast.success("Court booking successfull");
-              if (res.data.status) {
-                navigate("/mybooking");
-              } else {
-                toast.error("Payment failed");
-              }
-            });
-          } catch (error) {
-            toast.error("Payment validation error");
-          }
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        },
-        modal: {
-          ondismiss: function () {
-            toast.error("Payment was not completed. Please try again.");
-          },
-        },
-      };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const paymentObject = new (window as any).Razorpay(options);
-      paymentObject.open();
       setSubmitionLoad(false);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -176,10 +134,6 @@ export function Booking() {
     startTime: z.string(),
     duration: z.number(),
     date: z.date(),
-    amount: z.number(),
-    deductedAmount: z.number().optional(),
-    paymentmode: z.string().nonempty(),
-    totalAmount: z.number().optional(),
   });
   const {
     handleSubmit,
@@ -204,25 +158,18 @@ export function Booking() {
     const currentDuration = getValues("duration");
     if (currentDuration < 20) {
       const newDuration = currentDuration + 0.5;
-      const selectedCourt = courts.find(court => court._id === watch("court"));
-      const newPrice = calculatePrice(selectedCourt, watch("date"), watch("startTime"), newDuration);
       setValue("duration", newDuration);
-      setValue("amount", newPrice);
       trigger("duration");
-      trigger("amount");
     }
   };
 
   const decrementDuration = () => {
     const currentDuration = getValues("duration");
     if (currentDuration > 1) {
+      // Minimum duration limit
       const newDuration = currentDuration - 0.5;
-      const selectedCourt = courts.find(court => court._id === watch("court"));
-      const newPrice = calculatePrice(selectedCourt, watch("date"), watch("startTime"), newDuration);
-      setValue("duration", newDuration);
-      setValue("amount", newPrice);
+      setValue("duration", newDuration); // Decrement by half an hour
       trigger("duration");
-      trigger("amount");
     }
   };
 
@@ -240,47 +187,6 @@ export function Booking() {
         .finally(() => setLocalLoad(false));
     }
   }, [watch("sport")]);
-
-  useEffect(() => {
-    const value = getValues("court");
-    const selecteCourt = courts?.find((court) => court._id == value);
-    if (
-      selecteCourt?.specialcost?.category == "day" &&
-      watch("date") &&
-      isSpecialDay(watch("date"), selecteCourt)
-    ) {
-      setValue("amount", Number(selecteCourt?.specialcost?.price));
-      trigger("amount");
-    } else {
-      setValue("amount", Number(selecteCourt?.normalcost.price));
-      trigger("amount");
-    }
-  }, [watch("date")]);
-
-  const calculatePrice = (court, date, startTime, duration) => {
-    if (!court) return 0;
-
-    let basePrice;
-    if (court.specialcost?.category === "day" && isSpecialDay(date, court)) {
-      basePrice = Number(court.specialcost.price);
-    } else if (court.specialcost?.category === "time" && isSpecialTime(startTime, court)) {
-      basePrice = Number(court.specialcost.price);
-    } else {
-      basePrice = Number(court.normalcost.price);
-    }
-
-    return basePrice * duration;
-  };
-
-  useEffect(() => {
-    if (watch("court") && watch("date")) {
-      const selectedCourt = courts.find(court => court._id === watch("court"));
-      const currentDuration = getValues("duration");
-      const newPrice = calculatePrice(selectedCourt, watch("date"), watch("startTime"), currentDuration);
-      setValue("amount", newPrice);
-      trigger("amount");
-    }
-  }, [watch("date"), watch("court"), watch("startTime")]);
 
 
   useEffect(() => {
@@ -322,7 +228,6 @@ export function Booking() {
       // Reset duration to 1 hour
       setValue("duration", 1);
 
-      // Existing code for fetching booked slots
       axiosInstance
         .post("/booked-slots", {
           date: watch("date"),
@@ -336,27 +241,15 @@ export function Booking() {
         })
         .finally(() => {
           setValue("startTime", formatTime(timeSlots[0]));
-
-          // Recalculate the price based on the new duration
-          const selectedCourt = courts.find(court => court._id === watch("court"));
-          const newPrice = calculatePrice(selectedCourt, watch("date"), watch("startTime"), 1);
-          setValue("amount", newPrice);
-          trigger("amount");
         });
     }
   }, [watch("court"), watch("date")]);
 
   useEffect(() => {
-    console.log(formatTime(timeSlots[0]), "formatted start Time")
     setValue("startTime", formatTime(timeSlots[0]));
   }, [bookedSlots]);
 
-  const amount: any = watch("amount");
 
-  // Calculate values
-  const subtotal = amount ? parseFloat(amount) : 0;
-  const serviceCharge = (subtotal * 0.03).toFixed(2);
-  const totalAmount = (subtotal + parseFloat(serviceCharge)).toFixed(2);
 
   const handleReset = () => {
     const currentDuration = getValues("duration");
@@ -364,10 +257,6 @@ export function Booking() {
       duration: currentDuration,
       startTime: formatTime(timeSlots[0]),
       date: new Date(),
-      amount: 0,
-      deductedAmount: undefined,
-      paymentmode: "",
-      totalAmount: undefined,
     });
   };
 
@@ -378,7 +267,7 @@ export function Booking() {
   };
 
   return (
-    <main className="w-full min-h-screen flex  justify-center items-start text-[15px] ">
+    <main className="w-full min-h-screen flex  justify-center items-center text-[15px] ">
       <form
         className="w-[90%] sm:w-[70%] md:w-[60%] lg:w-[38%]  border rounded-md shadow-sm "
         onSubmit={handleSubmit(handleBooking)}
@@ -467,15 +356,10 @@ export function Booking() {
                   handleCourtReset();
                   setValue("court", value);
                   trigger("court");
-                  const selectedCourt = courts?.find(court => court?._id == value);
-                  const currentDuration = getValues("duration");
-                  const newPrice = calculatePrice(selectedCourt, watch("date"), watch("startTime"), currentDuration);
-                  setValue("amount", newPrice);
-                  trigger("amount");
                 }}
               >
                 <SelectTrigger
-                  className={`sm:w-64 w-full outline-none ring-0 ${!courts || (courts?.length <= 0 && "pointer-events-none")
+                  className={`sm:w-64 w-full outline-none ring-0 ${!courts || (courts.length <= 0 && "pointer-events-none")
                     } `}
                 >
                   <SelectValue
@@ -497,16 +381,16 @@ export function Booking() {
                 <SelectContent>
                   {courts.map((court) => (
                     <SelectItem value={String(court?._id)} key={court?._id}>
-                      {court?.courtName}
+                      {court.courtName}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <div>
-                {errors && errors?.court && errors?.court.message && (
+                {errors && errors.court && errors.court.message && (
                   <>
                     <span className="text-[12px] text-red-600">
-                      {errors?.court?.message}
+                      {errors.court.message}
                     </span>
                   </>
                 )}
@@ -516,9 +400,9 @@ export function Booking() {
           <div className="w-full flex justify-between min-h-10 sm:items-center sm:flex-row flex-col">
             <label htmlFor="" className="capitalize">
               Select date
-              <div className="text-xs text-red-700 font-sans">
-                (Note!: The start time will be refreshed when the date is changed)
-              </div>
+            <div className="text-xs text-red-700 font-sans">
+              (Note!: The start time will be refreshed when the date is changed)
+            </div>
             </label>
             <div className="flex flex-col sm:w-auto w-full">
               <Popover>
@@ -544,7 +428,11 @@ export function Booking() {
                     mode="single"
                     selected={watch("date")}
                     onSelect={(date) => {
-                      date && setValue("date", date);
+                      if (date) {
+                        setValue("date", date);
+                        setValue("duration", 1); // Reset duration to 1 hour
+                        trigger("duration");
+                      }
                     }}
                     disabled={isDateDisabled}
                     initialFocus
@@ -665,102 +553,13 @@ export function Booking() {
               </span>
             </div>
           </div>
-          <div className="w-full flex justify-between min-h-10 sm:items-center sm:flex-row flex-col">
-            <label htmlFor="">Payment method</label>
-            <div className="flex flex-col sm:w-auto w-full">
-              <Select
-                onValueChange={(value) => {
-                  if (value == "Advance Payment") {
-                    setValue("deductedAmount", watch("amount") * 0.2);
-                  }
-                  setValue("paymentmode", value);
-                  trigger("paymentmode");
-                }}
-              >
-                <SelectTrigger className="sm:w-64 w-full outline-none ring-0">
-                  <SelectValue placeholder="💳 Select payment option" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem key={"Full Payment"} value={"Full Payment"}>
-                    Full Payment
-                  </SelectItem>
-                  {/* <SelectItem key={"Advance Payment"} value={"Advance Payment"}>
-                    Pay 20% Advance
-                  </SelectItem> */}
-                </SelectContent>
-              </Select>
-              {errors && errors.paymentmode && errors.paymentmode.message && (
-                <>
-                  <span className="text-[12px] text-red-600">
-                    {errors.paymentmode.message}
-                  </span>
-                </>
-              )}
-            </div>
-          </div>
-          <div className="w-full flex flex-col items-center border border-r-0 border-l-0 p-2">
-
-
-            {/* Subtotal */}
-            <div className="w-full flex justify-between items-center mt-2">
-              <label htmlFor="">Subtotal</label>
-              <div className="flex flex-col">
-                <div className="sm:w-64 w-52 h-10 rounded-md flex justify-end gap-1 items-center px-4 pointer-events-none">
-                  <IndianRupee className="w-4 font-bold" />{" "}
-                  <span className="text-[15px] font-semibold">
-                    {amount ? subtotal.toFixed(2) : "---"}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Service Charge */}
-            <div className="w-full flex justify-between items-center mt-2">
-              <label htmlFor="">Service Charge</label>
-              <div className="flex flex-col">
-                <div className="sm:w-64 w-52 h-10 rounded-md flex justify-end gap-1 items-center px-4 pointer-events-none">
-                  <IndianRupee className="w-4 font-bold" />{" "}
-                  <span className="text-[15px] font-semibold">
-                    {amount ? serviceCharge : "---"}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Total Amount */}
-            <div className="w-full flex justify-between items-center mt-2">
-              <label htmlFor="">Total Amount</label>
-              <div className="flex flex-col">
-                <div className="sm:w-64 w-52 h-10 rounded-md flex justify-end gap-1 items-center px-4 pointer-events-none">
-                  <IndianRupee className="w-4 font-bold" />{" "}
-                  <span className="text-[15px] font-semibold">
-                    {amount ? totalAmount : "---"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {watch("paymentmode") === "Advance Payment" && (
-            <div className="w-full flex justify-between  items-center border border-r-0 border-l-0 border-t-0 px-2">
-              <label htmlFor="">Amount Payable </label>
-              <div className="flex flex-col">
-                <div className="sm:w-64 w-52 h-10  rounded-md flex justify-end gap-1  items-center  px-4 pointer-events-none">
-                  <IndianRupee className="w-4 font-bold" />{" "}
-                  <span className="text-[15px] font-semibold">
-                    {watch("deductedAmount")}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
           <LoaderButton
             type="submit"
             loading={submitionLoad}
             // onClick={handleBooking}
             className="w-full h-12 flex items-center justify-center bg-custom-gradient rounded-md text-white"
           >
-            Proceed to payment 💳
+            Book The Slot
           </LoaderButton>
         </div>
       </form>

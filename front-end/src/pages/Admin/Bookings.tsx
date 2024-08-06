@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from "@/lib/utils";
-import { bookingsByDate, listAllBookings } from "@/redux/actions/bookingAction";
+import { bookingsByDate, deleteBooking, listAllBookings } from "@/redux/actions/bookingAction";
 import { AppDispatch, RootState } from "@/redux/store";
 import { Button } from "@/shadcn/ui/button";
 import { Calendar } from "@/shadcn/ui/calendar";
@@ -9,11 +9,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn/ui/popover";
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shadcn/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shadcn/ui/table";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shadcn/ui/select";
 import { PopoverClose } from "@radix-ui/react-popover";
+import toast from "react-hot-toast";
+import { CustomModal } from "@/components/Moda";
+import { LoaderButton } from "@/components/custom/LoaderButton";
 
 export function Bookings() {
     const dispatch: AppDispatch = useDispatch();
@@ -22,6 +25,7 @@ export function Bookings() {
     const [date, setDate] = useState<Date | null>(null);
     const popoverClose = useRef<HTMLButtonElement>(null)
     const { bookings } = useSelector((state: RootState) => state.booking);
+    const modalCloseRef = useRef(null)
 
 
     useEffect(() => {
@@ -57,6 +61,20 @@ export function Bookings() {
         popoverClose.current.click()
         setDate(date);
         setSearch('');  // Clear the search input when a new date is picked
+    };
+
+    const handleDeleteBooking = async (bookingId: string) => {
+        try {
+            await dispatch(deleteBooking(bookingId));
+            toast.success("Booking deleted successfully");
+            if (date) {
+                dispatch(bookingsByDate(date));
+            } else {
+                dispatch(listAllBookings(search));
+            }
+        } catch (error) {
+            toast.error("Failed to delete booking");
+        }
     };
 
     // const handlePaymentStatusChange = async(bookingId: string, value: string) => {
@@ -131,50 +149,91 @@ export function Bookings() {
                     <TableBody>
                         {localBookings?.map((booking: any) => (
                             <TableRow key={booking?._id}>
-                                <TableCell className="font-medium">
-                                    {booking?.userId?.phoneNumber}
-                                </TableCell>
+                                {
+                                    booking?.userId?.role === "Admin" ? (
+                                        <TableCell className="font-medium">
+                                            Booked By Admin
+                                        </TableCell>
+                                    ) : (
+                                        <TableCell className="font-medium">
+                                            {booking?.userId?.phoneNumber}
+                                        </TableCell>
+
+                                    )
+                                }
                                 <TableCell className="font-medium">
                                     {booking?.courtId?.courtName}
                                 </TableCell>
                                 <TableCell>
-                                    {format(booking?.date,"PPP")} - {booking?.startTime} to {booking?.endTime}
+                                    {format(booking?.date, "PPP")} - {booking?.startTime} to {booking?.endTime}
                                 </TableCell>
                                 <TableCell className="font-medium">
                                     {booking?.duration}Hr
                                 </TableCell>
-                                <TableCell className="font-medium">
-                                    ₹{booking?.totalAmount}
-                                </TableCell>
-                                {/* <TableCell className="font-medium">
-                                    {booking?.paymentMethod}
-                                </TableCell> */}
-                                {/* <TableCell className="font-medium">
-                                    ₹{booking?.amountPaid}
-                                </TableCell>
-                                <TableCell className="font-medium">
-                                    {booking?.totalAmount - booking?.amountPaid === 0 ? (
-                                        <span>Nil</span>
+                                {
+                                    booking?.userId?.role === "Admin" ? (
+                                        <TableCell className="font-medium">
+                                            ---
+                                        </TableCell>
                                     ) : (
-                                        <span>₹{booking?.totalAmount - booking?.amountPaid}</span>
-                                    )}
-                                </TableCell> */}
-                                {/* <TableCell className="font-medium">
-                                    <Select
-                                        onValueChange={(value) => handlePaymentStatusChange(booking._id, value)}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder={<div className={`${booking?.paymentStatus === 'Advance Paid' ? 'text-orange-500' : 'text-green-500'}`}>{booking?.paymentStatus}</div>} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Paid">Paid</SelectItem>
-                                            <SelectItem value="Advance Paid">Advance Paid</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </TableCell> */}
-                                {/* <TableCell className="font-medium">
-                                    {booking?.status}
-                                </TableCell> */}
+                                        <TableCell className="font-medium">
+                                            ₹{booking?.totalAmount}
+                                        </TableCell>
+                                    )
+                                }
+                                <TableCell className="font-medium">
+                                    
+                                    
+                                        <CustomModal
+                                            className="w-[90%] sm:w-[75%] md:w-[66%] lg:w-[40%] xl:w-[40%] p-0 rounded-md"
+                                            TriggerComponent={
+                                                <Button variant="destructive">
+                                                    Delete
+                                                </Button>
+                                            }
+                                            closeComponent={
+                                                <div
+                                                    className="cursor-pointer z-20"
+                                                    ref={modalCloseRef}
+                                                >
+                                                    <X className="w-6" />
+                                                </div>
+                                            }
+                                        >
+                                            <div className="w-full min-h-36 bg-white p-6 rounded-md">
+                                                <div className="w-full">
+                                                    <h1 className="text-[19px] font-semibold">
+                                                        Are you sure ? 
+                                                    </h1>
+                                                </div>
+                                                <div className="mt-2">
+                                                    <p className="text-[14px]">
+                                                        You are going to permanently delete the booking at the court {booking?.courtId?.courtName}. This action cannot be undone. This will
+                                                        permanently delete the booking from servers.
+                                                    </p>
+                                                </div>
+                                                <div className="w-full flex justify-end gap-2 mt-1">
+                                                    <button
+                                                        className="h-10 min-w-20  rounded-md px-4 bg-slate-100"
+                                                        onClick={() =>
+                                                            modalCloseRef.current?.click()
+                                                        }
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    <LoaderButton
+                                                        loading={false}
+                                                        type="button"
+                                                        onClick={()=>handleDeleteBooking(booking._id)}
+                                                        from="logout"
+                                                        className="h-10   rounded-md px-4 bg-red-600 hover:bg-red-700 text-white min-w-20"
+                                                    >
+                                                        Continue
+                                                    </LoaderButton>
+                                                </div>
+                                            </div>
+                                        </CustomModal>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

@@ -51,3 +51,15 @@ export const bookingsByDate = createAsyncThunk(
     }
   }
 );
+
+export const deleteBooking = createAsyncThunk(
+  "bookings/delete-booking",
+  async(bookingId: string, {rejectWithValue}) => {
+    try {
+      const {data} = await axiosInstance.delete(`/delete-booking/${bookingId}`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(handleError(error))
+    }
+  }
+)
