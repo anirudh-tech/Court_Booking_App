@@ -58,7 +58,7 @@ export const Home = () => {
             <img src={womenImage} className="w-full md:w-[78%]" alt="" />
             <div className="md:absolute right-0 bottom-0 w-full md:w-80 min-h-14 md:h-40 flex items-center px-5 justify-center md:py-0   text-white bg-black shadow-md">
               <h1 className="font-bold  md:text-2xl text-center uppercase leading-8 ">
-              Step onto Greatness, Play Beyond Limits!
+                Step onto Greatness, Play Beyond Limits!
               </h1>
             </div>
           </motion.div>
@@ -86,7 +86,8 @@ export const Home = () => {
               </div>
               <div className="md:mt-10 mt-4 w-full flex justify-start ">
                 <>
-                  <CustomModal typeOfBtn="mainButton"
+                  <CustomModal
+                    typeOfBtn="mainButton"
                     className="w-[90%] sm:w-[75%] md:w-[66%] lg:w-[80%] xl:w-[60%] p-0"
                     TriggerComponent={
                       <button
@@ -200,6 +201,7 @@ export const Home = () => {
           <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 ">
             {courts?.map((court) => (
               <div
+                key={court._id}
                 className="w-full min-h-38  rounded-md p-4 border-2 shadow-md relative"
                 data-aos="fade-down"
                 dat-aos-delay={`100`}

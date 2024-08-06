@@ -28,11 +28,11 @@ export const CustomModal = ({
 
   const closeRef = useRef<HTMLDivElement>(null);
   return (
-    <main className={typeOfBtn == "mainButton" && "w-full md:w-auto"}>
+    <main className={typeOfBtn == "mainButton" ? "w-full md:w-auto" : ""}>
       <div onClick={openModal} className="cursor-pointer ">
         {TriggerComponent}
       </div>
-      <AnimatePresence >
+      <AnimatePresence>
         {isOpen && (
           <>
             <motion.div
